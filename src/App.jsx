@@ -188,21 +188,21 @@ const PROFILE = {
 }
 
 const LINKS = [
-  { id: 1, label: 'LinkedIn',             icon: <LinkedInIcon />,  href: '#' },
-  { id: 2, label: 'GitHub',               icon: <GitHubIcon />,    href: '#' },
-  { id: 3, label: 'My Portfolio Website', icon: <PortfolioIcon />, href: '#' },
-  { id: 4, label: 'Discord Community',    icon: <DiscordIcon />,   href: '#' },
+  { id: 1, label: 'LinkedIn',             icon: <LinkedInIcon />,  href: 'https://www.linkedin.com/in/muhammad-fahreza-a20975285' },
+  { id: 2, label: 'GitHub',               icon: <GitHubIcon />,    href: 'https://github.com/MhmdFahreza' },
+  { id: 3, label: 'My Portfolio Website', icon: <PortfolioIcon />, href: 'https://muhammadfahreza.vercel.app/' },
+  { id: 4, label: 'Discord Community',    icon: <DiscordIcon />,   href: 'https://discord.gg/UncurKFS' },
 ]
 
 const MUSIC_LINKS = [
-  { id: 5, label: 'Spotify',        icon: <MusicNoteIcon />, href: '#' },
-  { id: 6, label: 'YouTube Music',  icon: <MusicNoteIcon />, href: '#' },
+  { id: 5, label: 'Spotify',        icon: <MusicNoteIcon />, href: 'https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30' },
+  { id: 6, label: 'YouTube Music',  icon: <MusicNoteIcon />, href: 'https://music.youtube.com/playlist?list=PL9X21xjKqYoXnoUX4vl0EMhs0iQWEvE1k' },
 ]
 
 const DONATION_LINKS = [
-  { id: 7, label: 'Trakteer', icon: <HeartIcon />, href: '#' },
-  { id: 8, label: 'Saweria',  icon: <HeartIcon />, href: '#' },
-  { id: 9, label: 'Tako',     icon: <HeartIcon />, href: '#' },
+  { id: 7, label: 'Trakteer', icon: <HeartIcon />, href: 'https://trakteer.id/muhammad_fahreza19' },
+  { id: 8, label: 'Saweria',  icon: <HeartIcon />, href: 'https://saweria.co/FareekzYT' },
+  { id: 9, label: 'Tako',     icon: <HeartIcon />, href: 'https://tako.id/MuhammadFahreza' },
 ]
 
 const SOCIALS = [
