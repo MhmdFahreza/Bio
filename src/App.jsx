@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Howl } from 'howler';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -51,21 +50,21 @@ const PROFILE = {
 };
 
 const LINKS = [
-  { id: 1, label: 'LinkedIn', icon: <LinkedInIcon />, href: 'https://www.linkedin.com/in/muhammad-fahreza-a20975285' },
-  { id: 2, label: 'GitHub', icon: <GitHubIcon />, href: 'https://github.com/MhmdFahreza' },
-  { id: 3, label: 'My Portfolio Website', icon: <PortfolioIcon />, href: 'https://muhammadfahreza.vercel.app/' },
-  { id: 4, label: 'Discord Community', icon: <DiscordIcon />, href: 'https://discord.gg/UncurKFS' },
+  { id: 1, label: 'LinkedIn',            icon: <LinkedInIcon />,  href: 'https://www.linkedin.com/in/muhammad-fahreza-a20975285' },
+  { id: 2, label: 'GitHub',              icon: <GitHubIcon />,    href: 'https://github.com/MhmdFahreza' },
+  { id: 3, label: 'My Portfolio Website',icon: <PortfolioIcon />, href: 'https://muhammadfahreza.vercel.app/' },
+  { id: 4, label: 'Discord Community',   icon: <DiscordIcon />,   href: 'https://discord.gg/UncurKFS' },
 ];
 
 const MUSIC_LINKS = [
-  { id: 5, label: 'Spotify', icon: <MusicNoteIcon />, href: 'https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30' },
+  { id: 5, label: 'Spotify',       icon: <MusicNoteIcon />, href: 'https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30' },
   { id: 6, label: 'YouTube Music', icon: <MusicNoteIcon />, href: 'https://music.youtube.com/playlist?list=PL9X21xjKqYoXnoUX4vl0EMhs0iQWEvE1k' },
 ];
 
 const DONATION_LINKS = [
   { id: 7, label: 'Trakteer', icon: <HeartIcon />, href: 'https://trakteer.id/muhammad_fahreza19' },
-  { id: 8, label: 'Saweria', icon: <HeartIcon />, href: 'https://saweria.co/FareekzYT' },
-  { id: 9, label: 'Tako', icon: <HeartIcon />, href: 'https://tako.id/MuhammadFahreza' },
+  { id: 8, label: 'Saweria',  icon: <HeartIcon />, href: 'https://saweria.co/FareekzYT' },
+  { id: 9, label: 'Tako',     icon: <HeartIcon />, href: 'https://tako.id/MuhammadFahreza' },
 ];
 
 const SOCIALS = [
@@ -107,6 +106,261 @@ const SOCIALS = [
   },
 ];
 
+/* ====================== OCEAN SOUND ENGINE (Web Audio API) ====================== */
+/*
+ * Tidak butuh file audio. Semua dibuat secara prosedural menggunakan Web Audio API.
+ * Cara kerjanya sama seperti situs "The Boat" dari SBS — menggunakan oscillator,
+ * noise generator, dan filter untuk menciptakan suara ombak yang realistis.
+ */
+class OceanSoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.masterGain = null;
+    this.nodes = [];
+    this.playing = false;
+  }
+
+  /* Buat pink noise buffer (lebih natural dari white noise) */
+  _createPinkNoiseBuffer(seconds = 8) {
+    const sr = this.ctx.sampleRate;
+    const buf = this.ctx.createBuffer(1, sr * seconds, sr);
+    const d = buf.getChannelData(0);
+    let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+    for (let i = 0; i < d.length; i++) {
+      const wh = Math.random() * 2 - 1;
+      b0 = 0.99886*b0 + wh*0.0555179;
+      b1 = 0.99332*b1 + wh*0.0750759;
+      b2 = 0.96900*b2 + wh*0.1538520;
+      b3 = 0.86650*b3 + wh*0.3104856;
+      b4 = 0.55000*b4 + wh*0.5329522;
+      b5 = -0.7616*b5 - wh*0.0168980;
+      d[i] = (b0+b1+b2+b3+b4+b5+b6+wh*0.5362) * 0.11;
+      b6 = wh * 0.115926;
+    }
+    return buf;
+  }
+
+  /* Buat satu layer suara ombak */
+  _addWaveLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
+    const src = this.ctx.createBufferSource();
+    src.buffer = this._createPinkNoiseBuffer(8);
+    src.loop = true;
+
+    // Bandpass filter — pilih frekuensi suara ombak
+    const bpf = this.ctx.createBiquadFilter();
+    bpf.type = 'bandpass';
+    bpf.frequency.value = filterFreq;
+    bpf.Q.value = filterQ;
+
+    // Low-pass tambahan untuk kelembutan
+    const lpf = this.ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.value = filterFreq * 3;
+
+    // LFO → amplitude modulation (ritme ombak naik-turun)
+    const lfo = this.ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = lfoFreq;
+
+    const lfoGainNode = this.ctx.createGain();
+    lfoGainNode.gain.value = lfoDepth;
+
+    const layerGain = this.ctx.createGain();
+    layerGain.gain.value = gain;
+
+    // Routing: noise → BPF → LPF → layerGain → master
+    src.connect(bpf);
+    bpf.connect(lpf);
+    lpf.connect(layerGain);
+
+    // LFO modulates layerGain.gain (bukan konstan, melainkan bergelombang)
+    lfo.connect(lfoGainNode);
+    lfoGainNode.connect(layerGain.gain);
+
+    layerGain.connect(this.masterGain);
+
+    // Mulai dengan sedikit random offset agar tidak sinkron antar layer
+    const offset = Math.random() * 8;
+    lfo.start(0);
+    src.start(0, offset);
+
+    this.nodes.push({ src, lfo });
+  }
+
+  /* Inisialisasi AudioContext + semua layer */
+  init() {
+    if (this.ctx) return;
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.value = 0; // mulai senyap, fade-in saat play
+    this.masterGain.connect(this.ctx.destination);
+
+    // Layer 1: Ombak dalam — frekuensi rendah, lambat
+    this._addWaveLayer({ lfoFreq: 0.10, filterFreq: 200, filterQ: 0.6, gain: 0.55, lfoDepth: 0.35 });
+    // Layer 2: Ombak pecah — frekuensi menengah, agak cepat
+    this._addWaveLayer({ lfoFreq: 0.22, filterFreq: 600, filterQ: 0.9, gain: 0.40, lfoDepth: 0.30 });
+    // Layer 3: Ombak kecil — frekuensi tinggi, cepat
+    this._addWaveLayer({ lfoFreq: 0.38, filterFreq: 1200, filterQ: 1.2, gain: 0.20, lfoDepth: 0.15 });
+    // Layer 4: Bisikan angin laut
+    this._addWaveLayer({ lfoFreq: 0.05, filterFreq: 3000, filterQ: 0.4, gain: 0.12, lfoDepth: 0.08 });
+  }
+
+  play() {
+    if (!this.ctx) this.init();
+    // Resume jika AudioContext di-suspend oleh browser
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    // Fade-in halus selama 2 detik
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.linearRampToValueAtTime(0.55, now + 2.0);
+    this.playing = true;
+  }
+
+  pause() {
+    if (!this.ctx) return;
+    // Fade-out halus selama 0.8 detik
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.linearRampToValueAtTime(0, now + 0.8);
+    this.playing = false;
+  }
+
+  isPlaying() { return this.playing; }
+
+  destroy() {
+    this.nodes.forEach(({ src, lfo }) => {
+      try { src.stop(); } catch (_) {}
+      try { lfo.stop(); } catch (_) {}
+    });
+    if (this.ctx) this.ctx.close();
+  }
+}
+
+/* ====================== AUDIO CONTROL ====================== */
+function AudioControl({ engineRef }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showHint, setShowHint] = useState(true);
+
+  const toggle = useCallback(() => {
+    const engine = engineRef.current;
+    if (!engine) return;
+
+    setShowHint(false);
+    if (!engine.isPlaying()) {
+      engine.play();
+      setIsPlaying(true);
+    } else {
+      engine.pause();
+      setIsPlaying(false);
+    }
+  }, [engineRef]);
+
+  return (
+    <div className="audio-wrap">
+      {showHint && (
+        <div className="audio-hint">Klik untuk suara ombak 🌊</div>
+      )}
+      <button
+        className={`audio-btn ${isPlaying ? 'audio-btn--playing' : ''}`}
+        onClick={toggle}
+        aria-label="Toggle ocean sound"
+        title={isPlaying ? 'Matikan suara' : 'Nyalakan suara ombak'}
+      >
+        {isPlaying ? (
+          /* Speaker ON */
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        ) : (
+          /* Speaker OFF */
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+          </svg>
+        )}
+        {isPlaying && (
+          <span className="audio-wave">
+            <span /><span /><span />
+          </span>
+        )}
+      </button>
+    </div>
+  );
+}
+
+/* ====================== PARALLAX BACKGROUND ====================== */
+function ParallaxBackground() {
+  const skyRef      = useRef(null);
+  const sunRef      = useRef(null);
+  const cloudsRef   = useRef(null);
+  const mountainsRef= useRef(null);
+  const seaBackRef  = useRef(null);
+  const boatRef     = useRef(null);
+  const seaFrontRef = useRef(null);
+
+  useEffect(() => {
+    const layers = [
+      { ref: skyRef,       speed: 0.05 },
+      { ref: sunRef,       speed: 0.02 },
+      { ref: cloudsRef,    speed: 0.15 },
+      { ref: mountainsRef, speed: 0.30 },
+      { ref: seaBackRef,   speed: 0.50 },
+      { ref: boatRef,      speed: 0.70 },
+      { ref: seaFrontRef,  speed: 0.90 },
+    ];
+
+    const ctx = gsap.context(() => {
+      layers.forEach(({ ref, speed }) => {
+        gsap.to(ref.current, {
+          y: -window.innerHeight * speed,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: 'body',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.5,
+          },
+        });
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div className="parallax-bg">
+      <div className="layer layer-sky"      ref={skyRef}></div>
+      <div className="layer layer-sun"      ref={sunRef}>
+        <div className="sun"></div>
+      </div>
+      <div className="layer layer-clouds"   ref={cloudsRef}>
+        <div className="cloud c1"></div>
+        <div className="cloud c2"></div>
+        <div className="cloud c3"></div>
+        <div className="cloud c4"></div>
+      </div>
+      <div className="layer layer-mountains" ref={mountainsRef}>
+        <div className="mountain m1"></div>
+        <div className="mountain m2"></div>
+      </div>
+      <div className="layer layer-sea-back" ref={seaBackRef}></div>
+      <div className="layer layer-boat"     ref={boatRef}>
+        <div className="boat">
+          <div className="hull"></div>
+          <div className="mast"></div>
+          <div className="sail"></div>
+        </div>
+      </div>
+      <div className="layer layer-sea-front" ref={seaFrontRef}>
+        <div className="wave w1"></div>
+        <div className="wave w2"></div>
+      </div>
+    </div>
+  );
+}
+
 /* ====================== UI COMPONENTS ====================== */
 function LinkButton({ label, icon, href, index }) {
   return (
@@ -134,119 +388,24 @@ function SectionLabel({ text }) {
   );
 }
 
-/* ====================== AUDIO CONTROL ====================== */
-function AudioControl({ soundRef }) {
-  const [muted, setMuted] = useState(false);
-
-  const toggle = () => {
-    if (soundRef.current) {
-      if (muted) {
-        soundRef.current.play();
-      } else {
-        soundRef.current.pause();
-      }
-      setMuted(!muted);
-    }
-  };
-
-  return (
-    <button className="audio-btn" onClick={toggle} aria-label="Toggle sound">
-      {muted ? '🔇' : '🔊'}
-    </button>
-  );
-}
-
-/* ====================== PARALLAX BACKGROUND ====================== */
-function ParallaxBackground() {
-  const skyRef = useRef(null);
-  const sunRef = useRef(null);
-  const cloudsRef = useRef(null);
-  const mountainsRef = useRef(null);
-  const seaBackRef = useRef(null);
-  const boatRef = useRef(null);
-  const seaFrontRef = useRef(null);
-
-  useEffect(() => {
-    const layers = [
-      { ref: skyRef, speed: 0.05 },
-      { ref: sunRef, speed: 0.02 },
-      { ref: cloudsRef, speed: 0.15 },
-      { ref: mountainsRef, speed: 0.3 },
-      { ref: seaBackRef, speed: 0.5 },
-      { ref: boatRef, speed: 0.7 },
-      { ref: seaFrontRef, speed: 0.9 },
-    ];
-
-    const ctx = gsap.context(() => {
-      layers.forEach(({ ref, speed }) => {
-        gsap.to(ref.current, {
-          y: -window.innerHeight * speed,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: 'body',
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.5,
-          },
-        });
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <div className="parallax-bg">
-      <div className="layer layer-sky" ref={skyRef}></div>
-      <div className="layer layer-sun" ref={sunRef}>
-        <div className="sun"></div>
-      </div>
-      <div className="layer layer-clouds" ref={cloudsRef}>
-        <div className="cloud c1"></div>
-        <div className="cloud c2"></div>
-        <div className="cloud c3"></div>
-        <div className="cloud c4"></div>
-      </div>
-      <div className="layer layer-mountains" ref={mountainsRef}>
-        <div className="mountain m1"></div>
-        <div className="mountain m2"></div>
-      </div>
-      <div className="layer layer-sea-back" ref={seaBackRef}></div>
-      <div className="layer layer-boat" ref={boatRef}>
-        <div className="boat">
-          <div className="hull"></div>
-          <div className="mast"></div>
-          <div className="sail"></div>
-        </div>
-      </div>
-      <div className="layer layer-sea-front" ref={seaFrontRef}>
-        <div className="wave w1"></div>
-        <div className="wave w2"></div>
-      </div>
-    </div>
-  );
-}
-
 /* ====================== APP ====================== */
 export default function App() {
-  const soundRef = useRef(null);
-  let globalIndex = 0;
+  // Engine disimpan di ref agar tidak di-recreate saat re-render
+  const engineRef = useRef(null);
 
   useEffect(() => {
-    const sound = new Howl({
-      src: ['/sounds/ambient-waves.mp3', '/sounds/ambient-waves.ogg'],
-      loop: true,
-      volume: 0.3,
-    });
-    sound.play();
-    soundRef.current = sound;
-    return () => sound.unload();
+    engineRef.current = new OceanSoundEngine();
+    return () => {
+      if (engineRef.current) engineRef.current.destroy();
+    };
   }, []);
+
+  let globalIndex = 0;
 
   return (
     <div className="page">
       <ParallaxBackground />
-      <AudioControl soundRef={soundRef} />
+      <AudioControl engineRef={engineRef} />
 
       <section className="hero">
         <main className="card">
@@ -259,24 +418,28 @@ export default function App() {
             <h1 className="name">{PROFILE.name}</h1>
             <p className="bio">{PROFILE.bio}</p>
           </div>
+
           <SectionLabel text="My Bio" />
           <nav className="links">
             {LINKS.map((link) => (
               <LinkButton key={link.id} {...link} index={globalIndex++} />
             ))}
           </nav>
+
           <SectionLabel text="Music" />
           <nav className="links">
             {MUSIC_LINKS.map((link) => (
               <LinkButton key={link.id} {...link} index={globalIndex++} />
             ))}
           </nav>
+
           <SectionLabel text="Donation" />
           <nav className="links">
             {DONATION_LINKS.map((link) => (
               <LinkButton key={link.id} {...link} index={globalIndex++} />
             ))}
           </nav>
+
           <div className="socials">
             {SOCIALS.map((s) => (
               <a
