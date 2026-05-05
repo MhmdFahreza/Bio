@@ -115,7 +115,7 @@ class OceanSoundEngine {
     this.masterGain = null;
     this.nodes = [];
     this.playing = false;
-    this._currentVolume = 0.1; // default kecil
+    this._currentVolume = 0.1;
   }
 
   _createPinkNoiseBuffer(seconds = 8) {
@@ -141,55 +141,42 @@ class OceanSoundEngine {
     const src = this.ctx.createBufferSource();
     src.buffer = this._createPinkNoiseBuffer(8);
     src.loop = true;
-
     const bpf = this.ctx.createBiquadFilter();
     bpf.type = 'bandpass';
     bpf.frequency.value = filterFreq;
     bpf.Q.value = filterQ;
-
     const lpf = this.ctx.createBiquadFilter();
     lpf.type = 'lowpass';
     lpf.frequency.value = filterFreq * 3;
-
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
     lfo.frequency.value = lfoFreq;
-
     const lfoGainNode = this.ctx.createGain();
     lfoGainNode.gain.value = lfoDepth;
-
     const layerGain = this.ctx.createGain();
     layerGain.gain.value = gain;
-
     src.connect(bpf);
     bpf.connect(lpf);
     lpf.connect(layerGain);
-
     lfo.connect(lfoGainNode);
     lfoGainNode.connect(layerGain.gain);
-
     layerGain.connect(this.masterGain);
-
     const offset = Math.random() * 8;
     lfo.start(0);
     src.start(0, offset);
-
     this.nodes.push({ src, lfo });
   }
 
   init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.value = 0;
     this.masterGain.connect(this.ctx.destination);
-
     this._addWaveLayer({ lfoFreq: 0.10, filterFreq: 200, filterQ: 0.6, gain: 0.55, lfoDepth: 0.35 });
     this._addWaveLayer({ lfoFreq: 0.22, filterFreq: 600, filterQ: 0.9, gain: 0.40, lfoDepth: 0.30 });
     this._addWaveLayer({ lfoFreq: 0.38, filterFreq: 1200, filterQ: 1.2, gain: 0.20, lfoDepth: 0.15 });
     this._addWaveLayer({ lfoFreq: 0.05, filterFreq: 3000, filterQ: 0.4, gain: 0.12, lfoDepth: 0.08 });
-
     this.setVolume(this._currentVolume, 0);
   }
 
@@ -233,9 +220,8 @@ class OceanSoundEngine {
   }
 }
 
-/* ====================== AUDIO CONTROL (MUTE / UNMUTE) ====================== */
+/* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
-  // Baca status terakhir dari localStorage, jika tidak ada maka tidak mute (suara nyala)
   const [muted, setMuted] = useState(() => {
     return localStorage.getItem('oceanMuted') === 'true';
   });
@@ -244,14 +230,11 @@ function AudioControl({ engineRef }) {
   const toggleMute = () => {
     const engine = engineRef.current;
     if (!engine) return;
-
     if (muted) {
-      // Unmute: kembali ke volume yang tersimpan
       engine.setVolume(storedVolumeRef.current);
       setMuted(false);
       localStorage.setItem('oceanMuted', 'false');
     } else {
-      // Mute: simpan volume saat ini lalu matikan
       storedVolumeRef.current = engine._currentVolume;
       engine.setVolume(0);
       setMuted(true);
@@ -267,17 +250,14 @@ function AudioControl({ engineRef }) {
         aria-label={muted ? 'Unmute suara ombak' : 'Mute suara ombak'}
       >
         {muted ? (
-          // Ikon speaker dengan silang (muted)
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
             <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
           </svg>
         ) : (
-          // Ikon speaker biasa (unmuted)
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
             <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
           </svg>
         )}
-        {/* Animasi gelombang hanya muncul saat tidak mute */}
         {!muted && (
           <div className="audio-wave">
             <span></span>
@@ -290,75 +270,325 @@ function AudioControl({ engineRef }) {
   );
 }
 
-/* ====================== PARALLAX BACKGROUND ====================== */
-function ParallaxBackground() {
-  const skyRef      = useRef(null);
-  const sunRef      = useRef(null);
-  const cloudsRef   = useRef(null);
-  const mountainsRef= useRef(null);
-  const seaBackRef  = useRef(null);
-  const boatRef     = useRef(null);
-  const seaFrontRef = useRef(null);
+/* ====================== NEON CITY CANVAS BACKGROUND ====================== */
+function NeonCityBackground() {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const layers = [
-      { ref: skyRef,       speed: 0.1 },
-      { ref: sunRef,       speed: 0.02 },
-      { ref: cloudsRef,    speed: 0.15 },
-      { ref: mountainsRef, speed: 0.30 },
-      { ref: seaBackRef,   speed: 0.50 },
-      { ref: boatRef,      speed: 0.70 },
-      { ref: seaFrontRef,  speed: 0.90 },
-    ];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-    const ctx = gsap.context(() => {
-      layers.forEach(({ ref, speed }) => {
-        gsap.to(ref.current, {
-          y: -window.innerHeight * speed,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: 'body',
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.5,
-          },
-        });
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    let scrollY = 0;
+    let t = 0;
+    let animId;
+
+    /* ── RNG seeded untuk konsistensi ── */
+    let seed = 42;
+    const rnd = () => {
+      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+      return (seed >>> 0) / 0xffffffff;
+    };
+
+    /* ── STARS ── */
+    const STAR_COUNT = 160;
+    const stars = [];
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x: rnd() * W,
+        y: rnd() * H * 0.65,
+        r: rnd() * 1.3 + 0.2,
+        phase: rnd() * Math.PI * 2,
+        spd: 0.3 + rnd() * 0.8,
       });
-    });
+    }
 
-    return () => ctx.revert();
+    /* ── MOON ── */
+    const moon = { x: W * 0.78, y: H * 0.13, r: 30 };
+
+    /* ── CLOUDS ── */
+    const clouds = [];
+    for (let i = 0; i < 7; i++) {
+      clouds.push({
+        x: rnd() * W,
+        y: H * 0.04 + rnd() * H * 0.26,
+        rx: 70 + rnd() * 100,
+        ry: 20 + rnd() * 30,
+        spd: 0.10 + rnd() * 0.20,
+        alpha: 0.06 + rnd() * 0.12,
+      });
+    }
+
+    /* ── WIND LINES (focused in sky, moving right) ── */
+    const windLines = [];
+    for (let i = 0; i < 100; i++) {
+      const isSky = i < 70; // 70 lines di langit, 30 di bawah
+      windLines.push({
+        x: rnd() * W * 1.5 - W * 0.25,
+        y: isSky ? rnd() * H * 0.58 : H * 0.45 + rnd() * H * 0.55,
+        maxY: isSky ? H * 0.58 : H,
+        minY: isSky ? 0 : H * 0.45,
+        len: isSky ? 80 + rnd() * 200 : 40 + rnd() * 80,
+        spd: isSky ? 2.5 + rnd() * 4.0 : 1.5 + rnd() * 2.5,
+        alpha: isSky ? 0.15 + rnd() * 0.28 : 0.03 + rnd() * 0.06,
+        w: isSky ? 0.7 + rnd() * 1.4 : 0.3 + rnd() * 0.7,
+        isSky,
+      });
+    }
+
+    /* ── NEON PALETTE ── */
+    const WIN_COLORS_FAR  = ['rgba(255,220,100,0.45)', 'rgba(180,200,255,0.35)', 'rgba(200,160,255,0.3)'];
+    const WIN_COLORS_MID  = ['rgba(255,170,50,0.7)', 'rgba(60,210,255,0.65)', 'rgba(255,80,150,0.55)', 'rgba(180,120,255,0.5)'];
+    const WIN_COLORS_NEAR = ['rgba(255,210,55,0.95)', 'rgba(0,220,255,0.9)', 'rgba(255,55,120,0.85)', 'rgba(150,80,255,0.8)', 'rgba(40,255,180,0.75)'];
+    const NEON_SIGNS      = ['#ff3399', '#00ccff', '#ffaa00', '#9933ff', '#00ff99', '#ff6600'];
+    const BODY_COLORS_FAR  = ['#1a1530', '#161228', '#201840', '#13102a'];
+    const BODY_COLORS_MID  = ['#110e24', '#18142e', '#0e0c1e', '#150f28'];
+    const BODY_COLORS_NEAR = ['#08061a', '#0c0a18', '#060412', '#0a0816'];
+
+    /* ── BUILD BUILDINGS ── */
+    const makeBuildings = (count, minBW, maxBW, minBH, maxBH, bodyColors, winColors) => {
+      const arr = [];
+      let cx = -80;
+      for (let i = 0; i < count; i++) {
+        const bw = minBW + rnd() * (maxBW - minBW);
+        const bh = minBH + rnd() * (maxBH - minBH);
+        const color = bodyColors[Math.floor(rnd() * bodyColors.length)];
+        const winCols = Math.max(1, Math.floor((bw - 8) / 14));
+        const winRows = Math.max(1, Math.floor((bh - 10) / 16));
+        const windows = [];
+        for (let wc = 0; wc < winCols; wc++) {
+          for (let wr = 0; wr < winRows; wr++) {
+            if (rnd() > 0.38) {
+              windows.push({
+                wc, wr,
+                color: winColors[Math.floor(rnd() * winColors.length)],
+                flicker: rnd() > 0.80,
+                phase: rnd() * Math.PI * 2,
+                flickerSpd: 0.8 + rnd() * 2.0,
+              });
+            }
+          }
+        }
+        const hasAntenna   = rnd() > 0.45;
+        const hasNeonSign  = rnd() > 0.60;
+        const neonColor    = NEON_SIGNS[Math.floor(rnd() * NEON_SIGNS.length)];
+        const signW        = 0.35 + rnd() * 0.45;
+        const antPhase     = rnd() * Math.PI * 2;
+
+        arr.push({ x: cx, w: bw, h: bh, color, windows, winCols, winRows, hasAntenna, hasNeonSign, neonColor, signW, antPhase });
+        cx += bw + 2 + rnd() * 12;
+      }
+      return arr;
+    };
+
+    const farBuildings  = makeBuildings(22, 22, 58,  H * 0.10, H * 0.22, BODY_COLORS_FAR,  WIN_COLORS_FAR);
+    const midBuildings  = makeBuildings(16, 44, 92,  H * 0.20, H * 0.40, BODY_COLORS_MID,  WIN_COLORS_MID);
+    const nearBuildings = makeBuildings(11, 75, 155, H * 0.30, H * 0.58, BODY_COLORS_NEAR, WIN_COLORS_NEAR);
+
+    /* ── DRAW ONE LAYER ── */
+    const drawBuildings = (buildings, yBase, parallax, glowStr) => {
+      buildings.forEach(b => {
+        const by = yBase - b.h + parallax;
+        const bx = b.x;
+
+        /* body */
+        ctx.fillStyle = b.color;
+        ctx.fillRect(bx, by, b.w, b.h);
+
+        /* windows */
+        const cellW = (b.w - 8) / Math.max(b.winCols, 1);
+        const cellH = (b.h - 10) / Math.max(b.winRows, 1);
+        b.windows.forEach(win => {
+          let alpha = 1;
+          if (win.flicker) alpha = 0.25 + 0.75 * Math.abs(Math.sin(win.phase + t * win.flickerSpd));
+          const wx = bx + 4 + win.wc * cellW + cellW * 0.12;
+          const wy = by + 8 + win.wr * cellH + cellH * 0.10;
+          const ww = cellW * 0.65;
+          const wh = cellH * 0.60;
+          if (glowStr > 0.6) {
+            ctx.shadowBlur = 7 * glowStr;
+            ctx.shadowColor = win.color;
+          }
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = win.color;
+          ctx.fillRect(wx, wy, ww, wh);
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 0;
+        });
+
+        /* neon rooftop sign */
+        if (b.hasNeonSign && glowStr > 0.5) {
+          ctx.shadowBlur = 18 * glowStr;
+          ctx.shadowColor = b.neonColor;
+          ctx.fillStyle = b.neonColor;
+          const sw = b.w * b.signW;
+          ctx.fillRect(bx + (b.w - sw) / 2, by - 6, sw, 4);
+          ctx.fillRect(bx + b.w * 0.28, by - 20, 2.5, 16);
+          ctx.fillRect(bx + b.w * 0.68, by - 20, 2.5, 16);
+          ctx.shadowBlur = 0;
+        }
+
+        /* antenna */
+        if (b.hasAntenna) {
+          ctx.strokeStyle = 'rgba(160,140,200,0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(bx + b.w * 0.5, by);
+          ctx.lineTo(bx + b.w * 0.5, by - 22);
+          ctx.stroke();
+          const blink = Math.sin(t * 1.8 + b.antPhase) > 0 ? 0.95 : 0.08;
+          ctx.beginPath();
+          ctx.arc(bx + b.w * 0.5, by - 24, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,70,70,${blink})`;
+          ctx.shadowBlur = blink * 12;
+          ctx.shadowColor = 'rgba(255,50,50,0.9)';
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      });
+    };
+
+    /* ── MAIN RENDER LOOP ── */
+    const draw = () => {
+      t += 0.008;
+      ctx.clearRect(0, 0, W, H);
+
+      /* Sky gradient */
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0,   '#050215');
+      sky.addColorStop(0.2, '#0d0530');
+      sky.addColorStop(0.5, '#180a4a');
+      sky.addColorStop(0.78,'#280e55');
+      sky.addColorStop(1.0, '#110730');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      /* Nebula blobs */
+      const nb1 = ctx.createRadialGradient(W * 0.25, H * 0.25, 0, W * 0.25, H * 0.25, W * 0.38);
+      nb1.addColorStop(0, 'rgba(100,30,180,0.14)');
+      nb1.addColorStop(1, 'transparent');
+      ctx.fillStyle = nb1;
+      ctx.fillRect(0, 0, W, H);
+
+      const nb2 = ctx.createRadialGradient(W * 0.8, H * 0.18, 0, W * 0.8, H * 0.18, W * 0.28);
+      nb2.addColorStop(0, 'rgba(50,15,110,0.11)');
+      nb2.addColorStop(1, 'transparent');
+      ctx.fillStyle = nb2;
+      ctx.fillRect(0, 0, W, H);
+
+      /* Stars */
+      stars.forEach(s => {
+        const a = 0.25 + 0.75 * Math.abs(Math.sin(s.phase + t * s.spd));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y - scrollY * 0.025, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,245,220,${a * 0.85})`;
+        ctx.fill();
+      });
+
+      /* Moon */
+      const mx = moon.x, my = moon.y - scrollY * 0.03;
+      ctx.shadowBlur = 50;
+      ctx.shadowColor = 'rgba(190,160,255,0.55)';
+      const mg = ctx.createRadialGradient(mx, my, 0, mx, my, moon.r * 2.2);
+      mg.addColorStop(0,   'rgba(240,228,255,0.96)');
+      mg.addColorStop(0.45,'rgba(210,190,255,0.80)');
+      mg.addColorStop(0.75,'rgba(170,140,230,0.30)');
+      mg.addColorStop(1,   'transparent');
+      ctx.fillStyle = mg;
+      ctx.beginPath();
+      ctx.arc(mx, my, moon.r * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      /* Clouds */
+      clouds.forEach(c => {
+        c.x += c.spd;
+        if (c.x - c.rx * 2.5 > W) c.x = -c.rx * 2.5;
+        const cy = c.y - scrollY * 0.07;
+        const cg = ctx.createRadialGradient(c.x, cy, 0, c.x, cy, c.rx * 2);
+        cg.addColorStop(0, `rgba(130,90,200,${c.alpha})`);
+        cg.addColorStop(0.5,`rgba(90,60,160,${c.alpha * 0.55})`);
+        cg.addColorStop(1,  'transparent');
+        ctx.fillStyle = cg;
+        ctx.beginPath();
+        ctx.ellipse(c.x, cy, c.rx * 2, c.ry * 1.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      /* FAR buildings */
+      drawBuildings(farBuildings, H, 0, 0.35);
+
+      /* MID buildings */
+      drawBuildings(midBuildings, H, 0, 0.75);
+
+      /* Ground ambient glow */
+      const gg = ctx.createLinearGradient(0, H * 0.72, 0, H);
+      gg.addColorStop(0, 'rgba(60,10,120,0)');
+      gg.addColorStop(0.45,'rgba(90,20,160,0.12)');
+      gg.addColorStop(1,  'rgba(50,5,100,0.30)');
+      ctx.fillStyle = gg;
+      ctx.fillRect(0, H * 0.72, W, H * 0.28);
+
+      /* NEAR buildings */
+      drawBuildings(nearBuildings, H, 0, 1.2);
+
+      /* Foreground neon ground strip */
+      const gs = ctx.createLinearGradient(0, H - 2, 0, H + 10);
+      gs.addColorStop(0, 'rgba(160,60,255,0.18)');
+      gs.addColorStop(1, 'transparent');
+      ctx.fillStyle = gs;
+      ctx.fillRect(0, H - 3, W, 14);
+
+      /* Wind lines – sky = more visible, horizontal streaks */
+      windLines.forEach(l => {
+        l.x += l.spd;
+        if (l.x > W + l.len) {
+          l.x = -l.len * 1.2;
+          l.y = l.minY + Math.random() * (l.maxY - l.minY);
+        }
+        // Sky wind: almost horizontal with slight diagonal
+        const dy = l.isSky ? l.len * 0.03 : l.len * 0.08;
+        // Fade at tips using gradient
+        const wg = ctx.createLinearGradient(l.x, l.y, l.x + l.len, l.y + dy);
+        wg.addColorStop(0, `rgba(210,185,255,0)`);
+        wg.addColorStop(0.15, `rgba(210,185,255,${l.alpha})`);
+        wg.addColorStop(0.85, `rgba(210,185,255,${l.alpha})`);
+        wg.addColorStop(1, `rgba(210,185,255,0)`);
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(l.x + l.len, l.y + dy);
+        ctx.strokeStyle = wg;
+        ctx.lineWidth = l.w;
+        ctx.stroke();
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    const onScroll = () => { scrollY = window.scrollY; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    const onResize = () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
-  return (
-    <div className="parallax-bg">
-      <div className="layer layer-sky"      ref={skyRef}></div>
-      <div className="layer layer-sun"      ref={sunRef}>
-        <div className="sun"></div>
-      </div>
-      <div className="layer layer-clouds"   ref={cloudsRef}>
-        <div className="cloud c1"></div>
-        <div className="cloud c2"></div>
-        <div className="cloud c3"></div>
-        <div className="cloud c4"></div>
-      </div>
-      <div className="layer layer-mountains" ref={mountainsRef}>
-        <div className="mountain m1"></div>
-        <div className="mountain m2"></div>
-      </div>
-      <div className="layer layer-sea-back" ref={seaBackRef}></div>
-      <div className="layer layer-boat"     ref={boatRef}>
-        <div className="boat">
-          <div className="hull"></div>
-          <div className="mast"></div>
-          <div className="sail"></div>
-        </div>
-      </div>
-      <div className="layer layer-sea-front" ref={seaFrontRef}>
-        <div className="wave w1"></div>
-        <div className="wave w2"></div>
-      </div>
-    </div>
-  );
+  return <canvas ref={canvasRef} className="neon-city-canvas" />;
 }
 
 /* ====================== UI COMPONENTS ====================== */
@@ -395,22 +625,12 @@ export default function App() {
   useEffect(() => {
     const engine = new OceanSoundEngine();
     engineRef.current = engine;
-
-    // === BACA STATUS MUTE DARI LOCALSTORAGE SEBELUM MENYALAKAN SUARA ===
     const wasMuted = localStorage.getItem('oceanMuted') === 'true';
-    if (wasMuted) {
-      engine.setVolume(0); // langsung matikan suara
-    }
-    // =================================================================
-
-    // Mulai audio (dengan volume 0 jika sebelumnya mute)
+    if (wasMuted) engine.setVolume(0);
     engine.play();
 
-    // Fallback jika browser memblokir autoplay
     const resumeOnInteraction = () => {
-      if (engine.ctx && engine.ctx.state === 'suspended') {
-        engine.play();
-      }
+      if (engine.ctx && engine.ctx.state === 'suspended') engine.play();
       document.removeEventListener('click', resumeOnInteraction);
       document.removeEventListener('touchstart', resumeOnInteraction);
     };
@@ -419,16 +639,14 @@ export default function App() {
       document.addEventListener('touchstart', resumeOnInteraction);
     }
 
-    return () => {
-      engine.destroy();
-    };
+    return () => { engine.destroy(); };
   }, []);
 
   let globalIndex = 0;
 
   return (
     <div className="page">
-      <ParallaxBackground />
+      <NeonCityBackground />
       <AudioControl engineRef={engineRef} />
 
       <section className="hero">
