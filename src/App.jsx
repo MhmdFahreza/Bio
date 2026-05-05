@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './App.css';
@@ -109,20 +109,15 @@ const SOCIALS = [
 ];
 
 /* ====================== OCEAN SOUND ENGINE (Web Audio API) ====================== */
-/*
- * Tidak butuh file audio. Semua dibuat secara prosedural menggunakan Web Audio API.
- * Cara kerjanya sama seperti situs "The Boat" dari SBS — menggunakan oscillator,
- * noise generator, dan filter untuk menciptakan suara ombak yang realistis.
- */
 class OceanSoundEngine {
   constructor() {
     this.ctx = null;
     this.masterGain = null;
     this.nodes = [];
     this.playing = false;
+    this._currentVolume = 0.1; // default kecil
   }
 
-  /* Buat pink noise buffer (lebih natural dari white noise) */
   _createPinkNoiseBuffer(seconds = 8) {
     const sr = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
@@ -142,24 +137,20 @@ class OceanSoundEngine {
     return buf;
   }
 
-  /* Buat satu layer suara ombak */
   _addWaveLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
     const src = this.ctx.createBufferSource();
     src.buffer = this._createPinkNoiseBuffer(8);
     src.loop = true;
 
-    // Bandpass filter — pilih frekuensi suara ombak
     const bpf = this.ctx.createBiquadFilter();
     bpf.type = 'bandpass';
     bpf.frequency.value = filterFreq;
     bpf.Q.value = filterQ;
 
-    // Low-pass tambahan untuk kelembutan
     const lpf = this.ctx.createBiquadFilter();
     lpf.type = 'lowpass';
     lpf.frequency.value = filterFreq * 3;
 
-    // LFO → amplitude modulation (ritme ombak naik-turun)
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
     lfo.frequency.value = lfoFreq;
@@ -170,18 +161,15 @@ class OceanSoundEngine {
     const layerGain = this.ctx.createGain();
     layerGain.gain.value = gain;
 
-    // Routing: noise → BPF → LPF → layerGain → master
     src.connect(bpf);
     bpf.connect(lpf);
     lpf.connect(layerGain);
 
-    // LFO modulates layerGain.gain (bukan konstan, melainkan bergelombang)
     lfo.connect(lfoGainNode);
     lfoGainNode.connect(layerGain.gain);
 
     layerGain.connect(this.masterGain);
 
-    // Mulai dengan sedikit random offset agar tidak sinkron antar layer
     const offset = Math.random() * 8;
     lfo.start(0);
     src.start(0, offset);
@@ -189,45 +177,49 @@ class OceanSoundEngine {
     this.nodes.push({ src, lfo });
   }
 
-  /* Inisialisasi AudioContext + semua layer */
   init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0; // mulai senyap, fade-in saat play
+    this.masterGain.gain.value = 0;
     this.masterGain.connect(this.ctx.destination);
 
-    // Layer 1: Ombak dalam — frekuensi rendah, lambat
     this._addWaveLayer({ lfoFreq: 0.10, filterFreq: 200, filterQ: 0.6, gain: 0.55, lfoDepth: 0.35 });
-    // Layer 2: Ombak pecah — frekuensi menengah, agak cepat
     this._addWaveLayer({ lfoFreq: 0.22, filterFreq: 600, filterQ: 0.9, gain: 0.40, lfoDepth: 0.30 });
-    // Layer 3: Ombak kecil — frekuensi tinggi, cepat
     this._addWaveLayer({ lfoFreq: 0.38, filterFreq: 1200, filterQ: 1.2, gain: 0.20, lfoDepth: 0.15 });
-    // Layer 4: Bisikan angin laut
     this._addWaveLayer({ lfoFreq: 0.05, filterFreq: 3000, filterQ: 0.4, gain: 0.12, lfoDepth: 0.08 });
+
+    this.setVolume(this._currentVolume, 0);
   }
 
   play() {
     if (!this.ctx) this.init();
-    // Resume jika AudioContext di-suspend oleh browser
     if (this.ctx.state === 'suspended') this.ctx.resume();
-    // Fade-in halus selama 2 detik
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(0.55, now + 2.0);
+    this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + 2.0);
     this.playing = true;
   }
 
   pause() {
     if (!this.ctx) return;
-    // Fade-out halus selama 0.8 detik
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
     this.masterGain.gain.linearRampToValueAtTime(0, now + 0.8);
     this.playing = false;
+  }
+
+  setVolume(val, ramp = 0.3) {
+    this._currentVolume = Math.min(1, Math.max(0, val));
+    if (this.ctx && this.masterGain) {
+      const now = this.ctx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(now);
+      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+      this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + ramp);
+    }
   }
 
   isPlaying() { return this.playing; }
@@ -241,51 +233,57 @@ class OceanSoundEngine {
   }
 }
 
-/* ====================== AUDIO CONTROL ====================== */
+/* ====================== AUDIO CONTROL (MUTE / UNMUTE) ====================== */
 function AudioControl({ engineRef }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showHint, setShowHint] = useState(true);
+  // Baca status terakhir dari localStorage, jika tidak ada maka tidak mute (suara nyala)
+  const [muted, setMuted] = useState(() => {
+    return localStorage.getItem('oceanMuted') === 'true';
+  });
+  const storedVolumeRef = useRef(0.1);
 
-  const toggle = useCallback(() => {
+  const toggleMute = () => {
     const engine = engineRef.current;
     if (!engine) return;
 
-    setShowHint(false);
-    if (!engine.isPlaying()) {
-      engine.play();
-      setIsPlaying(true);
+    if (muted) {
+      // Unmute: kembali ke volume yang tersimpan
+      engine.setVolume(storedVolumeRef.current);
+      setMuted(false);
+      localStorage.setItem('oceanMuted', 'false');
     } else {
-      engine.pause();
-      setIsPlaying(false);
+      // Mute: simpan volume saat ini lalu matikan
+      storedVolumeRef.current = engine._currentVolume;
+      engine.setVolume(0);
+      setMuted(true);
+      localStorage.setItem('oceanMuted', 'true');
     }
-  }, [engineRef]);
+  };
 
   return (
     <div className="audio-wrap">
-      {showHint && (
-        <div className="audio-hint">Klik untuk suara ombak 🌊</div>
-      )}
       <button
-        className={`audio-btn ${isPlaying ? 'audio-btn--playing' : ''}`}
-        onClick={toggle}
-        aria-label="Toggle ocean sound"
-        title={isPlaying ? 'Matikan suara' : 'Nyalakan suara ombak'}
+        className={`audio-btn ${!muted ? 'audio-btn--playing' : ''}`}
+        onClick={toggleMute}
+        aria-label={muted ? 'Unmute suara ombak' : 'Mute suara ombak'}
       >
-        {isPlaying ? (
-          /* Speaker ON */
+        {muted ? (
+          // Ikon speaker dengan silang (muted)
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
           </svg>
         ) : (
-          /* Speaker OFF */
+          // Ikon speaker biasa (unmuted)
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
           </svg>
         )}
-        {isPlaying && (
-          <span className="audio-wave">
-            <span /><span /><span />
-          </span>
+        {/* Animasi gelombang hanya muncul saat tidak mute */}
+        {!muted && (
+          <div className="audio-wave">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         )}
       </button>
     </div>
@@ -304,7 +302,7 @@ function ParallaxBackground() {
 
   useEffect(() => {
     const layers = [
-      { ref: skyRef,       speed: 0.05 },
+      { ref: skyRef,       speed: 0.1 },
       { ref: sunRef,       speed: 0.02 },
       { ref: cloudsRef,    speed: 0.15 },
       { ref: mountainsRef, speed: 0.30 },
@@ -392,13 +390,37 @@ function SectionLabel({ text }) {
 
 /* ====================== APP ====================== */
 export default function App() {
-  // Engine disimpan di ref agar tidak di-recreate saat re-render
   const engineRef = useRef(null);
 
   useEffect(() => {
-    engineRef.current = new OceanSoundEngine();
+    const engine = new OceanSoundEngine();
+    engineRef.current = engine;
+
+    // === BACA STATUS MUTE DARI LOCALSTORAGE SEBELUM MENYALAKAN SUARA ===
+    const wasMuted = localStorage.getItem('oceanMuted') === 'true';
+    if (wasMuted) {
+      engine.setVolume(0); // langsung matikan suara
+    }
+    // =================================================================
+
+    // Mulai audio (dengan volume 0 jika sebelumnya mute)
+    engine.play();
+
+    // Fallback jika browser memblokir autoplay
+    const resumeOnInteraction = () => {
+      if (engine.ctx && engine.ctx.state === 'suspended') {
+        engine.play();
+      }
+      document.removeEventListener('click', resumeOnInteraction);
+      document.removeEventListener('touchstart', resumeOnInteraction);
+    };
+    if (engine.ctx && engine.ctx.state === 'suspended') {
+      document.addEventListener('click', resumeOnInteraction);
+      document.addEventListener('touchstart', resumeOnInteraction);
+    }
+
     return () => {
-      if (engineRef.current) engineRef.current.destroy();
+      engine.destroy();
     };
   }, []);
 

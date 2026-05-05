@@ -356,7 +356,7 @@ body {
   box-shadow: 0 6px 16px rgba(244,151,165,0.3);
 }
 
-/* ── Audio Button (BARU — lebih jelas, ada animasi gelombang) ── */
+/* ── Audio Button (MUTE / UNMUTE) ── */
 .audio-wrap {
   position: fixed;
   bottom: 20px;
@@ -366,21 +366,6 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-}
-
-/* Hint tooltip saat pertama buka */
-.audio-hint {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1.5px solid var(--sakura-dark);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 0.75rem;
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 600;
-  color: var(--text-dark);
-  white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(244,151,165,0.25);
-  animation: fade-up 0.5s 1.2s both;
 }
 
 .audio-btn {
