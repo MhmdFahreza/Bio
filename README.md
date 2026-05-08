@@ -1,4 +1,4 @@
-# 🌸 Fahreza Bio — Personal Link in Bio
+# 🌸 Fahreza — Personal Link in Bio
 
 > A beautifully crafted Japanese sakura-themed bio link page, built with love by **Muhammad Fahreza**.
 
