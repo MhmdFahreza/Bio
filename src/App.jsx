@@ -307,44 +307,46 @@ const useSakuraBurst = (avatarRef) => {
 /* ====================== PRELOADER ====================== */
 function Preloader({ onFinish }) {
   const [progress, setProgress] = useState(0);
-  const logoRef = useRef(null);
-  const ringRef = useRef(null);
+  const overlayRef = useRef(null);
+  const progressIntervalRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline();
-    tl.from(logoRef.current, { opacity: 0, scale: 0.6, duration: 0.5, ease: "back.out(1.5)" })
-      .to(ringRef.current, { rotation: 360, duration: 1.5, ease: "none", repeat: -1 })
-      .to({}, { duration: 0.3 });
-
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setProgress(prev => {
-        const next = prev + Math.floor(Math.random() * 8 + 3);
+        const next = prev + Math.max(Math.floor(Math.random() * 4 + 2), 1);
         return next >= 100 ? 100 : next;
       });
-    }, 120);
-
-    return () => clearInterval(interval);
+    }, 80);
+    progressIntervalRef.current = timer;
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    if (progress === 100) {
-      setTimeout(onFinish, 600);
+    if (progress === 100 && overlayRef.current) {
+      clearInterval(progressIntervalRef.current);
+      // fade out overlay then call onFinish
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in",
+        onComplete: onFinish
+      });
     }
   }, [progress, onFinish]);
 
   return (
-    <div className="preloader-overlay">
+    <div ref={overlayRef} className="preloader-overlay">
       <div className="preloader-content">
-        <div ref={logoRef} className="preloader-logo">
-          <div ref={ringRef} className="preloader-ring">
-            <div className="avatar-ring" />
+        <div className="progress-pill">
+          <div className="progress-track">
+            <div
+              className="progress-fill"
+              style={{ width: `${progress}%` }}
+            />
           </div>
-          <span className="preloader-icon">🌸</span>
+          <span className="progress-number">{progress}%</span>
         </div>
-        <div className="progress-bar-container">
-          <div className="progress-bar" style={{ width: `${progress}%` }} />
-        </div>
-        <p className="preloader-text">Memuat...</p>
+        <p className="preloader-caption">Loading…</p>
       </div>
     </div>
   );
