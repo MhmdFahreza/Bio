@@ -27,9 +27,8 @@ const useReducedMotion = () => {
 const useSEO = ({ title, description, ogImage }) => {
   useEffect(() => {
     document.title = title || "Muhammad Fahreza";
-
     const setMeta = (name, content, property) => {
-      let element = document.querySelector(`meta[${property ? 'property' : 'name'}="${property || name}"]`);
+      let element = document.querySelector(`meta[${property ? "property" : "name"}="${property || name}"]`);
       if (!element) {
         element = document.createElement("meta");
         if (property) element.setAttribute("property", property);
@@ -38,7 +37,6 @@ const useSEO = ({ title, description, ogImage }) => {
       }
       element.setAttribute("content", content);
     };
-
     if (description) setMeta("description", description);
     if (ogImage) setMeta("og:image", ogImage, true);
     setMeta("og:title", title, true);
@@ -90,7 +88,7 @@ const HeartIcon = () => (
 
 const WAIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
   </svg>
 );
 
@@ -234,11 +232,9 @@ const SOCIALS = [
 
 /* ====================== KONAMI CODE HOOK ====================== */
 const KONAMI_SEQUENCE = [
-  "ArrowUp", "ArrowUp",
-  "ArrowDown", "ArrowDown",
-  "ArrowLeft", "ArrowRight",
-  "ArrowLeft", "ArrowRight",
-  "KeyB", "KeyA"
+  "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
+  "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
+  "KeyB","KeyA",
 ];
 
 const useKonamiCode = (callback) => {
@@ -247,13 +243,8 @@ const useKonamiCode = (callback) => {
     const handler = (e) => {
       if (e.code === KONAMI_SEQUENCE[index]) {
         index++;
-        if (index === KONAMI_SEQUENCE.length) {
-          callback();
-          index = 0;
-        }
-      } else {
-        index = 0;
-      }
+        if (index === KONAMI_SEQUENCE.length) { callback(); index = 0; }
+      } else { index = 0; }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -263,15 +254,13 @@ const useKonamiCode = (callback) => {
 /* ====================== SAKURA BURST ON AVATAR CLICK ====================== */
 const useSakuraBurst = (avatarRef) => {
   const reducedMotion = useContext(MotionContext);
-
   const triggerBurst = useCallback(() => {
     if (reducedMotion || !avatarRef.current) return;
     const avatar = avatarRef.current;
     const rect = avatar.getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
-    const petalCount = 30;
-    for (let i = 0; i < petalCount; i++) {
+    for (let i = 0; i < 30; i++) {
       const petal = document.createElement("div");
       petal.className = "sakura-burst-petal";
       petal.style.left = startX + "px";
@@ -280,31 +269,20 @@ const useSakuraBurst = (avatarRef) => {
       petal.style.height = petal.style.width;
       petal.style.background = `rgba(255,183,197,${0.7 + Math.random() * 0.3})`;
       document.body.appendChild(petal);
-
       const angle = Math.random() * Math.PI * 2;
       const distance = 80 + Math.random() * 150;
       const toX = startX + Math.cos(angle) * distance;
       const toY = startY + Math.sin(angle) * distance + 200;
-
-      gsap.fromTo(petal, {
-        x: 0, y: 0, scale: 0, rotation: Math.random() * 360, opacity: 1,
-      }, {
-        x: toX - startX,
-        y: toY - startY,
-        scale: 1 + Math.random(),
-        rotation: Math.random() * 720 - 360,
-        opacity: 0,
-        duration: 1.2 + Math.random() * 1.2,
-        ease: "power2.out",
-        onComplete: () => petal.remove(),
-      });
+      gsap.fromTo(petal,
+        { x: 0, y: 0, scale: 0, rotation: Math.random() * 360, opacity: 1 },
+        { x: toX - startX, y: toY - startY, scale: 1 + Math.random(), rotation: Math.random() * 720 - 360, opacity: 0, duration: 1.2 + Math.random() * 1.2, ease: "power2.out", onComplete: () => petal.remove() }
+      );
     }
   }, [avatarRef, reducedMotion]);
-
   return triggerBurst;
 };
 
-/* ====================== PRELOADER ====================== */
+/* ====================== PRELOADER (ENHANCED) ====================== */
 function Preloader({ onFinish }) {
   const [progress, setProgress] = useState(0);
   const overlayRef = useRef(null);
@@ -312,7 +290,7 @@ function Preloader({ onFinish }) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         const next = prev + Math.max(Math.floor(Math.random() * 4 + 2), 1);
         return next >= 100 ? 100 : next;
       });
@@ -324,25 +302,409 @@ function Preloader({ onFinish }) {
   useEffect(() => {
     if (progress === 100 && overlayRef.current) {
       clearInterval(progressIntervalRef.current);
-      // fade out overlay then call onFinish
       gsap.to(overlayRef.current, {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.in",
-        onComplete: onFinish
+        opacity: 0, duration: 0.6, ease: "power2.in", onComplete: onFinish,
       });
     }
   }, [progress, onFinish]);
 
+  /* Falling petals config */
+  const petalData = [
+    { left: "188px", top: "28px", anim: "pl-fall-a", dur: "3.2s", delay: "0.0s", size: 10, hue: 197 },
+    { left: "212px", top: "18px", anim: "pl-fall-b", dur: "2.9s", delay: "0.6s", size: 8,  hue: 185 },
+    { left: "230px", top: "38px", anim: "pl-fall-c", dur: "3.6s", delay: "1.1s", size: 12, hue: 205 },
+    { left: "198px", top: "52px", anim: "pl-fall-a", dur: "2.7s", delay: "1.6s", size: 7,  hue: 193 },
+    { left: "244px", top: "32px", anim: "pl-fall-b", dur: "3.1s", delay: "2.1s", size: 9,  hue: 200 },
+    { left: "172px", top: "44px", anim: "pl-fall-c", dur: "3.9s", delay: "0.9s", size: 11, hue: 190 },
+    { left: "258px", top: "22px", anim: "pl-fall-a", dur: "2.5s", delay: "1.4s", size: 8,  hue: 210 },
+    { left: "165px", top: "62px", anim: "pl-fall-b", dur: "3.4s", delay: "0.3s", size: 10, hue: 195 },
+    { left: "275px", top: "48px", anim: "pl-fall-c", dur: "2.8s", delay: "1.8s", size: 7,  hue: 188 },
+  ];
+
   return (
     <div ref={overlayRef} className="preloader-overlay">
-      <div className="preloader-content">
+      {/* Keyframe animations injected inline */}
+      <style>{`
+        @keyframes pl-fall-a {
+          0%   { transform: translate(0,0)   rotate(0deg)   scale(1);   opacity: 1; }
+          100% { transform: translate(-130px,190px) rotate(560deg) scale(0.4); opacity: 0; }
+        }
+        @keyframes pl-fall-b {
+          0%   { transform: translate(0,0)   rotate(20deg)  scale(0.9); opacity: 0.95; }
+          100% { transform: translate(-70px, 210px) rotate(-380deg) scale(0.3); opacity: 0; }
+        }
+        @keyframes pl-fall-c {
+          0%   { transform: translate(0,0)   rotate(-15deg) scale(1.1); opacity: 1; }
+          100% { transform: translate(25px,  195px) rotate(440deg) scale(0.45); opacity: 0; }
+        }
+        @keyframes pl-sway {
+          0%, 100% { transform: rotate(-1.2deg); }
+          50%       { transform: rotate(1.2deg);  }
+        }
+        @keyframes pl-breathe {
+          0%, 100% { transform: scaleY(1) translateY(0);     }
+          50%       { transform: scaleY(1.015) translateY(-1px); }
+        }
+        @keyframes pl-kanji-glow {
+          0%, 100% { text-shadow: 0 0 18px rgba(255,183,197,0.85), 0 0 36px rgba(232,115,138,0.45), 0 2px 8px rgba(180,60,100,0.25); }
+          50%       { text-shadow: 0 0 28px rgba(255,183,197,1),    0 0 56px rgba(232,115,138,0.65), 0 2px 12px rgba(180,60,100,0.35); }
+        }
+        @keyframes pl-romaji-fade {
+          0%, 100% { opacity: 0.55; }
+          50%       { opacity: 0.80; }
+        }
+        @keyframes pl-sparkle {
+          0%, 100% { opacity: 0.3; transform: scale(0.7); }
+          50%       { opacity: 1;   transform: scale(1.2); }
+        }
+        @keyframes pl-cloud-drift {
+          0%   { transform: translateX(-12px); }
+          100% { transform: translateX(12px);  }
+        }
+        @keyframes pl-lantern-swing {
+          0%, 100% { transform: rotate(-4deg); transform-origin: top center; }
+          50%       { transform: rotate(4deg);  transform-origin: top center; }
+        }
+        @keyframes pl-badge-bounce {
+          0%, 100% { transform: translateY(0);  }
+          50%       { transform: translateY(-4px); }
+        }
+      `}</style>
+
+      <div className="preloader-content" style={{ gap: 0 }}>
+
+        {/* ── ILLUSTRATION SCENE ── */}
+        <div style={{ position: "relative", width: 340, height: 220, marginBottom: 6 }}>
+
+          {/* Falling petals (absolutely positioned over SVG) */}
+          {petalData.map((p, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                left: p.left,
+                top: p.top,
+                width: p.size,
+                height: p.size,
+                background: `hsla(${p.hue},100%,82%,0.92)`,
+                borderRadius: "50% 0 50% 50%",
+                animation: `${p.anim} ${p.dur} ${p.delay} ease-in infinite`,
+                pointerEvents: "none",
+                zIndex: 6,
+              }}
+            />
+          ))}
+
+          <svg
+            width="340"
+            height="220"
+            viewBox="0 0 340 220"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ display: "block", overflow: "visible" }}
+          >
+            <defs>
+              <linearGradient id="pl-gnd" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#b8e08a" />
+                <stop offset="100%" stopColor="#90c860" />
+              </linearGradient>
+              <linearGradient id="pl-trunk" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#5a3018" />
+                <stop offset="100%" stopColor="#8a5530" />
+              </linearGradient>
+              <radialGradient id="pl-moon" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,245,220,0.95)" />
+                <stop offset="100%" stopColor="rgba(255,230,180,0.5)" />
+              </radialGradient>
+            </defs>
+
+            {/* ── Distant mountains ── */}
+            <ellipse cx="58"  cy="162" rx="100" ry="62" fill="rgba(210,158,185,0.32)" />
+            <ellipse cx="270" cy="168" rx="90"  ry="52" fill="rgba(200,148,175,0.28)" />
+            <ellipse cx="158" cy="152" rx="80"  ry="46" fill="rgba(218,168,195,0.22)" />
+
+            {/* ── Moon (top right) ── */}
+            <circle cx="298" cy="28" r="22" fill="url(#pl-moon)" />
+            <circle cx="298" cy="28" r="22" fill="none" stroke="rgba(255,220,160,0.4)" strokeWidth="3" />
+            {/* Moon glow halo */}
+            <circle cx="298" cy="28" r="30" fill="rgba(255,240,200,0.12)" />
+
+            {/* ── Clouds ── */}
+            <g style={{ animation: "pl-cloud-drift 6s ease-in-out infinite alternate" }}>
+              <ellipse cx="55"  cy="22" rx="28" ry="10" fill="rgba(255,240,248,0.55)" />
+              <ellipse cx="70"  cy="16" rx="20" ry="9"  fill="rgba(255,240,248,0.60)" />
+              <ellipse cx="40"  cy="18" rx="18" ry="8"  fill="rgba(255,240,248,0.50)" />
+            </g>
+            <g style={{ animation: "pl-cloud-drift 8s ease-in-out 1s infinite alternate-reverse" }}>
+              <ellipse cx="255" cy="32" rx="22" ry="8"  fill="rgba(255,240,248,0.45)" />
+              <ellipse cx="268" cy="26" rx="16" ry="7"  fill="rgba(255,240,248,0.50)" />
+            </g>
+
+            {/* ── Ground ── */}
+            <rect x="0" y="172" width="340" height="48" fill="url(#pl-gnd)" />
+            <rect x="0" y="170" width="340" height="7"  fill="rgba(140,196,90,0.65)" rx="3" />
+
+            {/* ── Grass tufts ── */}
+            {[25,62,100,148,265,300,328].map((x, i) => (
+              <g key={i}>
+                <line x1={x}   y1="172" x2={x-3} y2="163" stroke="#6aaa38" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1={x}   y1="172" x2={x}   y2="162" stroke="#7cbb44" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1={x}   y1="172" x2={x+3} y2="164" stroke="#6aaa38" strokeWidth="1.5" strokeLinecap="round" />
+              </g>
+            ))}
+
+            {/* ── Hanging lantern (top left) ── */}
+            <g style={{ animation: "pl-lantern-swing 3.5s ease-in-out infinite" }}>
+              <line x1="28" y1="0" x2="28" y2="18" stroke="rgba(80,40,20,0.7)" strokeWidth="1.5" />
+              <rect x="20" y="18" width="16" height="22" rx="4" fill="#e04010" opacity="0.88" />
+              <rect x="22" y="20" width="12" height="18" rx="3" fill="rgba(255,160,80,0.45)" />
+              <rect x="18" y="16" width="20" height="4"  rx="2" fill="#b82c08" />
+              <rect x="18" y="38" width="20" height="4"  rx="2" fill="#b82c08" />
+              <line x1="28" y1="42" x2="28" y2="50" stroke="rgba(180,60,20,0.6)" strokeWidth="1.5" />
+              <ellipse cx="28" cy="51" rx="4" ry="2" fill="rgba(200,80,30,0.5)" />
+            </g>
+
+            {/* ── TORII GATE ── */}
+            <g opacity="0.90">
+              {/* Left pillar */}
+              <rect x="44" y="110" width="9" height="62" rx="3.5" fill="#d85518" />
+              {/* Right pillar */}
+              <rect x="82" y="110" width="9" height="62" rx="3.5" fill="#d85518" />
+              {/* Shimagi (top cap bar) */}
+              <rect x="30" y="104" width="75" height="6" rx="3" fill="#b83e0c" />
+              {/* Kasagi (main curved crossbeam) */}
+              <path d="M28 112 Q67.5 98 107 112" fill="none" stroke="#d85518" strokeWidth="9" strokeLinecap="round" />
+              <path d="M28 112 Q67.5 98 107 112" fill="none" stroke="#b83e0c" strokeWidth="9" strokeLinecap="round" opacity="0.4" />
+              {/* Nuki (lower crossbeam) */}
+              <rect x="42" y="126" width="51" height="6" rx="3" fill="#b83e0c" />
+              {/* Shimenawa rope hint */}
+              <line x1="48" y1="135" x2="87" y2="135" stroke="rgba(240,210,130,0.65)" strokeWidth="1.2" strokeDasharray="3,3" />
+              {/* Komainu base stones */}
+              <rect x="40"  y="168" width="14" height="6" rx="3" fill="#c8a888" opacity="0.7" />
+              <rect x="81"  y="168" width="14" height="6" rx="3" fill="#c8a888" opacity="0.7" />
+            </g>
+
+            {/* ── SAKURA TREE ── */}
+            <g style={{ animation: "pl-sway 4.5s ease-in-out infinite", transformOrigin: "228px 172px" }}>
+              {/* Roots hint */}
+              <path d="M220 172 Q208 175 200 178" fill="none" stroke="#5a3018" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+              <path d="M220 172 Q232 175 242 178" fill="none" stroke="#5a3018" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+
+              {/* Main trunk */}
+              <path d="M220 172 Q218 148 215 128 Q213 112 210 90" fill="none" stroke="url(#pl-trunk)" strokeWidth="11" strokeLinecap="round" />
+              {/* Trunk highlight */}
+              <path d="M220 172 Q219 148 217 128 Q215 112 213 90" fill="none" stroke="rgba(255,200,160,0.25)" strokeWidth="4" strokeLinecap="round" />
+
+              {/* Branches */}
+              <path d="M213 105 Q196 83 172 68"  fill="none" stroke="#7a4820" strokeWidth="7" strokeLinecap="round" />
+              <path d="M211 98  Q232 74 256 60"   fill="none" stroke="#7a4820" strokeWidth="6" strokeLinecap="round" />
+              <path d="M215 122 Q194 110 168 96"  fill="none" stroke="#7a4820" strokeWidth="5.5" strokeLinecap="round" />
+              <path d="M217 118 Q242 108 270 94"  fill="none" stroke="#7a4820" strokeWidth="5" strokeLinecap="round" />
+              {/* Sub-branches */}
+              <path d="M172 68  Q160 55 152 46"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
+              <path d="M256 60  Q266 47 274 40"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
+              <path d="M168 96  Q156 86 148 78"   fill="none" stroke="#8a5830" strokeWidth="3"   strokeLinecap="round" />
+              <path d="M270 94  Q280 84 288 77"   fill="none" stroke="#8a5830" strokeWidth="3"   strokeLinecap="round" />
+              <path d="M210 90  Q205 78 200 68"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
+              {/* Tiny twigs */}
+              <path d="M152 46  Q148 38 144 32"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
+              <path d="M274 40  Q280 32 284 25"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
+              <path d="M200 68  Q195 60 190 54"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
+
+              {/* ── Blossom clusters ── */}
+              {/* Center-top */}
+              <circle cx="210" cy="74"  r="24" fill="rgba(255,168,190,0.82)" />
+              <circle cx="196" cy="70"  r="19" fill="rgba(255,183,197,0.86)" />
+              <circle cx="226" cy="67"  r="20" fill="rgba(255,155,182,0.80)" />
+              <circle cx="209" cy="56"  r="15" fill="rgba(255,195,210,0.78)" />
+              <circle cx="220" cy="82"  r="13" fill="rgba(255,175,195,0.75)" />
+
+              {/* Left upper cluster */}
+              <circle cx="163" cy="58"  r="20" fill="rgba(255,173,193,0.83)" />
+              <circle cx="149" cy="55"  r="15" fill="rgba(255,183,197,0.87)" />
+              <circle cx="168" cy="44"  r="14" fill="rgba(255,162,185,0.80)" />
+              <circle cx="152" cy="68"  r="12" fill="rgba(255,187,202,0.74)" />
+              <circle cx="143" cy="44"  r="11" fill="rgba(255,195,212,0.76)" />
+
+              {/* Right upper cluster */}
+              <circle cx="264" cy="55"  r="19" fill="rgba(255,168,190,0.82)" />
+              <circle cx="278" cy="50"  r="15" fill="rgba(255,183,197,0.86)" />
+              <circle cx="272" cy="67"  r="13" fill="rgba(255,158,183,0.79)" />
+              <circle cx="257" cy="42"  r="14" fill="rgba(255,192,208,0.81)" />
+              <circle cx="285" cy="65"  r="10" fill="rgba(255,178,198,0.73)" />
+
+              {/* Left mid cluster */}
+              <circle cx="158" cy="90"  r="16" fill="rgba(255,175,195,0.80)" />
+              <circle cx="145" cy="87"  r="13" fill="rgba(255,183,197,0.84)" />
+              <circle cx="163" cy="77"  r="11" fill="rgba(255,162,185,0.77)" />
+
+              {/* Right mid cluster */}
+              <circle cx="278" cy="90"  r="15" fill="rgba(255,170,192,0.79)" />
+              <circle cx="291" cy="86"  r="12" fill="rgba(255,183,197,0.82)" />
+              <circle cx="284" cy="77"  r="11" fill="rgba(255,158,182,0.76)" />
+
+              {/* Top twig blossoms */}
+              <circle cx="144" cy="33"  r="11" fill="rgba(255,185,205,0.80)" />
+              <circle cx="283" cy="28"  r="11" fill="rgba(255,175,198,0.80)" />
+              <circle cx="189" cy="56"  r="12" fill="rgba(255,180,200,0.78)" />
+
+              {/* Blossom highlight dots (five-petal flower centers) */}
+              {[
+                [200,68],[214,62],[210,78],[224,72],[165,56],
+                [152,53],[271,53],[257,68],[278,87],[144,86],
+              ].map(([cx,cy],i)=>(
+                <circle key={i} cx={cx} cy={cy} r="2.8" fill="rgba(255,230,240,0.88)" />
+              ))}
+            </g>
+
+            {/* ── Petal on ground near tree ── */}
+            <ellipse cx="197" cy="174" rx="5"  ry="2.8" fill="rgba(255,183,197,0.68)" transform="rotate(-18,197,174)" />
+            <ellipse cx="250" cy="175" rx="4.5" ry="2.5" fill="rgba(255,175,193,0.60)" transform="rotate(12,250,175)" />
+            <ellipse cx="175" cy="176" rx="4"   ry="2.2" fill="rgba(255,190,207,0.62)" transform="rotate(-8,175,176)" />
+
+            {/* ── CHIBI CHARACTER (sitting under tree) ── */}
+            <g style={{ animation: "pl-breathe 3.2s ease-in-out infinite", transformOrigin: "142px 165px" }}>
+              {/* Ground shadow */}
+              <ellipse cx="142" cy="175" rx="22" ry="5.5" fill="rgba(0,0,0,0.14)" />
+
+              {/* ── Legs (sitting/folded) ── */}
+              <path d="M134 162 Q125 169 120 174" fill="none" stroke="#f2c2a2" strokeWidth="7" strokeLinecap="round" />
+              <path d="M150 162 Q156 169 162 174" fill="none" stroke="#f2c2a2" strokeWidth="7" strokeLinecap="round" />
+              {/* Shoes */}
+              <ellipse cx="118" cy="175" rx="7"  ry="4.5" fill="#c84880" />
+              <ellipse cx="163" cy="175" rx="7"  ry="4.5" fill="#c84880" />
+              <ellipse cx="117" cy="174" rx="5"  ry="2.5" fill="rgba(255,255,255,0.25)" />
+              <ellipse cx="162" cy="174" rx="5"  ry="2.5" fill="rgba(255,255,255,0.25)" />
+
+              {/* ── Kimono body ── */}
+              <path d="M130 148 Q126 157 122 167 Q131 170 142 170 Q153 170 162 167 Q158 157 154 148 Z" fill="#ffb7c5" />
+              {/* Kimono pattern stripes */}
+              <path d="M130 148 Q128 153 127 159 L133 159 Q133 153 132 148 Z" fill="rgba(220,90,130,0.35)" />
+              <path d="M152 148 Q154 153 155 159 L149 159 Q149 153 150 148 Z" fill="rgba(220,90,130,0.35)" />
+              {/* Inner collar */}
+              <path d="M136 148 Q142 144 148 148" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+              {/* Obi (sash) */}
+              <rect x="126" y="156" width="32" height="8" rx="4" fill="#e0608a" />
+              <rect x="126" y="157" width="32" height="3" rx="1.5" fill="rgba(255,255,255,0.20)" />
+              {/* Obi knot (musubi) visible at side */}
+              <ellipse cx="163" cy="161" rx="6" ry="5" fill="#e0608a" />
+              <ellipse cx="163" cy="160" rx="4" ry="3" fill="rgba(255,140,180,0.5)" />
+
+              {/* ── Arms ── */}
+              <path d="M130 152 Q121 157 116 164" fill="none" stroke="#f2c2a2" strokeWidth="6" strokeLinecap="round" />
+              <path d="M154 152 Q163 157 168 164" fill="none" stroke="#f2c2a2" strokeWidth="6" strokeLinecap="round" />
+              {/* Hands (holding knees) */}
+              <circle cx="114" cy="165" r="5.5" fill="#f2c2a2" />
+              <circle cx="169" cy="165" r="5.5" fill="#f2c2a2" />
+              {/* Sleeve cuffs */}
+              <ellipse cx="115" cy="162" rx="6" ry="3.5" fill="rgba(255,183,197,0.6)" />
+              <ellipse cx="168" cy="162" rx="6" ry="3.5" fill="rgba(255,183,197,0.6)" />
+
+              {/* ── Neck ── */}
+              <rect x="135" y="141" width="12" height="10" rx="5" fill="#f2c2a2" />
+
+              {/* ── Head ── */}
+              <ellipse cx="142" cy="132" rx="18" ry="17" fill="#f7cab0" />
+
+              {/* ── Hair (back/dark layer) ── */}
+              <ellipse cx="142" cy="124" rx="19" ry="15" fill="#2c1808" />
+              {/* Side hair curtains */}
+              <path d="M124 127 Q118 138 119 150 Q125 153 128 150 Q124 139 126 127 Z" fill="#2c1808" />
+              <path d="M160 127 Q166 138 165 150 Q159 153 156 150 Q160 139 158 127 Z" fill="#2c1808" />
+              {/* Front bangs */}
+              <path d="M124 124 Q128 116 142 114 Q156 116 160 124" fill="#2c1808" />
+              {/* Ahoge (cute cowlick) */}
+              <path d="M142 114 Q146 105 143 98"  fill="none" stroke="#2c1808" strokeWidth="2.8" strokeLinecap="round" />
+              <circle cx="143" cy="97" r="3.2" fill="#2c1808" />
+              {/* Hair highlight */}
+              <path d="M130 120 Q136 115 144 116" fill="none" stroke="rgba(120,70,30,0.4)" strokeWidth="2" strokeLinecap="round" />
+              {/* Hair ornament / kanzashi */}
+              <circle cx="157" cy="122" r="6"   fill="#ff5599" />
+              <circle cx="157" cy="122" r="3.5" fill="#ffb7c5" />
+              <circle cx="157" cy="122" r="1.5" fill="#ff3377" />
+              {/* Kanzashi stick */}
+              <line x1="157" y1="128" x2="160" y2="136" stroke="#d4488a" strokeWidth="1.5" strokeLinecap="round" />
+
+              {/* ── Face ── */}
+              {/* Eyes */}
+              <ellipse cx="134" cy="133" rx="4.5" ry="5" fill="#1c0e04" />
+              <ellipse cx="150" cy="133" rx="4.5" ry="5" fill="#1c0e04" />
+              {/* Eye iris color */}
+              <ellipse cx="134" cy="133" rx="3.2" ry="3.8" fill="#4a2890" />
+              <ellipse cx="150" cy="133" rx="3.2" ry="3.8" fill="#4a2890" />
+              {/* Eye shine */}
+              <circle cx="135.5" cy="130.5" r="1.8" fill="white" />
+              <circle cx="151.5" cy="130.5" r="1.8" fill="white" />
+              <circle cx="134.5" cy="134.5" r="0.9" fill="rgba(255,255,255,0.65)" />
+              <circle cx="150.5" cy="134.5" r="0.9" fill="rgba(255,255,255,0.65)" />
+              {/* Eyelashes upper */}
+              <path d="M129 129 Q131.5 126 134 129" fill="none" stroke="#1c0e04" strokeWidth="1.2" strokeLinecap="round" />
+              <path d="M146 129 Q148.5 126 151 129" fill="none" stroke="#1c0e04" strokeWidth="1.2" strokeLinecap="round" />
+              {/* Blush / rosy cheeks */}
+              <ellipse cx="127" cy="139" rx="6" ry="3.5" fill="rgba(255,120,150,0.38)" />
+              <ellipse cx="157" cy="139" rx="6" ry="3.5" fill="rgba(255,120,150,0.38)" />
+              {/* Nose */}
+              <circle cx="142" cy="139" r="1.3" fill="rgba(190,120,100,0.55)" />
+              {/* Smile */}
+              <path d="M136 144 Q142 149 148 144" fill="none" stroke="#c07070" strokeWidth="1.8" strokeLinecap="round" />
+              {/* Cute teeth hint */}
+              <rect x="139" y="144" width="6" height="2.5" rx="1" fill="rgba(255,255,255,0.7)" />
+            </g>
+
+            {/* ── Firefly sparkles ── */}
+            {[[96,140],[182,108],[310,130],[330,60]].map(([cx,cy],i)=>(
+              <circle
+                key={i}
+                cx={cx} cy={cy} r="2.2"
+                fill="rgba(255,240,160,0.92)"
+                style={{ animation: `pl-sparkle ${1.5+i*0.4}s ease-in-out ${i*0.3}s infinite` }}
+              />
+            ))}
+
+            {/* ── Path/stone walkway to torii ── */}
+            {[0,1,2,3].map(i=>(
+              <ellipse key={i} cx={67.5+i*0} cy={178+i*(-0.5)} rx={10-i} ry={3-i*0.2}
+                fill="rgba(200,180,160,0.5)"
+                transform={`translate(0,${i*6})`}
+              />
+            ))}
+          </svg>
+        </div>
+
+        {/* ── JAPANESE KANJI TITLE ── */}
+        <div style={{ textAlign: "center", marginBottom: 22 }}>
+          <p
+            style={{
+              fontFamily: "'Noto Serif JP','Yu Mincho','Hiragino Mincho ProN','MS Mincho',serif",
+              fontSize: "1.72rem",
+              fontWeight: 700,
+              color: "rgba(42,22,46,0.90)",
+              letterSpacing: "0.14em",
+              lineHeight: 1.2,
+              animation: "pl-kanji-glow 2.8s ease-in-out infinite",
+              margin: "0 0 5px 0",
+            }}
+          >
+            桜の世界へようこそ
+          </p>
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond',serif",
+              fontStyle: "italic",
+              fontSize: "0.70rem",
+              color: "rgba(110,70,90,0.62)",
+              letterSpacing: "0.20em",
+              animation: "pl-romaji-fade 2.8s ease-in-out infinite",
+              margin: 0,
+            }}
+          >
+            Sakura no sekai e yōkoso
+          </p>
+        </div>
+
+        {/* ── PROGRESS BAR ── */}
         <div className="progress-pill">
           <div className="progress-track">
-            <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
           <span className="progress-number">{progress}%</span>
         </div>
@@ -373,12 +735,7 @@ function CustomCursor() {
       gsap.to(glowRef.current, { x, y, duration: 0.22, ease: "power3.out" });
       trailRefs.current.forEach((trail, i) => {
         if (!trail) return;
-        gsap.to(trail, {
-          x, y,
-          duration: 0.12 + i * 0.07,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
+        gsap.to(trail, { x, y, duration: 0.12 + i * 0.07, ease: "power2.out", overwrite: "auto" });
       });
     };
 
@@ -396,10 +753,7 @@ function CustomCursor() {
       el.addEventListener("mouseenter", growCursor);
       el.addEventListener("mouseleave", shrinkCursor);
     });
-
-    return () => {
-      document.removeEventListener("mousemove", onMove);
-    };
+    return () => { document.removeEventListener("mousemove", onMove); };
   }, [reducedMotion]);
 
   if (reducedMotion) return null;
@@ -409,12 +763,7 @@ function CustomCursor() {
       <div ref={glowRef}  className="cursor-glow" />
       <div ref={dotRef}   className="cursor-dot"  />
       {Array.from({ length: TRAIL_N }).map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => { trailRefs.current[i] = el; }}
-          className="cursor-trail"
-          style={{ "--idx": i, "--total": TRAIL_N }}
-        />
+        <div key={i} ref={(el) => { trailRefs.current[i] = el; }} className="cursor-trail" style={{ "--idx": i, "--total": TRAIL_N }} />
       ))}
     </div>
   );
@@ -427,22 +776,10 @@ function PageTransition() {
   const reducedMotion = useContext(MotionContext);
 
   useEffect(() => {
-    if (reducedMotion) {
-      gsap.set(overlayRef.current, { yPercent: -100 });
-      return;
-    }
+    if (reducedMotion) { gsap.set(overlayRef.current, { yPercent: -100 }); return; }
     const tl = gsap.timeline();
-    tl.to(textRef.current, {
-      opacity: 0,
-      y: -20,
-      duration: 0.4,
-      ease: "power2.in",
-      delay: 0.5,
-    }).to(overlayRef.current, {
-      yPercent: -100,
-      duration: 1.0,
-      ease: "expo.inOut",
-    }, "-=0.1");
+    tl.to(textRef.current, { opacity: 0, y: -20, duration: 0.4, ease: "power2.in", delay: 0.5 })
+      .to(overlayRef.current, { yPercent: -100, duration: 1.0, ease: "expo.inOut" }, "-=0.1");
   }, [reducedMotion]);
 
   return (
@@ -462,32 +799,17 @@ function SplitTextReveal({ text, className }) {
 
   useEffect(() => {
     const chars = containerRef.current.querySelectorAll(".char");
-    if (reducedMotion) {
-      gsap.set(chars, { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" });
-      return;
-    }
-    gsap.fromTo(
-      chars,
+    if (reducedMotion) { gsap.set(chars, { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }); return; }
+    gsap.fromTo(chars,
       { opacity: 0, y: 36, rotateX: -70, filter: "blur(6px)" },
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        filter: "blur(0px)",
-        duration: 0.65,
-        stagger: 0.032,
-        ease: "back.out(1.5)",
-        delay: 1.2,
-      }
+      { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", duration: 0.65, stagger: 0.032, ease: "back.out(1.5)", delay: 1.2 }
     );
   }, [reducedMotion]);
 
   return (
     <h1 ref={containerRef} className={`${className} name-split`}>
       {text.split("").map((char, i) => (
-        <span key={i} className="char">
-          {char === " " ? "\u00A0" : char}
-        </span>
+        <span key={i} className="char">{char === " " ? "\u00A0" : char}</span>
       ))}
     </h1>
   );
@@ -502,38 +824,18 @@ function MagneticBtn({ children, strength = 0.38, className = "" }) {
   useEffect(() => {
     const isTouch = !window.matchMedia("(hover: hover)").matches || reducedMotion;
     if (isTouch) return;
-
     const wrap  = wrapRef.current;
     const inner = innerRef.current;
-
     const onMove = (e) => {
       const rect = wrap.getBoundingClientRect();
-      const cx   = rect.left + rect.width  / 2;
-      const cy   = rect.top  + rect.height / 2;
-      gsap.to(inner, {
-        x: (e.clientX - cx) * strength,
-        y: (e.clientY - cy) * strength,
-        duration: 0.35,
-        ease: "power2.out",
-        overwrite: "auto",
-      });
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top  + rect.height / 2;
+      gsap.to(inner, { x: (e.clientX - cx) * strength, y: (e.clientY - cy) * strength, duration: 0.35, ease: "power2.out", overwrite: "auto" });
     };
-
-    const onLeave = () => {
-      gsap.to(inner, {
-        x: 0, y: 0,
-        duration: 0.8,
-        ease: "elastic.out(1, 0.45)",
-        overwrite: "auto",
-      });
-    };
-
+    const onLeave = () => { gsap.to(inner, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.45)", overwrite: "auto" }); };
     wrap.addEventListener("mousemove", onMove);
     wrap.addEventListener("mouseleave", onLeave);
-    return () => {
-      wrap.removeEventListener("mousemove", onMove);
-      wrap.removeEventListener("mouseleave", onLeave);
-    };
+    return () => { wrap.removeEventListener("mousemove", onMove); wrap.removeEventListener("mouseleave", onLeave); };
   }, [strength, reducedMotion]);
 
   return (
@@ -552,46 +854,23 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   const onEnter = () => {
     if (!hasPreview || !previewRef.current || reducedMotion) return;
     gsap.killTweensOf(previewRef.current);
-    gsap.fromTo(
-      previewRef.current,
-      { opacity: 0, y: 10, scale: 0.94 },
-      { opacity: 1, y: 0,  scale: 1,    duration: 0.28, ease: "power2.out" }
-    );
+    gsap.fromTo(previewRef.current, { opacity: 0, y: 10, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.28, ease: "power2.out" });
   };
-
   const onLeave = () => {
     if (!hasPreview || !previewRef.current || reducedMotion) return;
     gsap.killTweensOf(previewRef.current);
-    gsap.to(previewRef.current, {
-      opacity: 0, y: 8, scale: 0.94,
-      duration: 0.2, ease: "power2.in",
-    });
+    gsap.to(previewRef.current, { opacity: 0, y: 8, scale: 0.94, duration: 0.2, ease: "power2.in" });
   };
 
   return (
-    <div
-      className="link-btn-wrap"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      <a
-        href={href}
-        className="link-btn"
-        style={{ animationDelay: `${reducedMotion ? 0 : 0.3 + index * 0.08}s` }}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+    <div className="link-btn-wrap" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <a href={href} className="link-btn" style={{ animationDelay: `${reducedMotion ? 0 : 0.3 + index * 0.08}s` }} target="_blank" rel="noopener noreferrer">
         <span className="link-btn__icon">{icon}</span>
         <span className="link-btn__label">{label}</span>
         <span className="link-btn__arrow">→</span>
       </a>
-
       {hasPreview && (
-        <div
-          ref={previewRef}
-          className="hover-preview"
-          style={{ background: previewBg }}
-        >
+        <div ref={previewRef} className="hover-preview" style={{ background: previewBg }}>
           <span className="hover-preview__icon">{icon}</span>
           <div className="hover-preview__info">
             <strong>{label}</strong>
@@ -606,36 +885,30 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
 /* ====================== SAKURA SOUND ENGINE ====================== */
 class SakuraSoundEngine {
   constructor() {
-    this.ctx = null;
-    this.masterGain = null;
-    this.nodes = [];
-    this.playing = false;
-    this._currentVolume = 0.12;
-    this._chimeInterval = null;
+    this.ctx = null; this.masterGain = null; this.nodes = []; this.playing = false;
+    this._currentVolume = 0.12; this._chimeInterval = null;
   }
-
   _createBreezeBuffer(seconds = 10) {
-    const sr  = this.ctx.sampleRate;
+    const sr = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
-    const d   = buf.getChannelData(0);
+    const d = buf.getChannelData(0);
     let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
     for (let i = 0; i < d.length; i++) {
       const wh = Math.random() * 2 - 1;
-      b0 = 0.99886*b0 + wh*0.0555179; b1 = 0.99332*b1 + wh*0.0750759;
-      b2 = 0.969*b2   + wh*0.153852;  b3 = 0.8665*b3  + wh*0.3104856;
-      b4 = 0.55*b4    + wh*0.5329522; b5 = -0.7616*b5 - wh*0.016898;
-      d[i] = (b0+b1+b2+b3+b4+b5+b6+wh*0.5362)*0.06; b6 = wh*0.115926;
+      b0=0.99886*b0+wh*0.0555179; b1=0.99332*b1+wh*0.0750759;
+      b2=0.969*b2+wh*0.153852; b3=0.8665*b3+wh*0.3104856;
+      b4=0.55*b4+wh*0.5329522; b5=-0.7616*b5-wh*0.016898;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+wh*0.5362)*0.06; b6=wh*0.115926;
     }
     return buf;
   }
-
   _addBreezeLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
     const src = this.ctx.createBufferSource();
     src.buffer = this._createBreezeBuffer(10); src.loop = true;
     const hpf = this.ctx.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=400; hpf.Q.value=0.5;
     const bpf = this.ctx.createBiquadFilter(); bpf.type="bandpass"; bpf.frequency.value=filterFreq; bpf.Q.value=filterQ;
-    const lpf = this.ctx.createBiquadFilter(); lpf.type="lowpass";  lpf.frequency.value=filterFreq*2.5;
-    const lfo = this.ctx.createOscillator();   lfo.type="sine"; lfo.frequency.value=lfoFreq;
+    const lpf = this.ctx.createBiquadFilter(); lpf.type="lowpass"; lpf.frequency.value=filterFreq*2.5;
+    const lfo = this.ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=lfoFreq;
     const lfoG = this.ctx.createGain(); lfoG.gain.value=lfoDepth;
     const layG = this.ctx.createGain(); layG.gain.value=gain;
     src.connect(hpf); hpf.connect(bpf); bpf.connect(lpf); lpf.connect(layG);
@@ -643,11 +916,9 @@ class SakuraSoundEngine {
     lfo.start(0); src.start(0, Math.random()*10);
     this.nodes.push({ src, lfo });
   }
-
   _addAmbientPad() {
-    [220, 330].forEach((freq) => {
-      const osc  = this.ctx.createOscillator(); osc.type="sine"; osc.frequency.value=freq;
-      osc.detune.value = (Math.random()-0.5)*8;
+    [220,330].forEach((freq) => {
+      const osc = this.ctx.createOscillator(); osc.type="sine"; osc.frequency.value=freq; osc.detune.value=(Math.random()-0.5)*8;
       const padG = this.ctx.createGain(); padG.gain.value=0.025;
       const trem = this.ctx.createOscillator(); trem.type="sine"; trem.frequency.value=0.08+Math.random()*0.06;
       const tremG = this.ctx.createGain(); tremG.gain.value=0.012;
@@ -656,43 +927,29 @@ class SakuraSoundEngine {
       this.nodes.push({ src: osc, lfo: trem });
     });
   }
-
   _playChime() {
-    if (!this.ctx || !this.playing) return;
-    const NOTES = [523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.51];
-    const freq  = NOTES[Math.floor(Math.random()*NOTES.length)];
-    const now   = this.ctx.currentTime;
-    const osc1  = this.ctx.createOscillator(); osc1.type="sine";     osc1.frequency.value=freq;
-    const osc2  = this.ctx.createOscillator(); osc2.type="triangle"; osc2.frequency.value=freq*2;
-    const osc3  = this.ctx.createOscillator(); osc3.type="sine";     osc3.frequency.value=freq*3.01;
-    const cG    = this.ctx.createGain();
-    const decay = 2.5 + Math.random()*2; const peak = 0.06+Math.random()*0.04;
+    if (!this.ctx||!this.playing) return;
+    const NOTES=[523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.51];
+    const freq=NOTES[Math.floor(Math.random()*NOTES.length)]; const now=this.ctx.currentTime;
+    const osc1=this.ctx.createOscillator(); osc1.type="sine"; osc1.frequency.value=freq;
+    const osc2=this.ctx.createOscillator(); osc2.type="triangle"; osc2.frequency.value=freq*2;
+    const osc3=this.ctx.createOscillator(); osc3.type="sine"; osc3.frequency.value=freq*3.01;
+    const cG=this.ctx.createGain();
+    const decay=2.5+Math.random()*2; const peak=0.06+Math.random()*0.04;
     cG.gain.setValueAtTime(0,now); cG.gain.linearRampToValueAtTime(peak,now+0.005); cG.gain.exponentialRampToValueAtTime(0.0001,now+decay);
-    const oG = this.ctx.createGain(); oG.gain.value=0.3;
-    const tG = this.ctx.createGain(); tG.gain.value=0.08;
+    const oG=this.ctx.createGain(); oG.gain.value=0.3;
+    const tG=this.ctx.createGain(); tG.gain.value=0.08;
     osc1.connect(cG); osc2.connect(oG); oG.connect(cG); osc3.connect(tG); tG.connect(cG); cG.connect(this.masterGain);
     [osc1,osc2,osc3].forEach(o=>{ o.start(now); o.stop(now+decay+0.1); });
   }
-
   _startChimeLoop() {
-    const next = () => {
-      if (!this.playing) return;
-      this._chimeInterval = setTimeout(()=>{
-        this._playChime();
-        if (Math.random()<0.3) setTimeout(()=>this._playChime(), 200+Math.random()*400);
-        next();
-      }, 1500+Math.random()*3500);
-    };
-    setTimeout(()=>{ this._playChime(); next(); }, 800);
+    const next=()=>{ if(!this.playing) return; this._chimeInterval=setTimeout(()=>{ this._playChime(); if(Math.random()<0.3) setTimeout(()=>this._playChime(),200+Math.random()*400); next(); },1500+Math.random()*3500); };
+    setTimeout(()=>{ this._playChime(); next(); },800);
   }
-  _stopChimeLoop() { if (this._chimeInterval) { clearTimeout(this._chimeInterval); this._chimeInterval=null; } }
-
-  _startBirdLoop() {
-    const sch = ()=>{ if(!this.playing) return; this._birdTimeout=setTimeout(()=>{ this._playBirdChirp(); sch(); },4000+Math.random()*8000); };
-    setTimeout(()=>sch(), 3000);
-  }
+  _stopChimeLoop() { if(this._chimeInterval){clearTimeout(this._chimeInterval);this._chimeInterval=null;} }
+  _startBirdLoop() { const sch=()=>{ if(!this.playing) return; this._birdTimeout=setTimeout(()=>{ this._playBirdChirp(); sch(); },4000+Math.random()*8000); }; setTimeout(()=>sch(),3000); }
   _playBirdChirp() {
-    if (!this.ctx||!this.playing) return;
+    if(!this.ctx||!this.playing) return;
     const now=this.ctx.currentTime; const bf=1800+Math.random()*1200;
     const osc=this.ctx.createOscillator(); osc.type="sine";
     osc.frequency.setValueAtTime(bf,now); osc.frequency.linearRampToValueAtTime(bf*1.3,now+0.05);
@@ -702,28 +959,27 @@ class SakuraSoundEngine {
     bG.gain.linearRampToValueAtTime(0.015,now+0.1); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.25);
     osc.connect(bG); bG.connect(this.masterGain); osc.start(now); osc.stop(now+0.3);
   }
-  _stopBirdLoop() { if (this._birdTimeout) { clearTimeout(this._birdTimeout); this._birdTimeout=null; } }
-
+  _stopBirdLoop() { if(this._birdTimeout){clearTimeout(this._birdTimeout);this._birdTimeout=null;} }
   init() {
-    if (this.ctx) return;
-    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+    if(this.ctx) return;
+    this.ctx=new(window.AudioContext||window.webkitAudioContext)();
     this.masterGain=this.ctx.createGain(); this.masterGain.gain.value=0; this.masterGain.connect(this.ctx.destination);
     this._addBreezeLayer({lfoFreq:0.06,filterFreq:800, filterQ:0.4,gain:0.35,lfoDepth:0.18});
     this._addBreezeLayer({lfoFreq:0.12,filterFreq:1800,filterQ:0.6,gain:0.2, lfoDepth:0.12});
     this._addBreezeLayer({lfoFreq:0.03,filterFreq:3500,filterQ:0.3,gain:0.1, lfoDepth:0.06});
     this._addAmbientPad();
-    this.setVolume(this._currentVolume, 0);
+    this.setVolume(this._currentVolume,0);
   }
   play() {
-    if (!this.ctx) this.init();
-    if (this.ctx.state==="suspended") this.ctx.resume();
+    if(!this.ctx) this.init();
+    if(this.ctx.state==="suspended") this.ctx.resume();
     const now=this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
     this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+2.5);
     this.playing=true; this._startChimeLoop(); this._startBirdLoop();
   }
   pause() {
-    if (!this.ctx) return;
+    if(!this.ctx) return;
     const now=this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
     this.masterGain.gain.linearRampToValueAtTime(0,now+1.0);
@@ -731,17 +987,17 @@ class SakuraSoundEngine {
   }
   setVolume(val,ramp=0.3) {
     this._currentVolume=Math.min(1,Math.max(0,val));
-    if (this.ctx&&this.masterGain) {
+    if(this.ctx&&this.masterGain){
       const now=this.ctx.currentTime;
       this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
       this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+ramp);
     }
   }
-  isPlaying() { return this.playing; }
-  destroy() {
+  isPlaying(){return this.playing;}
+  destroy(){
     this._stopChimeLoop(); this._stopBirdLoop();
     this.nodes.forEach(({src,lfo})=>{ try{src.stop()}catch(_){} try{lfo.stop()}catch(_){} });
-    if (this.ctx) this.ctx.close();
+    if(this.ctx) this.ctx.close();
   }
 }
 
@@ -753,26 +1009,14 @@ function AudioControl({ engineRef }) {
   const toggleMute = () => {
     const e = engineRef.current;
     if (!e) return;
-    if (muted) {
-      e.setVolume(storedVol.current);
-      setMuted(false);
-      localStorage.setItem("sakuraMuted", "false");
-    } else {
-      storedVol.current = e._currentVolume;
-      e.setVolume(0);
-      setMuted(true);
-      localStorage.setItem("sakuraMuted", "true");
-    }
+    if (muted) { e.setVolume(storedVol.current); setMuted(false); localStorage.setItem("sakuraMuted","false"); }
+    else { storedVol.current=e._currentVolume; e.setVolume(0); setMuted(true); localStorage.setItem("sakuraMuted","true"); }
   };
 
   return (
     <div className="audio-wrap">
       <MagneticBtn strength={0.25}>
-        <button
-          className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`}
-          onClick={toggleMute}
-          aria-label={muted ? "Nyalakan suara" : "Matikan suara"}
-        >
+        <button className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`} onClick={toggleMute} aria-label={muted ? "Nyalakan suara" : "Matikan suara"}>
           {muted ? (
             <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
               <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
@@ -782,11 +1026,7 @@ function AudioControl({ engineRef }) {
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           )}
-          {!muted && (
-            <div className="audio-wave">
-              <span /><span /><span />
-            </div>
-          )}
+          {!muted && (<div className="audio-wave"><span /><span /><span /></div>)}
         </button>
       </MagneticBtn>
     </div>
@@ -835,19 +1075,19 @@ function SakuraBackground() {
     };
 
     const draw = () => {
-      t += 0.008; ctx.clearRect(0,0,W,H);
-      const sky = ctx.createLinearGradient(0,0,0,H);
+      t+=0.008; ctx.clearRect(0,0,W,H);
+      const sky=ctx.createLinearGradient(0,0,0,H);
       sky.addColorStop(0,"#87CEEB"); sky.addColorStop(0.25,"#a8dcf0");
       sky.addColorStop(0.5,"#c9e8ff"); sky.addColorStop(0.75,"#e8d5e0"); sky.addColorStop(1,"#fce4ec");
       ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
-      if (bgLoaded) {
+      if(bgLoaded){
         ctx.globalAlpha=0.45;
-        const ir=bgImg.width/bgImg.height, cr=W/H;
+        const ir=bgImg.width/bgImg.height,cr=W/H;
         let dw,dh,dx,dy;
-        if (cr>ir) { dw=W;dh=W/ir;dx=0;dy=(H-dh)/2; } else { dh=H;dw=H*ir;dy=0;dx=(W-dw)/2; }
+        if(cr>ir){dw=W;dh=W/ir;dx=0;dy=(H-dh)/2;}else{dh=H;dw=H*ir;dy=0;dx=(W-dw)/2;}
         ctx.drawImage(bgImg,dx,dy,dw,dh); ctx.globalAlpha=1;
       }
-      [{ cx:W*0.2,cy:H*0.15,r:W*0.4,c:"rgba(255,200,220,0.18)" },{ cx:W*0.85,cy:H*0.1,r:W*0.35,c:"rgba(255,180,200,0.15)" }].forEach(({cx,cy,r,c})=>{
+      [{cx:W*0.2,cy:H*0.15,r:W*0.4,c:"rgba(255,200,220,0.18)"},{cx:W*0.85,cy:H*0.1,r:W*0.35,c:"rgba(255,180,200,0.15)"}].forEach(({cx,cy,r,c})=>{
         const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,c); g.addColorStop(1,"transparent");
         ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
       });
@@ -864,16 +1104,16 @@ function SakuraBackground() {
       petals.forEach(p=>{
         p.x+=p.driftSpd+windX; p.y+=p.fallSpd; p.x+=Math.sin(t*p.wobbleSpd+p.phase)*0.5; p.rotation+=p.rotSpd;
         if(p.y>H+20){p.y=-20;p.x=Math.random()*W*1.2-W*0.1;}
-        if(p.x>W+30) {p.x=-20;p.y=Math.random()*H*0.5;}
+        if(p.x>W+30){p.x=-20;p.y=Math.random()*H*0.5;}
         drawPetal(p.x+Math.sin(t*p.wobbleSpd+p.phase)*p.wobbleAmp*0.02,p.y,p.size,p.rotation,p.color,p.opacity,p.scaleY);
       });
       animId=requestAnimationFrame(draw);
     };
     draw();
 
-    const onResize = () => { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; };
-    window.addEventListener("resize", onResize);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", onResize); };
+    const onResize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;};
+    window.addEventListener("resize",onResize);
+    return ()=>{cancelAnimationFrame(animId);window.removeEventListener("resize",onResize);};
   }, []);
 
   return <canvas ref={canvasRef} className="neon-city-canvas" />;
@@ -890,7 +1130,7 @@ function SectionLabel({ text }) {
   );
 }
 
-/* ====================== SWIPE DETECTION (MOBILE GESTURE) ====================== */
+/* ====================== SWIPE DETECTION ====================== */
 function SwipeNotifier() {
   const [message, setMessage] = useState(null);
   const cardRef = useRef(null);
@@ -899,22 +1139,17 @@ function SwipeNotifier() {
     const el = cardRef.current;
     if (!el) return;
     let startX = 0;
-    const handleTouchStart = (e) => {
-      startX = e.touches[0].clientX;
-    };
+    const handleTouchStart = (e) => { startX = e.touches[0].clientX; };
     const handleTouchEnd = (e) => {
       const diff = e.changedTouches[0].clientX - startX;
       if (Math.abs(diff) > 50) {
-        setMessage(diff > 0 ? 'Swiped right 👉' : 'Swiped left 👈');
+        setMessage(diff > 0 ? "Swiped right 👉" : "Swiped left 👈");
         setTimeout(() => setMessage(null), 2000);
       }
     };
-    el.addEventListener('touchstart', handleTouchStart, { passive: true });
-    el.addEventListener('touchend', handleTouchEnd, { passive: true });
-    return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchend', handleTouchEnd);
-    };
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+    return () => { el.removeEventListener("touchstart", handleTouchStart); el.removeEventListener("touchend", handleTouchEnd); };
   }, []);
 
   return (
@@ -925,16 +1160,10 @@ function SwipeNotifier() {
   );
 }
 
-/* ====================== EASTER EGG: KONAMI CODE HIDDEN SECTION ====================== */
+/* ====================== EASTER EGG ====================== */
 function SecretSection({ onClose }) {
   const overlayRef = useRef(null);
-
-  useEffect(() => {
-    if (overlayRef.current) {
-      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
-    }
-  }, []);
-
+  useEffect(() => { if(overlayRef.current) gsap.fromTo(overlayRef.current,{opacity:0},{opacity:1,duration:0.5}); }, []);
   return (
     <div ref={overlayRef} className="secret-overlay" onClick={onClose}>
       <div className="secret-card" onClick={(e) => e.stopPropagation()}>
@@ -957,90 +1186,41 @@ export default function App() {
   const [konamiActive, setKonamiActive] = useState(false);
   const reducedMotion = useReducedMotion();
 
-  // Konami code easter egg
   useKonamiCode(() => setKonamiActive(true));
-
-  // Sakura burst on avatar click
   const triggerSakuraBurst = useSakuraBurst(avatarRef);
 
-  // SEO
   useSEO({
     title: "Muhammad Fahreza | Web Programmer",
     description: "Personal link Bio Profile Muhammad Fahreza. Temukan semua tautan penting: LinkedIn, GitHub, portofolio, musik, donasi, dan layanan pembuatan website.",
-    ogImage: "/src/assets/fotome.jpg"
+    ogImage: "/src/assets/fotome.jpg",
   });
 
-  /* ── Lenis Smooth Scroll ── */
   useEffect(() => {
     if (reducedMotion) return;
-    const lenis = new Lenis({
-      duration: 1.3,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
+    const lenis = new Lenis({ duration: 1.3, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
-
     const tickerFn = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tickerFn);
     gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      lenis.destroy();
-      gsap.ticker.remove(tickerFn);
-    };
+    return () => { lenis.destroy(); gsap.ticker.remove(tickerFn); };
   }, [reducedMotion]);
 
-  /* ── Parallax Depth ── */
   useEffect(() => {
     if (reducedMotion) return;
-    gsap.to(cardRef.current, {
-      y: -30,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".hero",
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5,
-      },
-    });
-
-    gsap.to(".corner-glow--tl", {
-      y: -60, x: -30,
-      ease: "none",
-      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 },
-    });
-    gsap.to(".corner-glow--br", {
-      y: 60, x: 30,
-      ease: "none",
-      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 },
-    });
-    gsap.to(".corner-glow--tr", {
-      y: -40,
-      ease: "none",
-      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 },
-    });
-    gsap.to(".corner-glow--bl", {
-      y: 40,
-      ease: "none",
-      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 },
-    });
-
-    gsap.to(fogRef.current, {
-      opacity: 0.4,
-      ease: "none",
-      scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true },
-    });
+    gsap.to(cardRef.current, { y: -30, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1.5 } });
+    gsap.to(".corner-glow--tl", { y: -60, x: -30, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 } });
+    gsap.to(".corner-glow--br", { y: 60, x: 30, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 } });
+    gsap.to(".corner-glow--tr", { y: -40, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 } });
+    gsap.to(".corner-glow--bl", { y: 40, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 } });
+    gsap.to(fogRef.current, { opacity: 0.4, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true } });
   }, [reducedMotion]);
 
-  /* ── Audio Engine ── */
   useEffect(() => {
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
     const wasMuted = localStorage.getItem("sakuraMuted") === "true";
     if (wasMuted) engine.setVolume(0);
     engine.play();
-
     const resume = () => {
       if (engine.ctx && engine.ctx.state === "suspended") engine.play();
       document.removeEventListener("click", resume);
@@ -1066,7 +1246,6 @@ export default function App() {
         <PageTransition />
         <SakuraBackground />
         <div ref={fogRef} className="edge-fog" />
-
         <div className="corner-glows">
           <div className="corner-glow corner-glow--tl" />
           <div className="corner-glow corner-glow--tr" />
@@ -1074,77 +1253,44 @@ export default function App() {
           <div className="corner-glow corner-glow--br" />
           <div className="corner-glow corner-glow--ct" />
         </div>
-
         <AudioControl engineRef={engineRef} />
-
         <section className="hero">
           <main ref={cardRef} className="card">
             <div className="avatar-wrap">
               <div className="avatar-ring" />
-              <img
-                ref={avatarRef}
-                src={PROFILE.avatar}
-                alt={PROFILE.name}
-                className="avatar-img"
-                onClick={triggerSakuraBurst}
-                style={{ cursor: "pointer" }}
-              />
+              <img ref={avatarRef} src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" onClick={triggerSakuraBurst} style={{ cursor: "pointer" }} />
               <div className="avatar-badge">🌸</div>
             </div>
-
             <div className="identity">
               <SplitTextReveal text={PROFILE.name} className="name" />
               <p className="bio">{PROFILE.bio}</p>
             </div>
-
             <SectionLabel text="My Bio" />
             <nav className="links">
-              {LINKS.map((link) => (
-                <LinkButton key={link.id} {...link} index={globalIndex++} />
-              ))}
+              {LINKS.map((link) => (<LinkButton key={link.id} {...link} index={globalIndex++} />))}
             </nav>
-
             <SectionLabel text="Music" />
             <nav className="links">
-              {MUSIC_LINKS.map((link) => (
-                <LinkButton key={link.id} {...link} index={globalIndex++} />
-              ))}
+              {MUSIC_LINKS.map((link) => (<LinkButton key={link.id} {...link} index={globalIndex++} />))}
             </nav>
-
             <SectionLabel text="Donation" />
             <nav className="links">
-              {DONATION_LINKS.map((link) => (
-                <LinkButton key={link.id} {...link} index={globalIndex++} />
-              ))}
+              {DONATION_LINKS.map((link) => (<LinkButton key={link.id} {...link} index={globalIndex++} />))}
             </nav>
-
             <SectionLabel text="Services" />
             <div className="links">
-              {SERVICE_LINKS.map((link) => (
-                <LinkButton key={link.id} {...link} index={globalIndex++} />
-              ))}
+              {SERVICE_LINKS.map((link) => (<LinkButton key={link.id} {...link} index={globalIndex++} />))}
             </div>
-
             <div className="socials">
               {SOCIALS.map((s) => (
                 <MagneticBtn key={s.name} strength={0.45}>
-                  <a
-                    href={s.href}
-                    className="social-btn"
-                    aria-label={s.name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {s.icon}
-                  </a>
+                  <a href={s.href} className="social-btn" aria-label={s.name} target="_blank" rel="noopener noreferrer">{s.icon}</a>
                 </MagneticBtn>
               ))}
             </div>
-
             <SwipeNotifier />
           </main>
         </section>
-
         {konamiActive && <SecretSection onClose={() => setKonamiActive(false)} />}
       </div>
     </MotionContext.Provider>
