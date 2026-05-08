@@ -51,11 +51,9 @@ body {
   color: var(--text-dark);
   overflow-y: auto;
   overflow-x: hidden;
-  /* Hide native cursor on desktop */
   cursor: none;
 }
 
-/* Restore cursor on touch */
 @media (hover: none) {
   body { cursor: auto; }
 }
@@ -70,7 +68,6 @@ body {
   pointer-events: none;
 }
 
-/* Main dot */
 .cursor-dot {
   position: fixed;
   top: 0; left: 0;
@@ -84,7 +81,6 @@ body {
   box-shadow: 0 0 8px rgba(232,115,138,0.6);
 }
 
-/* Soft glow ring */
 .cursor-glow {
   position: fixed;
   top: 0; left: 0;
@@ -98,7 +94,6 @@ body {
   will-change: transform;
 }
 
-/* Trail particles */
 .cursor-trail {
   position: fixed;
   top: 0; left: 0;
@@ -112,7 +107,6 @@ body {
   will-change: transform;
 }
 
-/* Hide cursor on mobile */
 @media (hover: none) {
   .cursor-root { display: none; }
 }
@@ -168,7 +162,7 @@ body {
 .name-split .char {
   display: inline-block;
   transform-origin: 50% 0%;
-  opacity: 0; /* GSAP will animate this in */
+  opacity: 0;
   will-change: transform, opacity, filter;
 }
 
@@ -181,7 +175,6 @@ body {
   justify-content: center;
 }
 
-/* Ensure link buttons keep full width inside magnetic wrapper */
 .links .magnetic-wrap,
 .link-btn-wrap .magnetic-wrap {
   width: 100%;
@@ -208,7 +201,6 @@ body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  /* GSAP handles translate/scale animation */
   box-shadow:
     0 8px 32px rgba(0,0,0,0.18),
     0 2px 8px rgba(0,0,0,0.10),
@@ -218,7 +210,6 @@ body {
   backdrop-filter: blur(8px);
 }
 
-/* Arrow pointing right */
 .hover-preview::after {
   content: '';
   position: absolute;
@@ -266,7 +257,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* On smaller screens, show preview above the button */
 @media (max-width: 600px) {
   .hover-preview {
     right: auto;
@@ -391,10 +381,9 @@ body {
     card-in    0.9s cubic-bezier(0.22,1,0.36,1) both,
     card-float 6s   ease-in-out 1s infinite;
 
-  overflow: visible; /* allow hover-preview to overflow */
+  overflow: visible;
 }
 
-/* Keep inner content clipping correct */
 .card > *:not(.hover-preview) {
   margin: 10px;
 }
@@ -881,4 +870,50 @@ body {
   color: var(--sakura-deep);
   z-index: 200;
   animation: fade-up 0.3s ease-out;
+}
+
+.sakura-burst-petal {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50% 0 50% 50%;
+  background: #ffb7c5;
+  z-index: 10000;
+  will-change: transform, opacity;
+}
+
+.secret-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.secret-card {
+  background: linear-gradient(160deg, #ffe0ea, #ffb7c5);
+  border-radius: 28px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(200,80,120,0.5);
+  max-width: 400px;
+}
+.secret-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+.secret-card h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  margin-bottom: 8px;
+}
+.secret-close {
+  margin-top: 20px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--sakura-dark);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }

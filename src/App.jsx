@@ -9,7 +9,7 @@ import "./App.css";
 gsap.registerPlugin(ScrollTrigger);
 
 /* ====================== MOTION CONTEXT ====================== */
-const MotionContext = createContext(true); // default: motion allowed
+const MotionContext = createContext(true);
 
 const useReducedMotion = () => {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -232,6 +232,78 @@ const SOCIALS = [
   },
 ];
 
+/* ====================== KONAMI CODE HOOK ====================== */
+const KONAMI_SEQUENCE = [
+  "ArrowUp", "ArrowUp",
+  "ArrowDown", "ArrowDown",
+  "ArrowLeft", "ArrowRight",
+  "ArrowLeft", "ArrowRight",
+  "KeyB", "KeyA"
+];
+
+const useKonamiCode = (callback) => {
+  useEffect(() => {
+    let index = 0;
+    const handler = (e) => {
+      if (e.code === KONAMI_SEQUENCE[index]) {
+        index++;
+        if (index === KONAMI_SEQUENCE.length) {
+          callback();
+          index = 0;
+        }
+      } else {
+        index = 0;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [callback]);
+};
+
+/* ====================== SAKURA BURST ON AVATAR CLICK ====================== */
+const useSakuraBurst = (avatarRef) => {
+  const reducedMotion = useContext(MotionContext);
+
+  const triggerBurst = useCallback(() => {
+    if (reducedMotion || !avatarRef.current) return;
+    const avatar = avatarRef.current;
+    const rect = avatar.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const petalCount = 30;
+    for (let i = 0; i < petalCount; i++) {
+      const petal = document.createElement("div");
+      petal.className = "sakura-burst-petal";
+      petal.style.left = startX + "px";
+      petal.style.top = startY + "px";
+      petal.style.width = (6 + Math.random() * 10) + "px";
+      petal.style.height = petal.style.width;
+      petal.style.background = `rgba(255,183,197,${0.7 + Math.random() * 0.3})`;
+      document.body.appendChild(petal);
+
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 80 + Math.random() * 150;
+      const toX = startX + Math.cos(angle) * distance;
+      const toY = startY + Math.sin(angle) * distance + 200;
+
+      gsap.fromTo(petal, {
+        x: 0, y: 0, scale: 0, rotation: Math.random() * 360, opacity: 1,
+      }, {
+        x: toX - startX,
+        y: toY - startY,
+        scale: 1 + Math.random(),
+        rotation: Math.random() * 720 - 360,
+        opacity: 0,
+        duration: 1.2 + Math.random() * 1.2,
+        ease: "power2.out",
+        onComplete: () => petal.remove(),
+      });
+    }
+  }, [avatarRef, reducedMotion]);
+
+  return triggerBurst;
+};
+
 /* ====================== PRELOADER ====================== */
 function Preloader({ onFinish }) {
   const [progress, setProgress] = useState(0);
@@ -239,7 +311,6 @@ function Preloader({ onFinish }) {
   const ringRef = useRef(null);
 
   useEffect(() => {
-    // Simulasi loading & animasi
     const tl = gsap.timeline();
     tl.from(logoRef.current, { opacity: 0, scale: 0.6, duration: 0.5, ease: "back.out(1.5)" })
       .to(ringRef.current, { rotation: 360, duration: 1.5, ease: "none", repeat: -1 })
@@ -279,7 +350,7 @@ function Preloader({ onFinish }) {
   );
 }
 
-/* ====================== 1. CUSTOM CURSOR ====================== */
+/* ====================== CUSTOM CURSOR ====================== */
 function CustomCursor() {
   const dotRef    = useRef(null);
   const glowRef   = useRef(null);
@@ -347,7 +418,7 @@ function CustomCursor() {
   );
 }
 
-/* ====================== 2. PAGE TRANSITION OVERLAY ====================== */
+/* ====================== PAGE TRANSITION OVERLAY ====================== */
 function PageTransition() {
   const overlayRef = useRef(null);
   const textRef    = useRef(null);
@@ -382,7 +453,7 @@ function PageTransition() {
   );
 }
 
-/* ====================== 3. SPLIT TEXT REVEAL ====================== */
+/* ====================== SPLIT TEXT REVEAL ====================== */
 function SplitTextReveal({ text, className }) {
   const containerRef = useRef(null);
   const reducedMotion = useContext(MotionContext);
@@ -420,7 +491,7 @@ function SplitTextReveal({ text, className }) {
   );
 }
 
-/* ====================== 4. MAGNETIC BUTTON WRAPPER ====================== */
+/* ====================== MAGNETIC BUTTON WRAPPER ====================== */
 function MagneticBtn({ children, strength = 0.38, className = "" }) {
   const wrapRef  = useRef(null);
   const innerRef = useRef(null);
@@ -470,7 +541,7 @@ function MagneticBtn({ children, strength = 0.38, className = "" }) {
   );
 }
 
-/* ====================== 5. HOVER PREVIEW ON LINK BUTTON ====================== */
+/* ====================== HOVER PREVIEW ON LINK BUTTON ====================== */
 function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   const previewRef = useRef(null);
   const hasPreview = !!previewBg;
@@ -846,9 +917,31 @@ function SwipeNotifier() {
 
   return (
     <>
-      <div ref={cardRef} className="swipe-area" /> {/* invisible overlay for swipe */}
+      <div ref={cardRef} className="swipe-area" />
       {message && <div className="swipe-notification">{message}</div>}
     </>
+  );
+}
+
+/* ====================== EASTER EGG: KONAMI CODE HIDDEN SECTION ====================== */
+function SecretSection({ onClose }) {
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    if (overlayRef.current) {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+    }
+  }, []);
+
+  return (
+    <div ref={overlayRef} className="secret-overlay" onClick={onClose}>
+      <div className="secret-card" onClick={(e) => e.stopPropagation()}>
+        <div className="secret-icon">🌸🎮🌸</div>
+        <h2>🎉 Easter Egg Unlocked! 🎉</h2>
+        <p>You discovered the hidden Sakura Garden.<br/>Enjoy the blossoms!</p>
+        <button className="secret-close" onClick={onClose}>Close</button>
+      </div>
+    </div>
   );
 }
 
@@ -857,13 +950,21 @@ export default function App() {
   const engineRef  = useRef(null);
   const fogRef     = useRef(null);
   const cardRef    = useRef(null);
+  const avatarRef  = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [konamiActive, setKonamiActive] = useState(false);
   const reducedMotion = useReducedMotion();
+
+  // Konami code easter egg
+  useKonamiCode(() => setKonamiActive(true));
+
+  // Sakura burst on avatar click
+  const triggerSakuraBurst = useSakuraBurst(avatarRef);
 
   // SEO
   useSEO({
     title: "Muhammad Fahreza | Web Programmer",
-    description: "Personal linktree & portofolio Muhammad Fahreza. Temukan semua tautan penting: LinkedIn, GitHub, portofolio, musik, donasi, dan layanan pembuatan website.",
+    description: "Personal link Bio Profile Muhammad Fahreza. Temukan semua tautan penting: LinkedIn, GitHub, portofolio, musik, donasi, dan layanan pembuatan website.",
     ogImage: "/src/assets/fotome.jpg"
   });
 
@@ -978,7 +1079,14 @@ export default function App() {
           <main ref={cardRef} className="card">
             <div className="avatar-wrap">
               <div className="avatar-ring" />
-              <img src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" />
+              <img
+                ref={avatarRef}
+                src={PROFILE.avatar}
+                alt={PROFILE.name}
+                className="avatar-img"
+                onClick={triggerSakuraBurst}
+                style={{ cursor: "pointer" }}
+              />
               <div className="avatar-badge">🌸</div>
             </div>
 
@@ -1034,6 +1142,8 @@ export default function App() {
             <SwipeNotifier />
           </main>
         </section>
+
+        {konamiActive && <SecretSection onClose={() => setKonamiActive(false)} />}
       </div>
     </MotionContext.Provider>
   );
