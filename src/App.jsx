@@ -722,6 +722,16 @@ export default function App() {
   return (
     <div className="page">
       <SakuraBackground />
+
+      {/* Pink glowing orbs at corners */}
+      <div className="corner-glows">
+        <div className="corner-glow corner-glow--tl" />
+        <div className="corner-glow corner-glow--tr" />
+        <div className="corner-glow corner-glow--bl" />
+        <div className="corner-glow corner-glow--br" />
+        <div className="corner-glow corner-glow--ct" />
+      </div>
+
       <AudioControl engineRef={engineRef} />
 
       <section className="hero">
