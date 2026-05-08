@@ -270,8 +270,8 @@ function AudioControl({ engineRef }) {
   );
 }
 
-/* ====================== NEON CITY CANVAS BACKGROUND ====================== */
-function NeonCityBackground() {
+/* ====================== SAKURA SPRING CANVAS BACKGROUND ====================== */
+function SakuraBackground() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -284,173 +284,87 @@ function NeonCityBackground() {
     canvas.width = W;
     canvas.height = H;
 
-    let scrollY = 0;
     let t = 0;
     let animId;
 
-    /* ── RNG seeded untuk konsistensi ── */
-    let seed = 42;
-    const rnd = () => {
-      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-      return (seed >>> 0) / 0xffffffff;
-    };
+    /* ── Sakura background image ── */
+    const bgImg = new Image();
+    bgImg.src = '/sakura-bg.png';
+    let bgLoaded = false;
+    bgImg.onload = () => { bgLoaded = true; };
 
-    /* ── STARS ── */
-    const STAR_COUNT = 160;
-    const stars = [];
-    for (let i = 0; i < STAR_COUNT; i++) {
-      stars.push({
-        x: rnd() * W,
-        y: rnd() * H * 0.65,
-        r: rnd() * 1.3 + 0.2,
-        phase: rnd() * Math.PI * 2,
-        spd: 0.3 + rnd() * 0.8,
+    /* ── SAKURA PETALS ── */
+    const PETAL_COUNT = 55;
+    const petals = [];
+    const PETAL_COLORS = [
+      'rgba(255,183,197,0.85)', 'rgba(255,200,210,0.80)',
+      'rgba(255,160,180,0.75)', 'rgba(255,220,230,0.70)',
+      'rgba(248,140,170,0.80)', 'rgba(255,175,195,0.90)',
+    ];
+
+    for (let i = 0; i < PETAL_COUNT; i++) {
+      petals.push({
+        x: Math.random() * W * 1.2 - W * 0.1,
+        y: Math.random() * H * 1.2 - H * 0.3,
+        size: 6 + Math.random() * 12,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpd: (Math.random() - 0.5) * 0.04,
+        fallSpd: 0.4 + Math.random() * 1.0,
+        driftSpd: 0.5 + Math.random() * 1.5,
+        wobbleAmp: 20 + Math.random() * 40,
+        wobbleSpd: 0.5 + Math.random() * 1.5,
+        phase: Math.random() * Math.PI * 2,
+        color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+        opacity: 0.6 + Math.random() * 0.4,
+        scaleY: 0.5 + Math.random() * 0.5,
       });
     }
 
-    /* ── MOON ── */
-    const moon = { x: W * 0.78, y: H * 0.13, r: 30 };
+    /* ── WIND STREAKS ── */
+    const WIND_COUNT = 35;
+    const winds = [];
+    for (let i = 0; i < WIND_COUNT; i++) {
+      winds.push({
+        x: Math.random() * W * 1.5 - W * 0.25,
+        y: Math.random() * H,
+        len: 60 + Math.random() * 160,
+        spd: 2.0 + Math.random() * 3.5,
+        alpha: 0.04 + Math.random() * 0.10,
+        w: 0.5 + Math.random() * 1.0,
+      });
+    }
 
     /* ── CLOUDS ── */
     const clouds = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 6; i++) {
       clouds.push({
-        x: rnd() * W,
-        y: H * 0.04 + rnd() * H * 0.26,
-        rx: 70 + rnd() * 100,
-        ry: 20 + rnd() * 30,
-        spd: 0.10 + rnd() * 0.20,
-        alpha: 0.06 + rnd() * 0.12,
+        x: Math.random() * W,
+        y: H * 0.05 + Math.random() * H * 0.3,
+        rx: 80 + Math.random() * 120,
+        ry: 25 + Math.random() * 35,
+        spd: 0.08 + Math.random() * 0.15,
+        alpha: 0.25 + Math.random() * 0.25,
       });
     }
 
-    /* ── WIND LINES (focused in sky, moving right) ── */
-    const windLines = [];
-    for (let i = 0; i < 100; i++) {
-      const isSky = i < 70; // 70 lines di langit, 30 di bawah
-      windLines.push({
-        x: rnd() * W * 1.5 - W * 0.25,
-        y: isSky ? rnd() * H * 0.58 : H * 0.45 + rnd() * H * 0.55,
-        maxY: isSky ? H * 0.58 : H,
-        minY: isSky ? 0 : H * 0.45,
-        len: isSky ? 80 + rnd() * 200 : 40 + rnd() * 80,
-        spd: isSky ? 2.5 + rnd() * 4.0 : 1.5 + rnd() * 2.5,
-        alpha: isSky ? 0.15 + rnd() * 0.28 : 0.03 + rnd() * 0.06,
-        w: isSky ? 0.7 + rnd() * 1.4 : 0.3 + rnd() * 0.7,
-        isSky,
-      });
-    }
-
-    /* ── NEON PALETTE ── */
-    const WIN_COLORS_FAR  = ['rgba(255,220,100,0.45)', 'rgba(180,200,255,0.35)', 'rgba(200,160,255,0.3)'];
-    const WIN_COLORS_MID  = ['rgba(255,170,50,0.7)', 'rgba(60,210,255,0.65)', 'rgba(255,80,150,0.55)', 'rgba(180,120,255,0.5)'];
-    const WIN_COLORS_NEAR = ['rgba(255,210,55,0.95)', 'rgba(0,220,255,0.9)', 'rgba(255,55,120,0.85)', 'rgba(150,80,255,0.8)', 'rgba(40,255,180,0.75)'];
-    const NEON_SIGNS      = ['#ff3399', '#00ccff', '#ffaa00', '#9933ff', '#00ff99', '#ff6600'];
-    const BODY_COLORS_FAR  = ['#1a1530', '#161228', '#201840', '#13102a'];
-    const BODY_COLORS_MID  = ['#110e24', '#18142e', '#0e0c1e', '#150f28'];
-    const BODY_COLORS_NEAR = ['#08061a', '#0c0a18', '#060412', '#0a0816'];
-
-    /* ── BUILD BUILDINGS ── */
-    const makeBuildings = (count, minBW, maxBW, minBH, maxBH, bodyColors, winColors) => {
-      const arr = [];
-      let cx = -80;
-      for (let i = 0; i < count; i++) {
-        const bw = minBW + rnd() * (maxBW - minBW);
-        const bh = minBH + rnd() * (maxBH - minBH);
-        const color = bodyColors[Math.floor(rnd() * bodyColors.length)];
-        const winCols = Math.max(1, Math.floor((bw - 8) / 14));
-        const winRows = Math.max(1, Math.floor((bh - 10) / 16));
-        const windows = [];
-        for (let wc = 0; wc < winCols; wc++) {
-          for (let wr = 0; wr < winRows; wr++) {
-            if (rnd() > 0.38) {
-              windows.push({
-                wc, wr,
-                color: winColors[Math.floor(rnd() * winColors.length)],
-                flicker: rnd() > 0.80,
-                phase: rnd() * Math.PI * 2,
-                flickerSpd: 0.8 + rnd() * 2.0,
-              });
-            }
-          }
-        }
-        const hasAntenna   = rnd() > 0.45;
-        const hasNeonSign  = rnd() > 0.60;
-        const neonColor    = NEON_SIGNS[Math.floor(rnd() * NEON_SIGNS.length)];
-        const signW        = 0.35 + rnd() * 0.45;
-        const antPhase     = rnd() * Math.PI * 2;
-
-        arr.push({ x: cx, w: bw, h: bh, color, windows, winCols, winRows, hasAntenna, hasNeonSign, neonColor, signW, antPhase });
-        cx += bw + 2 + rnd() * 12;
-      }
-      return arr;
-    };
-
-    const farBuildings  = makeBuildings(22, 22, 58,  H * 0.10, H * 0.22, BODY_COLORS_FAR,  WIN_COLORS_FAR);
-    const midBuildings  = makeBuildings(16, 44, 92,  H * 0.20, H * 0.40, BODY_COLORS_MID,  WIN_COLORS_MID);
-    const nearBuildings = makeBuildings(11, 75, 155, H * 0.30, H * 0.58, BODY_COLORS_NEAR, WIN_COLORS_NEAR);
-
-    /* ── DRAW ONE LAYER ── */
-    const drawBuildings = (buildings, yBase, parallax, glowStr) => {
-      buildings.forEach(b => {
-        const by = yBase - b.h + parallax;
-        const bx = b.x;
-
-        /* body */
-        ctx.fillStyle = b.color;
-        ctx.fillRect(bx, by, b.w, b.h);
-
-        /* windows */
-        const cellW = (b.w - 8) / Math.max(b.winCols, 1);
-        const cellH = (b.h - 10) / Math.max(b.winRows, 1);
-        b.windows.forEach(win => {
-          let alpha = 1;
-          if (win.flicker) alpha = 0.25 + 0.75 * Math.abs(Math.sin(win.phase + t * win.flickerSpd));
-          const wx = bx + 4 + win.wc * cellW + cellW * 0.12;
-          const wy = by + 8 + win.wr * cellH + cellH * 0.10;
-          const ww = cellW * 0.65;
-          const wh = cellH * 0.60;
-          if (glowStr > 0.6) {
-            ctx.shadowBlur = 7 * glowStr;
-            ctx.shadowColor = win.color;
-          }
-          ctx.globalAlpha = alpha;
-          ctx.fillStyle = win.color;
-          ctx.fillRect(wx, wy, ww, wh);
-          ctx.globalAlpha = 1;
-          ctx.shadowBlur = 0;
-        });
-
-        /* neon rooftop sign */
-        if (b.hasNeonSign && glowStr > 0.5) {
-          ctx.shadowBlur = 18 * glowStr;
-          ctx.shadowColor = b.neonColor;
-          ctx.fillStyle = b.neonColor;
-          const sw = b.w * b.signW;
-          ctx.fillRect(bx + (b.w - sw) / 2, by - 6, sw, 4);
-          ctx.fillRect(bx + b.w * 0.28, by - 20, 2.5, 16);
-          ctx.fillRect(bx + b.w * 0.68, by - 20, 2.5, 16);
-          ctx.shadowBlur = 0;
-        }
-
-        /* antenna */
-        if (b.hasAntenna) {
-          ctx.strokeStyle = 'rgba(160,140,200,0.55)';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(bx + b.w * 0.5, by);
-          ctx.lineTo(bx + b.w * 0.5, by - 22);
-          ctx.stroke();
-          const blink = Math.sin(t * 1.8 + b.antPhase) > 0 ? 0.95 : 0.08;
-          ctx.beginPath();
-          ctx.arc(bx + b.w * 0.5, by - 24, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,70,70,${blink})`;
-          ctx.shadowBlur = blink * 12;
-          ctx.shadowColor = 'rgba(255,50,50,0.9)';
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-      });
+    /* ── Draw single petal shape ── */
+    const drawPetal = (x, y, size, rotation, color, opacity, scaleY) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.scale(1, scaleY);
+      ctx.globalAlpha = opacity;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(size * 0.4, -size * 0.6, size, -size * 0.4, size * 0.5, 0);
+      ctx.bezierCurveTo(size, size * 0.4, size * 0.4, size * 0.6, 0, 0);
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = 'rgba(255,183,197,0.3)';
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+      ctx.restore();
     };
 
     /* ── MAIN RENDER LOOP ── */
@@ -460,105 +374,71 @@ function NeonCityBackground() {
 
       /* Sky gradient */
       const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0,   '#050215');
-      sky.addColorStop(0.2, '#0d0530');
-      sky.addColorStop(0.5, '#180a4a');
-      sky.addColorStop(0.78,'#280e55');
-      sky.addColorStop(1.0, '#110730');
+      sky.addColorStop(0,    '#87CEEB');
+      sky.addColorStop(0.25, '#a8dcf0');
+      sky.addColorStop(0.5,  '#c9e8ff');
+      sky.addColorStop(0.75, '#e8d5e0');
+      sky.addColorStop(1.0,  '#fce4ec');
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
 
-      /* Nebula blobs */
-      const nb1 = ctx.createRadialGradient(W * 0.25, H * 0.25, 0, W * 0.25, H * 0.25, W * 0.38);
-      nb1.addColorStop(0, 'rgba(100,30,180,0.14)');
-      nb1.addColorStop(1, 'transparent');
-      ctx.fillStyle = nb1;
+      /* Background image overlay */
+      if (bgLoaded) {
+        ctx.globalAlpha = 0.45;
+        const imgRatio = bgImg.width / bgImg.height;
+        const canvasRatio = W / H;
+        let dw, dh, dx, dy;
+        if (canvasRatio > imgRatio) {
+          dw = W; dh = W / imgRatio;
+          dx = 0; dy = (H - dh) / 2;
+        } else {
+          dh = H; dw = H * imgRatio;
+          dy = 0; dx = (W - dw) / 2;
+        }
+        ctx.drawImage(bgImg, dx, dy, dw, dh);
+        ctx.globalAlpha = 1;
+      }
+
+      /* Soft pink/white radial glows */
+      const g1 = ctx.createRadialGradient(W * 0.2, H * 0.15, 0, W * 0.2, H * 0.15, W * 0.4);
+      g1.addColorStop(0, 'rgba(255,200,220,0.18)');
+      g1.addColorStop(1, 'transparent');
+      ctx.fillStyle = g1;
       ctx.fillRect(0, 0, W, H);
 
-      const nb2 = ctx.createRadialGradient(W * 0.8, H * 0.18, 0, W * 0.8, H * 0.18, W * 0.28);
-      nb2.addColorStop(0, 'rgba(50,15,110,0.11)');
-      nb2.addColorStop(1, 'transparent');
-      ctx.fillStyle = nb2;
+      const g2 = ctx.createRadialGradient(W * 0.85, H * 0.1, 0, W * 0.85, H * 0.1, W * 0.35);
+      g2.addColorStop(0, 'rgba(255,180,200,0.15)');
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
       ctx.fillRect(0, 0, W, H);
-
-      /* Stars */
-      stars.forEach(s => {
-        const a = 0.25 + 0.75 * Math.abs(Math.sin(s.phase + t * s.spd));
-        ctx.beginPath();
-        ctx.arc(s.x, s.y - scrollY * 0.025, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,245,220,${a * 0.85})`;
-        ctx.fill();
-      });
-
-      /* Moon */
-      const mx = moon.x, my = moon.y - scrollY * 0.03;
-      ctx.shadowBlur = 50;
-      ctx.shadowColor = 'rgba(190,160,255,0.55)';
-      const mg = ctx.createRadialGradient(mx, my, 0, mx, my, moon.r * 2.2);
-      mg.addColorStop(0,   'rgba(240,228,255,0.96)');
-      mg.addColorStop(0.45,'rgba(210,190,255,0.80)');
-      mg.addColorStop(0.75,'rgba(170,140,230,0.30)');
-      mg.addColorStop(1,   'transparent');
-      ctx.fillStyle = mg;
-      ctx.beginPath();
-      ctx.arc(mx, my, moon.r * 2.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
 
       /* Clouds */
       clouds.forEach(c => {
         c.x += c.spd;
         if (c.x - c.rx * 2.5 > W) c.x = -c.rx * 2.5;
-        const cy = c.y - scrollY * 0.07;
-        const cg = ctx.createRadialGradient(c.x, cy, 0, c.x, cy, c.rx * 2);
-        cg.addColorStop(0, `rgba(130,90,200,${c.alpha})`);
-        cg.addColorStop(0.5,`rgba(90,60,160,${c.alpha * 0.55})`);
-        cg.addColorStop(1,  'transparent');
+        const cg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.rx * 2);
+        cg.addColorStop(0, `rgba(255,255,255,${c.alpha})`);
+        cg.addColorStop(0.5, `rgba(255,240,245,${c.alpha * 0.6})`);
+        cg.addColorStop(1, 'transparent');
         ctx.fillStyle = cg;
         ctx.beginPath();
-        ctx.ellipse(c.x, cy, c.rx * 2, c.ry * 1.6, 0, 0, Math.PI * 2);
+        ctx.ellipse(c.x, c.y, c.rx * 2, c.ry * 1.6, 0, 0, Math.PI * 2);
         ctx.fill();
       });
 
-      /* FAR buildings */
-      drawBuildings(farBuildings, H, 0, 0.35);
-
-      /* MID buildings */
-      drawBuildings(midBuildings, H, 0, 0.75);
-
-      /* Ground ambient glow */
-      const gg = ctx.createLinearGradient(0, H * 0.72, 0, H);
-      gg.addColorStop(0, 'rgba(60,10,120,0)');
-      gg.addColorStop(0.45,'rgba(90,20,160,0.12)');
-      gg.addColorStop(1,  'rgba(50,5,100,0.30)');
-      ctx.fillStyle = gg;
-      ctx.fillRect(0, H * 0.72, W, H * 0.28);
-
-      /* NEAR buildings */
-      drawBuildings(nearBuildings, H, 0, 1.2);
-
-      /* Foreground neon ground strip */
-      const gs = ctx.createLinearGradient(0, H - 2, 0, H + 10);
-      gs.addColorStop(0, 'rgba(160,60,255,0.18)');
-      gs.addColorStop(1, 'transparent');
-      ctx.fillStyle = gs;
-      ctx.fillRect(0, H - 3, W, 14);
-
-      /* Wind lines – sky = more visible, horizontal streaks */
-      windLines.forEach(l => {
+      /* Wind streaks */
+      winds.forEach(l => {
         l.x += l.spd;
         if (l.x > W + l.len) {
           l.x = -l.len * 1.2;
-          l.y = l.minY + Math.random() * (l.maxY - l.minY);
+          l.y = Math.random() * H;
         }
-        // Sky wind: almost horizontal with slight diagonal
-        const dy = l.isSky ? l.len * 0.03 : l.len * 0.08;
-        // Fade at tips using gradient
+        const dy = l.len * 0.02;
         const wg = ctx.createLinearGradient(l.x, l.y, l.x + l.len, l.y + dy);
-        wg.addColorStop(0, `rgba(210,185,255,0)`);
-        wg.addColorStop(0.15, `rgba(210,185,255,${l.alpha})`);
-        wg.addColorStop(0.85, `rgba(210,185,255,${l.alpha})`);
-        wg.addColorStop(1, `rgba(210,185,255,0)`);
+        wg.addColorStop(0, `rgba(255,255,255,0)`);
+        wg.addColorStop(0.15, `rgba(255,255,255,${l.alpha})`);
+        wg.addColorStop(0.85, `rgba(255,240,245,${l.alpha})`);
+        wg.addColorStop(1, `rgba(255,255,255,0)`);
         ctx.beginPath();
         ctx.moveTo(l.x, l.y);
         ctx.lineTo(l.x + l.len, l.y + dy);
@@ -567,13 +447,31 @@ function NeonCityBackground() {
         ctx.stroke();
       });
 
+      /* Sakura petals */
+      const windX = Math.sin(t * 0.5) * 0.8;
+      petals.forEach(p => {
+        p.x += p.driftSpd + windX;
+        p.y += p.fallSpd;
+        p.x += Math.sin(t * p.wobbleSpd + p.phase) * 0.5;
+        p.rotation += p.rotSpd;
+
+        if (p.y > H + 20) {
+          p.y = -20;
+          p.x = Math.random() * W * 1.2 - W * 0.1;
+        }
+        if (p.x > W + 30) {
+          p.x = -20;
+          p.y = Math.random() * H * 0.5;
+        }
+
+        const wobbleX = Math.sin(t * p.wobbleSpd + p.phase) * p.wobbleAmp * 0.02;
+        drawPetal(p.x + wobbleX, p.y, p.size, p.rotation, p.color, p.opacity, p.scaleY);
+      });
+
       animId = requestAnimationFrame(draw);
     };
 
     draw();
-
-    const onScroll = () => { scrollY = window.scrollY; };
-    window.addEventListener('scroll', onScroll, { passive: true });
 
     const onResize = () => {
       W = canvas.width = window.innerWidth;
@@ -583,7 +481,6 @@ function NeonCityBackground() {
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
   }, []);
@@ -646,7 +543,7 @@ export default function App() {
 
   return (
     <div className="page">
-      <NeonCityBackground />
+      <SakuraBackground />
       <AudioControl engineRef={engineRef} />
 
       <section className="hero">

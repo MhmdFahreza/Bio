@@ -21,15 +21,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { width: 100%; min-height: 100vh; }
 body {
-  /* Dark fallback – canvas renders on top of this */
-  background: #05021a;
+  /* Sakura fallback – canvas renders on top of this */
+  background: #e8d5e0;
   font-family: 'Quicksand', 'DM Sans', sans-serif;
   color: var(--text-dark);
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* ── Neon City Canvas Background ── */
+/* ── Sakura Canvas Background ── */
 .neon-city-canvas {
   position: fixed;
   inset: 0;
@@ -314,8 +314,8 @@ body {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #10062a; }
-::-webkit-scrollbar-thumb { background: #7a3aad; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #fce4ec; }
+::-webkit-scrollbar-thumb { background: #f497a5; border-radius: 3px; }
 
 /* ── Responsive ── */
 @media (min-width: 480px) {
