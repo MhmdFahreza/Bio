@@ -102,7 +102,7 @@ const WAIcon = () => (
 const PROFILE = {
   name: "Muhammad Fahreza",
   bio: "Web Programmer",
-  avatar: "/src/assets/fotome.jpg",
+  avatar: "/fotome.jpg",
 };
 
 const LINKS = [
@@ -2124,7 +2124,7 @@ export default function App() {
     title: "Muhammad Fahreza",
     description:
       "Personal link Bio Profile Muhammad Fahreza. Temukan semua tautan penting: LinkedIn, GitHub, portofolio, musik, donasi, dan layanan pembuatan website.",
-    ogImage: "/src/assets/fotome.jpg",
+    ogImage: "/fotome.jpg",
   });
 
   useEffect(() => {
