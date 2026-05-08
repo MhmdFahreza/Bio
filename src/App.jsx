@@ -1,12 +1,55 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, createContext, useContext, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/* ====================== MOTION CONTEXT ====================== */
+const MotionContext = createContext(true); // default: motion allowed
+
+const useReducedMotion = () => {
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handle = () => setReducedMotion(mq.matches);
+    handle();
+    mq.addEventListener("change", handle);
+    return () => mq.removeEventListener("change", handle);
+  }, []);
+  return reducedMotion;
+};
+
+/* ====================== SEO HOOK ====================== */
+const useSEO = ({ title, description, ogImage }) => {
+  useEffect(() => {
+    document.title = title || "Muhammad Fahreza";
+
+    const setMeta = (name, content, property) => {
+      let element = document.querySelector(`meta[${property ? 'property' : 'name'}="${property || name}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        if (property) element.setAttribute("property", property);
+        else element.setAttribute("name", name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+
+    if (description) setMeta("description", description);
+    if (ogImage) setMeta("og:image", ogImage, true);
+    setMeta("og:title", title, true);
+    setMeta("og:description", description, true);
+    setMeta("og:type", "website", true);
+    setMeta("twitter:card", "summary_large_image", false);
+    setMeta("twitter:title", title, false);
+    setMeta("twitter:description", description, false);
+    if (ogImage) setMeta("twitter:image", ogImage, false);
+  }, [title, description, ogImage]);
+};
 
 /* ====================== ICONS ====================== */
 const LinkedInIcon = () => (
@@ -189,27 +232,72 @@ const SOCIALS = [
   },
 ];
 
+/* ====================== PRELOADER ====================== */
+function Preloader({ onFinish }) {
+  const [progress, setProgress] = useState(0);
+  const logoRef = useRef(null);
+  const ringRef = useRef(null);
+
+  useEffect(() => {
+    // Simulasi loading & animasi
+    const tl = gsap.timeline();
+    tl.from(logoRef.current, { opacity: 0, scale: 0.6, duration: 0.5, ease: "back.out(1.5)" })
+      .to(ringRef.current, { rotation: 360, duration: 1.5, ease: "none", repeat: -1 })
+      .to({}, { duration: 0.3 });
+
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        const next = prev + Math.floor(Math.random() * 8 + 3);
+        return next >= 100 ? 100 : next;
+      });
+    }, 120);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (progress === 100) {
+      setTimeout(onFinish, 600);
+    }
+  }, [progress, onFinish]);
+
+  return (
+    <div className="preloader-overlay">
+      <div className="preloader-content">
+        <div ref={logoRef} className="preloader-logo">
+          <div ref={ringRef} className="preloader-ring">
+            <div className="avatar-ring" />
+          </div>
+          <span className="preloader-icon">🌸</span>
+        </div>
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${progress}%` }} />
+        </div>
+        <p className="preloader-text">Memuat...</p>
+      </div>
+    </div>
+  );
+}
+
 /* ====================== 1. CUSTOM CURSOR ====================== */
 function CustomCursor() {
   const dotRef    = useRef(null);
   const glowRef   = useRef(null);
   const trailRefs = useRef([]);
   const TRAIL_N   = 7;
+  const reducedMotion = useContext(MotionContext);
 
   useEffect(() => {
-    const isTouch = !window.matchMedia("(hover: hover)").matches;
+    const isTouch = !window.matchMedia("(hover: hover)").matches || reducedMotion;
     if (isTouch) return;
 
-    // Set initial transform origin to top-left so x/y control position
     gsap.set([dotRef.current, glowRef.current], { xPercent: -50, yPercent: -50 });
     gsap.set(trailRefs.current, { xPercent: -50, yPercent: -50 });
 
     const onMove = (e) => {
       const { clientX: x, clientY: y } = e;
-
       gsap.to(dotRef.current, { x, y, duration: 0.05, ease: "none" });
       gsap.to(glowRef.current, { x, y, duration: 0.22, ease: "power3.out" });
-
       trailRefs.current.forEach((trail, i) => {
         if (!trail) return;
         gsap.to(trail, {
@@ -239,7 +327,9 @@ function CustomCursor() {
     return () => {
       document.removeEventListener("mousemove", onMove);
     };
-  }, []);
+  }, [reducedMotion]);
+
+  if (reducedMotion) return null;
 
   return (
     <div className="cursor-root" aria-hidden="true">
@@ -261,8 +351,13 @@ function CustomCursor() {
 function PageTransition() {
   const overlayRef = useRef(null);
   const textRef    = useRef(null);
+  const reducedMotion = useContext(MotionContext);
 
   useEffect(() => {
+    if (reducedMotion) {
+      gsap.set(overlayRef.current, { yPercent: -100 });
+      return;
+    }
     const tl = gsap.timeline();
     tl.to(textRef.current, {
       opacity: 0,
@@ -275,7 +370,7 @@ function PageTransition() {
       duration: 1.0,
       ease: "expo.inOut",
     }, "-=0.1");
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <div ref={overlayRef} className="page-transition">
@@ -290,9 +385,14 @@ function PageTransition() {
 /* ====================== 3. SPLIT TEXT REVEAL ====================== */
 function SplitTextReveal({ text, className }) {
   const containerRef = useRef(null);
+  const reducedMotion = useContext(MotionContext);
 
   useEffect(() => {
     const chars = containerRef.current.querySelectorAll(".char");
+    if (reducedMotion) {
+      gsap.set(chars, { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" });
+      return;
+    }
     gsap.fromTo(
       chars,
       { opacity: 0, y: 36, rotateX: -70, filter: "blur(6px)" },
@@ -304,10 +404,10 @@ function SplitTextReveal({ text, className }) {
         duration: 0.65,
         stagger: 0.032,
         ease: "back.out(1.5)",
-        delay: 1.2, // after page transition
+        delay: 1.2,
       }
     );
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <h1 ref={containerRef} className={`${className} name-split`}>
@@ -324,9 +424,10 @@ function SplitTextReveal({ text, className }) {
 function MagneticBtn({ children, strength = 0.38, className = "" }) {
   const wrapRef  = useRef(null);
   const innerRef = useRef(null);
+  const reducedMotion = useContext(MotionContext);
 
   useEffect(() => {
-    const isTouch = !window.matchMedia("(hover: hover)").matches;
+    const isTouch = !window.matchMedia("(hover: hover)").matches || reducedMotion;
     if (isTouch) return;
 
     const wrap  = wrapRef.current;
@@ -360,7 +461,7 @@ function MagneticBtn({ children, strength = 0.38, className = "" }) {
       wrap.removeEventListener("mousemove", onMove);
       wrap.removeEventListener("mouseleave", onLeave);
     };
-  }, [strength]);
+  }, [strength, reducedMotion]);
 
   return (
     <div ref={wrapRef} className={`magnetic-wrap ${className}`}>
@@ -373,9 +474,10 @@ function MagneticBtn({ children, strength = 0.38, className = "" }) {
 function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   const previewRef = useRef(null);
   const hasPreview = !!previewBg;
+  const reducedMotion = useContext(MotionContext);
 
   const onEnter = () => {
-    if (!hasPreview || !previewRef.current) return;
+    if (!hasPreview || !previewRef.current || reducedMotion) return;
     gsap.killTweensOf(previewRef.current);
     gsap.fromTo(
       previewRef.current,
@@ -385,7 +487,7 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   };
 
   const onLeave = () => {
-    if (!hasPreview || !previewRef.current) return;
+    if (!hasPreview || !previewRef.current || reducedMotion) return;
     gsap.killTweensOf(previewRef.current);
     gsap.to(previewRef.current, {
       opacity: 0, y: 8, scale: 0.94,
@@ -402,7 +504,7 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
       <a
         href={href}
         className="link-btn"
-        style={{ animationDelay: `${0.3 + index * 0.08}s` }}
+        style={{ animationDelay: `${reducedMotion ? 0 : 0.3 + index * 0.08}s` }}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -428,7 +530,7 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   );
 }
 
-/* ====================== SAKURA SOUND ENGINE (Web Audio API) ====================== */
+/* ====================== SAKURA SOUND ENGINE ====================== */
 class SakuraSoundEngine {
   constructor() {
     this.ctx = null;
@@ -715,14 +817,59 @@ function SectionLabel({ text }) {
   );
 }
 
+/* ====================== SWIPE DETECTION (MOBILE GESTURE) ====================== */
+function SwipeNotifier() {
+  const [message, setMessage] = useState(null);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    let startX = 0;
+    const handleTouchStart = (e) => {
+      startX = e.touches[0].clientX;
+    };
+    const handleTouchEnd = (e) => {
+      const diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) {
+        setMessage(diff > 0 ? 'Swiped right 👉' : 'Swiped left 👈');
+        setTimeout(() => setMessage(null), 2000);
+      }
+    };
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchend', handleTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
+
+  return (
+    <>
+      <div ref={cardRef} className="swipe-area" /> {/* invisible overlay for swipe */}
+      {message && <div className="swipe-notification">{message}</div>}
+    </>
+  );
+}
+
 /* ====================== APP ====================== */
 export default function App() {
   const engineRef  = useRef(null);
   const fogRef     = useRef(null);
   const cardRef    = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const reducedMotion = useReducedMotion();
 
-  /* ── 4. Lenis Smooth Scroll ── */
+  // SEO
+  useSEO({
+    title: "Muhammad Fahreza | Web Programmer",
+    description: "Personal linktree & portofolio Muhammad Fahreza. Temukan semua tautan penting: LinkedIn, GitHub, portofolio, musik, donasi, dan layanan pembuatan website.",
+    ogImage: "/src/assets/fotome.jpg"
+  });
+
+  /* ── Lenis Smooth Scroll ── */
   useEffect(() => {
+    if (reducedMotion) return;
     const lenis = new Lenis({
       duration: 1.3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -739,11 +886,11 @@ export default function App() {
       lenis.destroy();
       gsap.ticker.remove(tickerFn);
     };
-  }, []);
+  }, [reducedMotion]);
 
-  /* ── 6. Parallax Depth ── */
+  /* ── Parallax Depth ── */
   useEffect(() => {
-    // Card subtle upward float on scroll
+    if (reducedMotion) return;
     gsap.to(cardRef.current, {
       y: -30,
       ease: "none",
@@ -755,7 +902,6 @@ export default function App() {
       },
     });
 
-    // Corner glows parallax at different rates
     gsap.to(".corner-glow--tl", {
       y: -60, x: -30,
       ease: "none",
@@ -777,13 +923,12 @@ export default function App() {
       scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 },
     });
 
-    // Edge fog subtle parallax
     gsap.to(fogRef.current, {
       opacity: 0.4,
       ease: "none",
       scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true },
     });
-  }, []);
+  }, [reducedMotion]);
 
   /* ── Audio Engine ── */
   useEffect(() => {
@@ -807,88 +952,89 @@ export default function App() {
 
   let globalIndex = 0;
 
+  if (loading) {
+    return <Preloader onFinish={() => setLoading(false)} />;
+  }
+
   return (
-    <div className="page">
-      {/* 1. Custom Cursor */}
-      <CustomCursor />
+    <MotionContext.Provider value={reducedMotion}>
+      <div className="page">
+        <CustomCursor />
+        <PageTransition />
+        <SakuraBackground />
+        <div ref={fogRef} className="edge-fog" />
 
-      {/* 5. Page Transition */}
-      <PageTransition />
+        <div className="corner-glows">
+          <div className="corner-glow corner-glow--tl" />
+          <div className="corner-glow corner-glow--tr" />
+          <div className="corner-glow corner-glow--bl" />
+          <div className="corner-glow corner-glow--br" />
+          <div className="corner-glow corner-glow--ct" />
+        </div>
 
-      <SakuraBackground />
-      <div ref={fogRef} className="edge-fog" />
+        <AudioControl engineRef={engineRef} />
 
-      <div className="corner-glows">
-        <div className="corner-glow corner-glow--tl" />
-        <div className="corner-glow corner-glow--tr" />
-        <div className="corner-glow corner-glow--bl" />
-        <div className="corner-glow corner-glow--br" />
-        <div className="corner-glow corner-glow--ct" />
+        <section className="hero">
+          <main ref={cardRef} className="card">
+            <div className="avatar-wrap">
+              <div className="avatar-ring" />
+              <img src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" />
+              <div className="avatar-badge">🌸</div>
+            </div>
+
+            <div className="identity">
+              <SplitTextReveal text={PROFILE.name} className="name" />
+              <p className="bio">{PROFILE.bio}</p>
+            </div>
+
+            <SectionLabel text="My Bio" />
+            <nav className="links">
+              {LINKS.map((link) => (
+                <LinkButton key={link.id} {...link} index={globalIndex++} />
+              ))}
+            </nav>
+
+            <SectionLabel text="Music" />
+            <nav className="links">
+              {MUSIC_LINKS.map((link) => (
+                <LinkButton key={link.id} {...link} index={globalIndex++} />
+              ))}
+            </nav>
+
+            <SectionLabel text="Donation" />
+            <nav className="links">
+              {DONATION_LINKS.map((link) => (
+                <LinkButton key={link.id} {...link} index={globalIndex++} />
+              ))}
+            </nav>
+
+            <SectionLabel text="Services" />
+            <div className="links">
+              {SERVICE_LINKS.map((link) => (
+                <LinkButton key={link.id} {...link} index={globalIndex++} />
+              ))}
+            </div>
+
+            <div className="socials">
+              {SOCIALS.map((s) => (
+                <MagneticBtn key={s.name} strength={0.45}>
+                  <a
+                    href={s.href}
+                    className="social-btn"
+                    aria-label={s.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {s.icon}
+                  </a>
+                </MagneticBtn>
+              ))}
+            </div>
+
+            <SwipeNotifier />
+          </main>
+        </section>
       </div>
-
-      <AudioControl engineRef={engineRef} />
-
-      <section className="hero">
-        {/* 6. Parallax — card is the slow layer */}
-        <main ref={cardRef} className="card">
-          <div className="avatar-wrap">
-            <div className="avatar-ring" />
-            <img src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" />
-            <div className="avatar-badge">🌸</div>
-          </div>
-
-          <div className="identity">
-            {/* 3. Split Text Reveal */}
-            <SplitTextReveal text={PROFILE.name} className="name" />
-            <p className="bio">{PROFILE.bio}</p>
-          </div>
-
-          <SectionLabel text="My Bio" />
-          <nav className="links">
-            {LINKS.map((link) => (
-              <LinkButton key={link.id} {...link} index={globalIndex++} />
-            ))}
-          </nav>
-
-          <SectionLabel text="Music" />
-          <nav className="links">
-            {MUSIC_LINKS.map((link) => (
-              <LinkButton key={link.id} {...link} index={globalIndex++} />
-            ))}
-          </nav>
-
-          <SectionLabel text="Donation" />
-          <nav className="links">
-            {DONATION_LINKS.map((link) => (
-              <LinkButton key={link.id} {...link} index={globalIndex++} />
-            ))}
-          </nav>
-
-          <SectionLabel text="Services" />
-          <div className="links">
-            {SERVICE_LINKS.map((link) => (
-              <LinkButton key={link.id} {...link} index={globalIndex++} />
-            ))}
-          </div>
-
-          {/* 2. Magnetic Buttons — social icons */}
-          <div className="socials">
-            {SOCIALS.map((s) => (
-              <MagneticBtn key={s.name} strength={0.45}>
-                <a
-                  href={s.href}
-                  className="social-btn"
-                  aria-label={s.name}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {s.icon}
-                </a>
-              </MagneticBtn>
-            ))}
-          </div>
-        </main>
-      </section>
-    </div>
+    </MotionContext.Provider>
   );
 }

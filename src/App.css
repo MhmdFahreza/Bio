@@ -808,3 +808,77 @@ body {
   .page-transition { display: none; }
   .name-split .char { opacity: 1; transform: none; filter: none; }
 }
+
+/* Preloader */
+.preloader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: linear-gradient(160deg, #f8a0b4, #ffb7c5, #ffd1dc, #ffe0ea);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s;
+}
+.preloader-content {
+  text-align: center;
+  color: var(--text-dark);
+}
+.preloader-logo {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+}
+.preloader-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: conic-gradient(#ffb7c5, #fff, #f8a0b4, #fff, #ffb7c5);
+  animation: spin 2s linear infinite;
+}
+.preloader-icon {
+  font-size: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.progress-bar-container {
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--sakura-deep);
+  width: 0%;
+  transition: width 0.1s linear;
+}
+.preloader-text {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--sakura-deep);
+}
+
+/* Swipe notification */
+.swipe-notification {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  padding: 12px 24px;
+  border-radius: 30px;
+  box-shadow: 0 4px 16px rgba(200,80,120,0.25);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  color: var(--sakura-deep);
+  z-index: 200;
+  animation: fade-up 0.3s ease-out;
+}
