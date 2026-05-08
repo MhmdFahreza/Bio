@@ -114,6 +114,15 @@ const DONATION_LINKS = [
   },
 ];
 
+const SERVICE_LINKS = [
+  {
+    id: 10,
+    label: "Open Jasa Pembuatan Website",
+    icon: <PortfolioIcon />,
+    href: "https://wa.me/6283847882287?text=Halo%2C%20saya%20ingin%20tanya%20tentang%20jasa%20pembuatan%20website",
+  },
+];
+
 const SOCIALS = [
   {
     name: "TikTok",
@@ -865,6 +874,19 @@ export default function App() {
               <LinkButton key={link.id} {...link} index={globalIndex++} />
             ))}
           </nav>
+
+          <SectionLabel text="Services" />
+          <div className="links">
+            {SERVICE_LINKS.map((link) => (
+              <LinkButton
+                key={link.id}
+                label={link.label}
+                icon={link.icon}
+                href={link.href}
+                index={globalIndex++}
+              />
+            ))}
+          </div>
 
           <div className="socials">
             {SOCIALS.map((s) => (
