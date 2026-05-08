@@ -512,19 +512,6 @@ function SakuraBackground() {
       });
     }
 
-    /* ── CLOUDS ── */
-    const clouds = [];
-    for (let i = 0; i < 6; i++) {
-      clouds.push({
-        x: Math.random() * W,
-        y: H * 0.05 + Math.random() * H * 0.3,
-        rx: 80 + Math.random() * 120,
-        ry: 25 + Math.random() * 35,
-        spd: 0.08 + Math.random() * 0.15,
-        alpha: 0.25 + Math.random() * 0.25,
-      });
-    }
-
     /* ── Draw single petal shape ── */
     const drawPetal = (x, y, size, rotation, color, opacity, scaleY) => {
       ctx.save();
@@ -589,20 +576,6 @@ function SakuraBackground() {
       g2.addColorStop(1, 'transparent');
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, W, H);
-
-      /* Clouds */
-      clouds.forEach(c => {
-        c.x += c.spd;
-        if (c.x - c.rx * 2.5 > W) c.x = -c.rx * 2.5;
-        const cg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.rx * 2);
-        cg.addColorStop(0, `rgba(255,255,255,${c.alpha})`);
-        cg.addColorStop(0.5, `rgba(255,240,245,${c.alpha * 0.6})`);
-        cg.addColorStop(1, 'transparent');
-        ctx.fillStyle = cg;
-        ctx.beginPath();
-        ctx.ellipse(c.x, c.y, c.rx * 2, c.ry * 1.6, 0, 0, Math.PI * 2);
-        ctx.fill();
-      });
 
       /* Wind streaks */
       winds.forEach(l => {
