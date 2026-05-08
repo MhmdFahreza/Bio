@@ -1627,14 +1627,14 @@ class SakuraSoundEngine {
     osc3.frequency.value = freq * 3.01;
     const cG = this.ctx.createGain();
     const decay = 2.5 + Math.random() * 2;
-    const peak = 0.1 + Math.random() * 0.05; // ✅ Naik dari 0.06+0.04
+    const peak = 0.1 + Math.random() * 0.05;
     cG.gain.setValueAtTime(0, now);
     cG.gain.linearRampToValueAtTime(peak, now + 0.005);
     cG.gain.exponentialRampToValueAtTime(0.0001, now + decay);
     const oG = this.ctx.createGain();
-    oG.gain.value = 0.4; // ✅ Naik dari 0.3
+    oG.gain.value = 0.4;
     const tG = this.ctx.createGain();
-    tG.gain.value = 0.12; // ✅ Naik dari 0.08
+    tG.gain.value = 0.12;
     osc1.connect(cG);
     osc2.connect(oG);
     oG.connect(cG);
@@ -1699,7 +1699,7 @@ class SakuraSoundEngine {
     osc.frequency.linearRampToValueAtTime(bf * 1.15, now + 0.18);
     const bG = this.ctx.createGain();
     bG.gain.setValueAtTime(0, now);
-    bG.gain.linearRampToValueAtTime(0.035, now + 0.01); // ✅ Naik dari 0.02
+    bG.gain.linearRampToValueAtTime(0.035, now + 0.01);
     bG.gain.linearRampToValueAtTime(0.025, now + 0.1);
     bG.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
     osc.connect(bG);
@@ -1808,7 +1808,7 @@ function AudioControl({ engineRef }) {
   const [muted, setMuted] = useState(
     () => localStorage.getItem("sakuraMuted") === "true",
   );
-  const storedVol = useRef(0.35); // ✅ Sesuai default engine
+  const storedVol = useRef(0.35);
 
   const toggleMute = () => {
     const e = engineRef.current;
@@ -2108,6 +2108,45 @@ function SecretSection({ onClose }) {
   );
 }
 
+// ── Pop‑up untuk mengaktifkan suara ──
+function SoundEnablePrompt({ engineRef, onClose }) {
+  const overlayRef = useRef(null);
+  useEffect(() => {
+    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+  }, []);
+
+  const enableSound = async () => {
+    const engine = engineRef.current;
+    if (engine && engine.ctx && engine.ctx.state === "suspended") {
+      await engine.ctx.resume();
+    }
+    if (engine && !engine.playing) {
+      engine.play();
+    }
+    onClose();
+  };
+
+  return (
+    <div ref={overlayRef} className="sound-prompt-overlay">
+      <div className="sound-prompt-card">
+        <div className="sound-prompt-icon">🎵🌸</div>
+        <h3>Music & Ambience</h3>
+        <p>
+          We have a beautiful Sakura soundscape ready for you.
+          <br />
+          Tap the button to enable music and make the experience bloom!
+        </p>
+        <button className="sound-prompt-btn" onClick={enableSound}>
+          🌸 Play Music 🌸
+        </button>
+        <button className="sound-prompt-skip" onClick={onClose}>
+          Skip for now
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const engineRef = useRef(null);
   const fogRef = useRef(null);
@@ -2115,6 +2154,7 @@ export default function App() {
   const avatarRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [konamiActive, setKonamiActive] = useState(false);
+  const [showSoundPrompt, setShowSoundPrompt] = useState(false);
   const reducedMotion = useReducedMotion();
 
   useKonamiCode(() => setKonamiActive(true));
@@ -2128,7 +2168,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (reducedMotion || loading) return; // wait until loading is done and no reduced motion
+    if (reducedMotion || loading) return;
     const lenis = new Lenis({
       duration: 1.3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -2215,25 +2255,25 @@ export default function App() {
   }, [loading, reducedMotion]);
 
   useEffect(() => {
-    if (loading) return;                
+    if (loading) return;
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
 
     const wasMuted = localStorage.getItem("sakuraMuted") === "true";
-    if (wasMuted) engine.setVolume(0);
+    // coba mainkan mesin
     engine.play();
 
-    const resume = () => {
-      if (engine.ctx && engine.ctx.state === "suspended") engine.play();
-      document.removeEventListener("click", resume);
-      document.removeEventListener("touchstart", resume);
-    };
-    if (engine.ctx && engine.ctx.state === "suspended") {
-      document.addEventListener("click", resume);
-      document.addEventListener("touchstart", resume);
-    }
+    // beri waktu sebentar untuk memeriksa apakah context masih suspended
+    const checkTimer = setTimeout(() => {
+      if (engine.ctx && engine.ctx.state === "suspended") {
+        setShowSoundPrompt(true);
+        // jangan mainkan suara sebelum interaksi pengguna
+        engine.pause(); // matikan agar tidak berbunyi tiba‑tiba setelah resume
+      }
+    }, 500);
 
     return () => {
+      clearTimeout(checkTimer);
       engine.destroy();
     };
   }, [loading]);
@@ -2297,6 +2337,12 @@ export default function App() {
           </main>
         </section>
         {konamiActive && <SecretSection onClose={() => setKonamiActive(false)} />}
+        {showSoundPrompt && (
+          <SoundEnablePrompt
+            engineRef={engineRef}
+            onClose={() => setShowSoundPrompt(false)}
+          />
+        )}
       </div>
     </MotionContext.Provider>
   );
