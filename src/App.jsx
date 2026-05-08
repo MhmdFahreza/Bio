@@ -1013,7 +1013,7 @@ function AudioControl({ engineRef }) {
 
   const toggleMute = () => {
     const e = engineRef.current;
-    if (!e) return;
+    if (!e) return; // engine belum siap
     if (muted) { e.setVolume(storedVol.current); setMuted(false); localStorage.setItem("sakuraMuted","false"); }
     else { storedVol.current=e._currentVolume; e.setVolume(0); setMuted(true); localStorage.setItem("sakuraMuted","true"); }
   };
@@ -1200,6 +1200,7 @@ export default function App() {
     ogImage: "/src/assets/fotome.jpg",
   });
 
+  // Lenis smooth scroll (non‑reduced motion only)
   useEffect(() => {
     if (reducedMotion) return;
     const lenis = new Lenis({ duration: 1.3, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
@@ -1210,6 +1211,7 @@ export default function App() {
     return () => { lenis.destroy(); gsap.ticker.remove(tickerFn); };
   }, [reducedMotion]);
 
+  // Scroll‑based parallax & glows
   useEffect(() => {
     if (reducedMotion) return;
     gsap.to(cardRef.current, { y: -30, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1.5 } });
@@ -1220,12 +1222,16 @@ export default function App() {
     gsap.to(fogRef.current, { opacity: 0.4, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true } });
   }, [reducedMotion]);
 
+  // Sound engine HANYA setelah preloader selesai
   useEffect(() => {
+    if (loading) return;                // masih loading → jangan buat engine
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
+
     const wasMuted = localStorage.getItem("sakuraMuted") === "true";
     if (wasMuted) engine.setVolume(0);
     engine.play();
+
     const resume = () => {
       if (engine.ctx && engine.ctx.state === "suspended") engine.play();
       document.removeEventListener("click", resume);
@@ -1235,8 +1241,11 @@ export default function App() {
       document.addEventListener("click", resume);
       document.addEventListener("touchstart", resume);
     }
-    return () => { engine.destroy(); };
-  }, []);
+
+    return () => {
+      engine.destroy();
+    };
+  }, [loading]);
 
   let globalIndex = 0;
 
