@@ -108,46 +108,56 @@ const SOCIALS = [
   },
 ];
 
-/* ====================== OCEAN SOUND ENGINE (Web Audio API) ====================== */
-class OceanSoundEngine {
+/* ====================== SAKURA SOUND ENGINE (Web Audio API) ====================== */
+/* Generates: gentle breeze + Japanese furin wind chimes + soft ambient pad */
+class SakuraSoundEngine {
   constructor() {
     this.ctx = null;
     this.masterGain = null;
     this.nodes = [];
     this.playing = false;
-    this._currentVolume = 0.1;
+    this._currentVolume = 0.12;
+    this._chimeInterval = null;
   }
 
-  _createPinkNoiseBuffer(seconds = 8) {
+  /* ── Gentle breeze noise buffer ── */
+  _createBreezeBuffer(seconds = 10) {
     const sr = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
     const d = buf.getChannelData(0);
-    let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
     for (let i = 0; i < d.length; i++) {
       const wh = Math.random() * 2 - 1;
-      b0 = 0.99886*b0 + wh*0.0555179;
-      b1 = 0.99332*b1 + wh*0.0750759;
-      b2 = 0.96900*b2 + wh*0.1538520;
-      b3 = 0.86650*b3 + wh*0.3104856;
-      b4 = 0.55000*b4 + wh*0.5329522;
-      b5 = -0.7616*b5 - wh*0.0168980;
-      d[i] = (b0+b1+b2+b3+b4+b5+b6+wh*0.5362) * 0.11;
+      b0 = 0.99886 * b0 + wh * 0.0555179;
+      b1 = 0.99332 * b1 + wh * 0.0750759;
+      b2 = 0.96900 * b2 + wh * 0.1538520;
+      b3 = 0.86650 * b3 + wh * 0.3104856;
+      b4 = 0.55000 * b4 + wh * 0.5329522;
+      b5 = -0.7616 * b5 - wh * 0.0168980;
+      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + wh * 0.5362) * 0.06;
       b6 = wh * 0.115926;
     }
     return buf;
   }
 
-  _addWaveLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
+  /* ── Soft breeze layer (high-pass filtered, gentle sway) ── */
+  _addBreezeLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
     const src = this.ctx.createBufferSource();
-    src.buffer = this._createPinkNoiseBuffer(8);
+    src.buffer = this._createBreezeBuffer(10);
     src.loop = true;
+    // High-pass to keep it airy, not rumbly
+    const hpf = this.ctx.createBiquadFilter();
+    hpf.type = 'highpass';
+    hpf.frequency.value = 400;
+    hpf.Q.value = 0.5;
     const bpf = this.ctx.createBiquadFilter();
     bpf.type = 'bandpass';
     bpf.frequency.value = filterFreq;
     bpf.Q.value = filterQ;
     const lpf = this.ctx.createBiquadFilter();
     lpf.type = 'lowpass';
-    lpf.frequency.value = filterFreq * 3;
+    lpf.frequency.value = filterFreq * 2.5;
+    // Gentle LFO for swaying wind
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
     lfo.frequency.value = lfoFreq;
@@ -155,16 +165,176 @@ class OceanSoundEngine {
     lfoGainNode.gain.value = lfoDepth;
     const layerGain = this.ctx.createGain();
     layerGain.gain.value = gain;
-    src.connect(bpf);
+    src.connect(hpf);
+    hpf.connect(bpf);
     bpf.connect(lpf);
     lpf.connect(layerGain);
     lfo.connect(lfoGainNode);
     lfoGainNode.connect(layerGain.gain);
     layerGain.connect(this.masterGain);
-    const offset = Math.random() * 8;
     lfo.start(0);
-    src.start(0, offset);
+    src.start(0, Math.random() * 10);
     this.nodes.push({ src, lfo });
+  }
+
+  /* ── Ambient pad (soft sustained tones) ── */
+  _addAmbientPad() {
+    // Play two detuned sine waves for a warm, dreamy pad
+    const padFreqs = [220, 330]; // A3 & E4 — gentle fifth
+    padFreqs.forEach(freq => {
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      // Slight detuning for shimmer
+      osc.detune.value = (Math.random() - 0.5) * 8;
+      const padGain = this.ctx.createGain();
+      padGain.gain.value = 0.025;
+      // Very slow tremolo for life
+      const trem = this.ctx.createOscillator();
+      trem.type = 'sine';
+      trem.frequency.value = 0.08 + Math.random() * 0.06;
+      const tremGain = this.ctx.createGain();
+      tremGain.gain.value = 0.012;
+      osc.connect(padGain);
+      trem.connect(tremGain);
+      tremGain.connect(padGain.gain);
+      padGain.connect(this.masterGain);
+      osc.start(0);
+      trem.start(0);
+      this.nodes.push({ src: osc, lfo: trem });
+    });
+  }
+
+  /* ── Japanese furin wind chime (single strike) ── */
+  _playChime() {
+    if (!this.ctx || !this.playing) return;
+    // Japanese pentatonic scale (In Sen): frequencies in higher octave for bell-like quality
+    const CHIME_NOTES = [
+      523.25,  // C5
+      587.33,  // D5
+      659.25,  // E5
+      783.99,  // G5
+      880.00,  // A5
+      1046.50, // C6
+      1174.66, // D6
+      1318.51, // E6
+    ];
+    const freq = CHIME_NOTES[Math.floor(Math.random() * CHIME_NOTES.length)];
+    const now = this.ctx.currentTime;
+
+    // Main tone (sine for purity)
+    const osc1 = this.ctx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.value = freq;
+
+    // Harmonic overtone (triangle, octave up, softer)
+    const osc2 = this.ctx.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.value = freq * 2;
+
+    // Third partial for shimmer
+    const osc3 = this.ctx.createOscillator();
+    osc3.type = 'sine';
+    osc3.frequency.value = freq * 3.01;
+
+    const chimeGain = this.ctx.createGain();
+    const attackTime = 0.005;
+    const decayTime = 2.5 + Math.random() * 2.0;
+    const peakVol = 0.06 + Math.random() * 0.04;
+
+    chimeGain.gain.setValueAtTime(0, now);
+    chimeGain.gain.linearRampToValueAtTime(peakVol, now + attackTime);
+    chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + decayTime);
+
+    const overtoneGain = this.ctx.createGain();
+    overtoneGain.gain.value = 0.3;
+
+    const thirdGain = this.ctx.createGain();
+    thirdGain.gain.value = 0.08;
+
+    osc1.connect(chimeGain);
+    osc2.connect(overtoneGain);
+    overtoneGain.connect(chimeGain);
+    osc3.connect(thirdGain);
+    thirdGain.connect(chimeGain);
+    chimeGain.connect(this.masterGain);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc3.start(now);
+    osc1.stop(now + decayTime + 0.1);
+    osc2.stop(now + decayTime + 0.1);
+    osc3.stop(now + decayTime + 0.1);
+  }
+
+  /* ── Start random chime scheduling ── */
+  _startChimeLoop() {
+    const scheduleNext = () => {
+      if (!this.playing) return;
+      // Random interval: 1.5s to 5s between chimes, sometimes clusters
+      const delay = 1500 + Math.random() * 3500;
+      this._chimeInterval = setTimeout(() => {
+        this._playChime();
+        // Occasionally play a quick second chime for a cluster effect
+        if (Math.random() < 0.3) {
+          setTimeout(() => this._playChime(), 200 + Math.random() * 400);
+        }
+        scheduleNext();
+      }, delay);
+    };
+    // First chime after a short delay
+    setTimeout(() => {
+      this._playChime();
+      scheduleNext();
+    }, 800);
+  }
+
+  _stopChimeLoop() {
+    if (this._chimeInterval) {
+      clearTimeout(this._chimeInterval);
+      this._chimeInterval = null;
+    }
+  }
+
+  /* ── Soft bird-like chirps (occasional) ── */
+  _startBirdLoop() {
+    const scheduleBird = () => {
+      if (!this.playing) return;
+      const delay = 4000 + Math.random() * 8000;
+      this._birdTimeout = setTimeout(() => {
+        this._playBirdChirp();
+        scheduleBird();
+      }, delay);
+    };
+    setTimeout(() => scheduleBird(), 3000);
+  }
+
+  _playBirdChirp() {
+    if (!this.ctx || !this.playing) return;
+    const now = this.ctx.currentTime;
+    const baseFreq = 1800 + Math.random() * 1200;
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.linearRampToValueAtTime(baseFreq * 1.3, now + 0.05);
+    osc.frequency.linearRampToValueAtTime(baseFreq * 0.9, now + 0.12);
+    osc.frequency.linearRampToValueAtTime(baseFreq * 1.15, now + 0.18);
+    const birdGain = this.ctx.createGain();
+    birdGain.gain.setValueAtTime(0, now);
+    birdGain.gain.linearRampToValueAtTime(0.02, now + 0.01);
+    birdGain.gain.linearRampToValueAtTime(0.015, now + 0.1);
+    birdGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    osc.connect(birdGain);
+    birdGain.connect(this.masterGain);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+
+  _stopBirdLoop() {
+    if (this._birdTimeout) {
+      clearTimeout(this._birdTimeout);
+      this._birdTimeout = null;
+    }
   }
 
   init() {
@@ -173,10 +343,12 @@ class OceanSoundEngine {
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.value = 0;
     this.masterGain.connect(this.ctx.destination);
-    this._addWaveLayer({ lfoFreq: 0.10, filterFreq: 200, filterQ: 0.6, gain: 0.55, lfoDepth: 0.35 });
-    this._addWaveLayer({ lfoFreq: 0.22, filterFreq: 600, filterQ: 0.9, gain: 0.40, lfoDepth: 0.30 });
-    this._addWaveLayer({ lfoFreq: 0.38, filterFreq: 1200, filterQ: 1.2, gain: 0.20, lfoDepth: 0.15 });
-    this._addWaveLayer({ lfoFreq: 0.05, filterFreq: 3000, filterQ: 0.4, gain: 0.12, lfoDepth: 0.08 });
+    // Light airy breeze layers
+    this._addBreezeLayer({ lfoFreq: 0.06, filterFreq: 800,  filterQ: 0.4, gain: 0.35, lfoDepth: 0.18 });
+    this._addBreezeLayer({ lfoFreq: 0.12, filterFreq: 1800, filterQ: 0.6, gain: 0.20, lfoDepth: 0.12 });
+    this._addBreezeLayer({ lfoFreq: 0.03, filterFreq: 3500, filterQ: 0.3, gain: 0.10, lfoDepth: 0.06 });
+    // Warm ambient pad
+    this._addAmbientPad();
     this.setVolume(this._currentVolume, 0);
   }
 
@@ -186,8 +358,10 @@ class OceanSoundEngine {
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + 2.0);
+    this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + 2.5);
     this.playing = true;
+    this._startChimeLoop();
+    this._startBirdLoop();
   }
 
   pause() {
@@ -195,8 +369,10 @@ class OceanSoundEngine {
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(0, now + 0.8);
+    this.masterGain.gain.linearRampToValueAtTime(0, now + 1.0);
     this.playing = false;
+    this._stopChimeLoop();
+    this._stopBirdLoop();
   }
 
   setVolume(val, ramp = 0.3) {
@@ -212,6 +388,8 @@ class OceanSoundEngine {
   isPlaying() { return this.playing; }
 
   destroy() {
+    this._stopChimeLoop();
+    this._stopBirdLoop();
     this.nodes.forEach(({ src, lfo }) => {
       try { src.stop(); } catch (_) {}
       try { lfo.stop(); } catch (_) {}
@@ -223,7 +401,7 @@ class OceanSoundEngine {
 /* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
   const [muted, setMuted] = useState(() => {
-    return localStorage.getItem('oceanMuted') === 'true';
+    return localStorage.getItem('sakuraMuted') === 'true';
   });
   const storedVolumeRef = useRef(0.1);
 
@@ -233,12 +411,12 @@ function AudioControl({ engineRef }) {
     if (muted) {
       engine.setVolume(storedVolumeRef.current);
       setMuted(false);
-      localStorage.setItem('oceanMuted', 'false');
+      localStorage.setItem('sakuraMuted', 'false');
     } else {
       storedVolumeRef.current = engine._currentVolume;
       engine.setVolume(0);
       setMuted(true);
-      localStorage.setItem('oceanMuted', 'true');
+      localStorage.setItem('sakuraMuted', 'true');
     }
   };
 
@@ -247,7 +425,7 @@ function AudioControl({ engineRef }) {
       <button
         className={`audio-btn ${!muted ? 'audio-btn--playing' : ''}`}
         onClick={toggleMute}
-        aria-label={muted ? 'Unmute suara ombak' : 'Mute suara ombak'}
+        aria-label={muted ? 'Nyalakan suara sakura' : 'Matikan suara sakura'}
       >
         {muted ? (
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
@@ -520,9 +698,9 @@ export default function App() {
   const engineRef = useRef(null);
 
   useEffect(() => {
-    const engine = new OceanSoundEngine();
+    const engine = new SakuraSoundEngine();
     engineRef.current = engine;
-    const wasMuted = localStorage.getItem('oceanMuted') === 'true';
+    const wasMuted = localStorage.getItem('sakuraMuted') === 'true';
     if (wasMuted) engine.setVolume(0);
     engine.play();
 
