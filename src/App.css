@@ -715,3 +715,26 @@ body {
   .audio-wave span { animation: none; }
   .badge-pulse { animation: none; }
 }
+
+/* ── Pink Edge Fog / Vignette ── */
+.edge-fog {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* Atas */
+    linear-gradient(to bottom,  rgba(255, 150, 185, 0.45) 0%, transparent 18%),
+    /* Bawah */
+    linear-gradient(to top,     rgba(255, 130, 175, 0.45) 0%, transparent 18%),
+    /* Kiri */
+    linear-gradient(to right,   rgba(255, 140, 180, 0.40) 0%, transparent 18%),
+    /* Kanan */
+    linear-gradient(to left,    rgba(255, 140, 180, 0.40) 0%, transparent 18%);
+  animation: fog-breathe 5s ease-in-out infinite;
+}
+
+@keyframes fog-breathe {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 1.0; }
+}

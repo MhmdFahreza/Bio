@@ -1,9 +1,9 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import './App.css';
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -46,33 +46,78 @@ const HeartIcon = () => (
 
 /* ====================== DATA ====================== */
 const PROFILE = {
-  name: 'Muhammad Fahreza',
-  bio: 'Web Programmer',
-  avatar: '/src/assets/fotome.jpg',
+  name: "Muhammad Fahreza",
+  bio: "Web Programmer",
+  avatar: "/src/assets/fotome.jpg",
 };
 
 const LINKS = [
-  { id: 1, label: 'LinkedIn',            icon: <LinkedInIcon />,  href: 'https://www.linkedin.com/in/muhammad-fahreza-a20975285' },
-  { id: 2, label: 'GitHub',              icon: <GitHubIcon />,    href: 'https://github.com/MhmdFahreza' },
-  { id: 3, label: 'My Portfolio Website',icon: <PortfolioIcon />, href: 'https://muhammadfahreza.vercel.app/' },
-  { id: 4, label: 'Discord Community',   icon: <DiscordIcon />,   href: 'https://discord.gg/UncurKFS' },
+  {
+    id: 1,
+    label: "LinkedIn",
+    icon: <LinkedInIcon />,
+    href: "https://www.linkedin.com/in/muhammad-fahreza-a20975285",
+  },
+  {
+    id: 2,
+    label: "GitHub",
+    icon: <GitHubIcon />,
+    href: "https://github.com/MhmdFahreza",
+  },
+  {
+    id: 3,
+    label: "My Portfolio Website",
+    icon: <PortfolioIcon />,
+    href: "https://muhammadfahreza.vercel.app/",
+  },
+  {
+    id: 4,
+    label: "Discord Community",
+    icon: <DiscordIcon />,
+    href: "https://discord.gg/UncurKFS",
+  },
 ];
 
 const MUSIC_LINKS = [
-  { id: 5, label: 'Spotify',       icon: <MusicNoteIcon />, href: 'https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30' },
-  { id: 6, label: 'YouTube Music', icon: <MusicNoteIcon />, href: 'https://music.youtube.com/playlist?list=PL9X21xjKqYoXnoUX4vl0EMhs0iQWEvE1k' },
+  {
+    id: 5,
+    label: "Spotify",
+    icon: <MusicNoteIcon />,
+    href: "https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30",
+  },
+  {
+    id: 6,
+    label: "YouTube Music",
+    icon: <MusicNoteIcon />,
+    href: "https://music.youtube.com/playlist?list=PL9X21xjKqYoXnoUX4vl0EMhs0iQWEvE1k",
+  },
 ];
 
 const DONATION_LINKS = [
-  { id: 7, label: 'Trakteer', icon: <HeartIcon />, href: 'https://trakteer.id/muhammad_fahreza19' },
-  { id: 8, label: 'Saweria',  icon: <HeartIcon />, href: 'https://saweria.co/FareekzYT' },
-  { id: 9, label: 'Tako',     icon: <HeartIcon />, href: 'https://tako.id/MuhammadFahreza' },
+  {
+    id: 7,
+    label: "Trakteer",
+    icon: <HeartIcon />,
+    href: "https://trakteer.id/muhammad_fahreza19",
+  },
+  {
+    id: 8,
+    label: "Saweria",
+    icon: <HeartIcon />,
+    href: "https://saweria.co/FareekzYT",
+  },
+  {
+    id: 9,
+    label: "Tako",
+    icon: <HeartIcon />,
+    href: "https://tako.id/MuhammadFahreza",
+  },
 ];
 
 const SOCIALS = [
   {
-    name: 'TikTok',
-    href: 'https://www.tiktok.com/@weiterszz',
+    name: "TikTok",
+    href: "https://www.tiktok.com/@weiterszz",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
         <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.75a8.27 8.27 0 004.84 1.55V6.87a4.85 4.85 0 01-1.07-.18z" />
@@ -80,8 +125,8 @@ const SOCIALS = [
     ),
   },
   {
-    name: 'YouTube',
-    href: 'https://www.youtube.com/@FareekzYT',
+    name: "YouTube",
+    href: "https://www.youtube.com/@FareekzYT",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
         <path d="M23.5 6.2s-.23-1.64-.95-2.36c-.9-.95-1.92-.96-2.38-1.01C17.1 2.6 12 2.6 12 2.6s-5.1 0-8.17.23c-.46.05-1.47.06-2.38 1.01C.73 4.56.5 6.2.5 6.2S.27 8.1.27 10v1.87c0 1.9.23 3.8.23 3.8s.23 1.64.95 2.36c.91.95 2.1.92 2.63 1.02C5.87 19.27 12 19.27 12 19.27s5.1 0 8.17-.23c.46-.05 1.47-.06 2.38-1.01.72-.72.95-2.36.95-2.36s.23-1.9.23-3.8V10c0-1.9-.23-3.8-.23-3.8zM9.73 14.59V8.66l6.44 2.97-6.44 2.96z" />
@@ -89,8 +134,8 @@ const SOCIALS = [
     ),
   },
   {
-    name: 'X',
-    href: 'https://x.com/Muhamma83709506',
+    name: "X",
+    href: "https://x.com/Muhamma83709506",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -98,8 +143,8 @@ const SOCIALS = [
     ),
   },
   {
-    name: 'Instagram',
-    href: 'https://www.instagram.com/imfhrz/',
+    name: "Instagram",
+    href: "https://www.instagram.com/imfhrz/",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
@@ -125,15 +170,21 @@ class SakuraSoundEngine {
     const sr = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
     const d = buf.getChannelData(0);
-    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    let b0 = 0,
+      b1 = 0,
+      b2 = 0,
+      b3 = 0,
+      b4 = 0,
+      b5 = 0,
+      b6 = 0;
     for (let i = 0; i < d.length; i++) {
       const wh = Math.random() * 2 - 1;
       b0 = 0.99886 * b0 + wh * 0.0555179;
       b1 = 0.99332 * b1 + wh * 0.0750759;
-      b2 = 0.96900 * b2 + wh * 0.1538520;
-      b3 = 0.86650 * b3 + wh * 0.3104856;
-      b4 = 0.55000 * b4 + wh * 0.5329522;
-      b5 = -0.7616 * b5 - wh * 0.0168980;
+      b2 = 0.969 * b2 + wh * 0.153852;
+      b3 = 0.8665 * b3 + wh * 0.3104856;
+      b4 = 0.55 * b4 + wh * 0.5329522;
+      b5 = -0.7616 * b5 - wh * 0.016898;
       d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + wh * 0.5362) * 0.06;
       b6 = wh * 0.115926;
     }
@@ -147,19 +198,19 @@ class SakuraSoundEngine {
     src.loop = true;
     // High-pass to keep it airy, not rumbly
     const hpf = this.ctx.createBiquadFilter();
-    hpf.type = 'highpass';
+    hpf.type = "highpass";
     hpf.frequency.value = 400;
     hpf.Q.value = 0.5;
     const bpf = this.ctx.createBiquadFilter();
-    bpf.type = 'bandpass';
+    bpf.type = "bandpass";
     bpf.frequency.value = filterFreq;
     bpf.Q.value = filterQ;
     const lpf = this.ctx.createBiquadFilter();
-    lpf.type = 'lowpass';
+    lpf.type = "lowpass";
     lpf.frequency.value = filterFreq * 2.5;
     // Gentle LFO for swaying wind
     const lfo = this.ctx.createOscillator();
-    lfo.type = 'sine';
+    lfo.type = "sine";
     lfo.frequency.value = lfoFreq;
     const lfoGainNode = this.ctx.createGain();
     lfoGainNode.gain.value = lfoDepth;
@@ -181,9 +232,9 @@ class SakuraSoundEngine {
   _addAmbientPad() {
     // Play two detuned sine waves for a warm, dreamy pad
     const padFreqs = [220, 330]; // A3 & E4 — gentle fifth
-    padFreqs.forEach(freq => {
+    padFreqs.forEach((freq) => {
       const osc = this.ctx.createOscillator();
-      osc.type = 'sine';
+      osc.type = "sine";
       osc.frequency.value = freq;
       // Slight detuning for shimmer
       osc.detune.value = (Math.random() - 0.5) * 8;
@@ -191,7 +242,7 @@ class SakuraSoundEngine {
       padGain.gain.value = 0.025;
       // Very slow tremolo for life
       const trem = this.ctx.createOscillator();
-      trem.type = 'sine';
+      trem.type = "sine";
       trem.frequency.value = 0.08 + Math.random() * 0.06;
       const tremGain = this.ctx.createGain();
       tremGain.gain.value = 0.012;
@@ -210,12 +261,12 @@ class SakuraSoundEngine {
     if (!this.ctx || !this.playing) return;
     // Japanese pentatonic scale (In Sen): frequencies in higher octave for bell-like quality
     const CHIME_NOTES = [
-      523.25,  // C5
-      587.33,  // D5
-      659.25,  // E5
-      783.99,  // G5
-      880.00,  // A5
-      1046.50, // C6
+      523.25, // C5
+      587.33, // D5
+      659.25, // E5
+      783.99, // G5
+      880.0, // A5
+      1046.5, // C6
       1174.66, // D6
       1318.51, // E6
     ];
@@ -224,17 +275,17 @@ class SakuraSoundEngine {
 
     // Main tone (sine for purity)
     const osc1 = this.ctx.createOscillator();
-    osc1.type = 'sine';
+    osc1.type = "sine";
     osc1.frequency.value = freq;
 
     // Harmonic overtone (triangle, octave up, softer)
     const osc2 = this.ctx.createOscillator();
-    osc2.type = 'triangle';
+    osc2.type = "triangle";
     osc2.frequency.value = freq * 2;
 
     // Third partial for shimmer
     const osc3 = this.ctx.createOscillator();
-    osc3.type = 'sine';
+    osc3.type = "sine";
     osc3.frequency.value = freq * 3.01;
 
     const chimeGain = this.ctx.createGain();
@@ -314,7 +365,7 @@ class SakuraSoundEngine {
     const now = this.ctx.currentTime;
     const baseFreq = 1800 + Math.random() * 1200;
     const osc = this.ctx.createOscillator();
-    osc.type = 'sine';
+    osc.type = "sine";
     osc.frequency.setValueAtTime(baseFreq, now);
     osc.frequency.linearRampToValueAtTime(baseFreq * 1.3, now + 0.05);
     osc.frequency.linearRampToValueAtTime(baseFreq * 0.9, now + 0.12);
@@ -344,9 +395,27 @@ class SakuraSoundEngine {
     this.masterGain.gain.value = 0;
     this.masterGain.connect(this.ctx.destination);
     // Light airy breeze layers
-    this._addBreezeLayer({ lfoFreq: 0.06, filterFreq: 800,  filterQ: 0.4, gain: 0.35, lfoDepth: 0.18 });
-    this._addBreezeLayer({ lfoFreq: 0.12, filterFreq: 1800, filterQ: 0.6, gain: 0.20, lfoDepth: 0.12 });
-    this._addBreezeLayer({ lfoFreq: 0.03, filterFreq: 3500, filterQ: 0.3, gain: 0.10, lfoDepth: 0.06 });
+    this._addBreezeLayer({
+      lfoFreq: 0.06,
+      filterFreq: 800,
+      filterQ: 0.4,
+      gain: 0.35,
+      lfoDepth: 0.18,
+    });
+    this._addBreezeLayer({
+      lfoFreq: 0.12,
+      filterFreq: 1800,
+      filterQ: 0.6,
+      gain: 0.2,
+      lfoDepth: 0.12,
+    });
+    this._addBreezeLayer({
+      lfoFreq: 0.03,
+      filterFreq: 3500,
+      filterQ: 0.3,
+      gain: 0.1,
+      lfoDepth: 0.06,
+    });
     // Warm ambient pad
     this._addAmbientPad();
     this.setVolume(this._currentVolume, 0);
@@ -354,11 +423,14 @@ class SakuraSoundEngine {
 
   play() {
     if (!this.ctx) this.init();
-    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.ctx.state === "suspended") this.ctx.resume();
     const now = this.ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + 2.5);
+    this.masterGain.gain.linearRampToValueAtTime(
+      this._currentVolume,
+      now + 2.5,
+    );
     this.playing = true;
     this._startChimeLoop();
     this._startBirdLoop();
@@ -381,18 +453,27 @@ class SakuraSoundEngine {
       const now = this.ctx.currentTime;
       this.masterGain.gain.cancelScheduledValues(now);
       this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-      this.masterGain.gain.linearRampToValueAtTime(this._currentVolume, now + ramp);
+      this.masterGain.gain.linearRampToValueAtTime(
+        this._currentVolume,
+        now + ramp,
+      );
     }
   }
 
-  isPlaying() { return this.playing; }
+  isPlaying() {
+    return this.playing;
+  }
 
   destroy() {
     this._stopChimeLoop();
     this._stopBirdLoop();
     this.nodes.forEach(({ src, lfo }) => {
-      try { src.stop(); } catch (_) {}
-      try { lfo.stop(); } catch (_) {}
+      try {
+        src.stop();
+      } catch (_) {}
+      try {
+        lfo.stop();
+      } catch (_) {}
     });
     if (this.ctx) this.ctx.close();
   }
@@ -401,7 +482,7 @@ class SakuraSoundEngine {
 /* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
   const [muted, setMuted] = useState(() => {
-    return localStorage.getItem('sakuraMuted') === 'true';
+    return localStorage.getItem("sakuraMuted") === "true";
   });
   const storedVolumeRef = useRef(0.1);
 
@@ -411,21 +492,21 @@ function AudioControl({ engineRef }) {
     if (muted) {
       engine.setVolume(storedVolumeRef.current);
       setMuted(false);
-      localStorage.setItem('sakuraMuted', 'false');
+      localStorage.setItem("sakuraMuted", "false");
     } else {
       storedVolumeRef.current = engine._currentVolume;
       engine.setVolume(0);
       setMuted(true);
-      localStorage.setItem('sakuraMuted', 'true');
+      localStorage.setItem("sakuraMuted", "true");
     }
   };
 
   return (
     <div className="audio-wrap">
       <button
-        className={`audio-btn ${!muted ? 'audio-btn--playing' : ''}`}
+        className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`}
         onClick={toggleMute}
-        aria-label={muted ? 'Nyalakan suara sakura' : 'Matikan suara sakura'}
+        aria-label={muted ? "Nyalakan suara sakura" : "Matikan suara sakura"}
       >
         {muted ? (
           <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
@@ -455,7 +536,7 @@ function SakuraBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
 
     let W = window.innerWidth;
     let H = window.innerHeight;
@@ -467,17 +548,22 @@ function SakuraBackground() {
 
     /* ── Sakura background image ── */
     const bgImg = new Image();
-    bgImg.src = '/sakura-bg.png';
+    bgImg.src = "/sakura-bg.png";
     let bgLoaded = false;
-    bgImg.onload = () => { bgLoaded = true; };
+    bgImg.onload = () => {
+      bgLoaded = true;
+    };
 
     /* ── SAKURA PETALS ── */
     const PETAL_COUNT = 55;
     const petals = [];
     const PETAL_COLORS = [
-      'rgba(255,183,197,0.85)', 'rgba(255,200,210,0.80)',
-      'rgba(255,160,180,0.75)', 'rgba(255,220,230,0.70)',
-      'rgba(248,140,170,0.80)', 'rgba(255,175,195,0.90)',
+      "rgba(255,183,197,0.85)",
+      "rgba(255,200,210,0.80)",
+      "rgba(255,160,180,0.75)",
+      "rgba(255,220,230,0.70)",
+      "rgba(248,140,170,0.80)",
+      "rgba(255,175,195,0.90)",
     ];
 
     for (let i = 0; i < PETAL_COUNT; i++) {
@@ -507,7 +593,7 @@ function SakuraBackground() {
         y: Math.random() * H,
         len: 60 + Math.random() * 160,
         spd: 2.0 + Math.random() * 3.5,
-        alpha: 0.04 + Math.random() * 0.10,
+        alpha: 0.04 + Math.random() * 0.1,
         w: 0.5 + Math.random() * 1.0,
       });
     }
@@ -521,11 +607,18 @@ function SakuraBackground() {
       ctx.globalAlpha = opacity;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.bezierCurveTo(size * 0.4, -size * 0.6, size, -size * 0.4, size * 0.5, 0);
+      ctx.bezierCurveTo(
+        size * 0.4,
+        -size * 0.6,
+        size,
+        -size * 0.4,
+        size * 0.5,
+        0,
+      );
       ctx.bezierCurveTo(size, size * 0.4, size * 0.4, size * 0.6, 0, 0);
       ctx.fillStyle = color;
       ctx.shadowBlur = 4;
-      ctx.shadowColor = 'rgba(255,183,197,0.3)';
+      ctx.shadowColor = "rgba(255,183,197,0.3)";
       ctx.fill();
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
@@ -539,11 +632,11 @@ function SakuraBackground() {
 
       /* Sky gradient */
       const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0,    '#87CEEB');
-      sky.addColorStop(0.25, '#a8dcf0');
-      sky.addColorStop(0.5,  '#c9e8ff');
-      sky.addColorStop(0.75, '#e8d5e0');
-      sky.addColorStop(1.0,  '#fce4ec');
+      sky.addColorStop(0, "#87CEEB");
+      sky.addColorStop(0.25, "#a8dcf0");
+      sky.addColorStop(0.5, "#c9e8ff");
+      sky.addColorStop(0.75, "#e8d5e0");
+      sky.addColorStop(1.0, "#fce4ec");
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
 
@@ -554,31 +647,49 @@ function SakuraBackground() {
         const canvasRatio = W / H;
         let dw, dh, dx, dy;
         if (canvasRatio > imgRatio) {
-          dw = W; dh = W / imgRatio;
-          dx = 0; dy = (H - dh) / 2;
+          dw = W;
+          dh = W / imgRatio;
+          dx = 0;
+          dy = (H - dh) / 2;
         } else {
-          dh = H; dw = H * imgRatio;
-          dy = 0; dx = (W - dw) / 2;
+          dh = H;
+          dw = H * imgRatio;
+          dy = 0;
+          dx = (W - dw) / 2;
         }
         ctx.drawImage(bgImg, dx, dy, dw, dh);
         ctx.globalAlpha = 1;
       }
 
       /* Soft pink/white radial glows */
-      const g1 = ctx.createRadialGradient(W * 0.2, H * 0.15, 0, W * 0.2, H * 0.15, W * 0.4);
-      g1.addColorStop(0, 'rgba(255,200,220,0.18)');
-      g1.addColorStop(1, 'transparent');
+      const g1 = ctx.createRadialGradient(
+        W * 0.2,
+        H * 0.15,
+        0,
+        W * 0.2,
+        H * 0.15,
+        W * 0.4,
+      );
+      g1.addColorStop(0, "rgba(255,200,220,0.18)");
+      g1.addColorStop(1, "transparent");
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, W, H);
 
-      const g2 = ctx.createRadialGradient(W * 0.85, H * 0.1, 0, W * 0.85, H * 0.1, W * 0.35);
-      g2.addColorStop(0, 'rgba(255,180,200,0.15)');
-      g2.addColorStop(1, 'transparent');
+      const g2 = ctx.createRadialGradient(
+        W * 0.85,
+        H * 0.1,
+        0,
+        W * 0.85,
+        H * 0.1,
+        W * 0.35,
+      );
+      g2.addColorStop(0, "rgba(255,180,200,0.15)");
+      g2.addColorStop(1, "transparent");
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, W, H);
 
       /* Wind streaks */
-      winds.forEach(l => {
+      winds.forEach((l) => {
         l.x += l.spd;
         if (l.x > W + l.len) {
           l.x = -l.len * 1.2;
@@ -600,7 +711,7 @@ function SakuraBackground() {
 
       /* Sakura petals */
       const windX = Math.sin(t * 0.5) * 0.8;
-      petals.forEach(p => {
+      petals.forEach((p) => {
         p.x += p.driftSpd + windX;
         p.y += p.fallSpd;
         p.x += Math.sin(t * p.wobbleSpd + p.phase) * 0.5;
@@ -615,8 +726,17 @@ function SakuraBackground() {
           p.y = Math.random() * H * 0.5;
         }
 
-        const wobbleX = Math.sin(t * p.wobbleSpd + p.phase) * p.wobbleAmp * 0.02;
-        drawPetal(p.x + wobbleX, p.y, p.size, p.rotation, p.color, p.opacity, p.scaleY);
+        const wobbleX =
+          Math.sin(t * p.wobbleSpd + p.phase) * p.wobbleAmp * 0.02;
+        drawPetal(
+          p.x + wobbleX,
+          p.y,
+          p.size,
+          p.rotation,
+          p.color,
+          p.opacity,
+          p.scaleY,
+        );
       });
 
       animId = requestAnimationFrame(draw);
@@ -628,11 +748,11 @@ function SakuraBackground() {
       W = canvas.width = window.innerWidth;
       H = canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -673,21 +793,23 @@ export default function App() {
   useEffect(() => {
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
-    const wasMuted = localStorage.getItem('sakuraMuted') === 'true';
+    const wasMuted = localStorage.getItem("sakuraMuted") === "true";
     if (wasMuted) engine.setVolume(0);
     engine.play();
 
     const resumeOnInteraction = () => {
-      if (engine.ctx && engine.ctx.state === 'suspended') engine.play();
-      document.removeEventListener('click', resumeOnInteraction);
-      document.removeEventListener('touchstart', resumeOnInteraction);
+      if (engine.ctx && engine.ctx.state === "suspended") engine.play();
+      document.removeEventListener("click", resumeOnInteraction);
+      document.removeEventListener("touchstart", resumeOnInteraction);
     };
-    if (engine.ctx && engine.ctx.state === 'suspended') {
-      document.addEventListener('click', resumeOnInteraction);
-      document.addEventListener('touchstart', resumeOnInteraction);
+    if (engine.ctx && engine.ctx.state === "suspended") {
+      document.addEventListener("click", resumeOnInteraction);
+      document.addEventListener("touchstart", resumeOnInteraction);
     }
 
-    return () => { engine.destroy(); };
+    return () => {
+      engine.destroy();
+    };
   }, []);
 
   let globalIndex = 0;
@@ -695,7 +817,7 @@ export default function App() {
   return (
     <div className="page">
       <SakuraBackground />
-
+      <div className="edge-fog" />
       {/* Pink glowing orbs at corners */}
       <div className="corner-glows">
         <div className="corner-glow corner-glow--tl" />
@@ -711,7 +833,11 @@ export default function App() {
         <main className="card">
           <div className="avatar-wrap">
             <div className="avatar-ring" />
-            <img src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" />
+            <img
+              src={PROFILE.avatar}
+              alt={PROFILE.name}
+              className="avatar-img"
+            />
             <div className="avatar-badge">🌸</div>
           </div>
           <div className="identity">
