@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
 import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -44,6 +45,12 @@ const HeartIcon = () => (
   </svg>
 );
 
+const WAIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+);
+
 /* ====================== DATA ====================== */
 const PROFILE = {
   name: "Muhammad Fahreza",
@@ -57,24 +64,32 @@ const LINKS = [
     label: "LinkedIn",
     icon: <LinkedInIcon />,
     href: "https://www.linkedin.com/in/muhammad-fahreza-a20975285",
+    previewBg: "linear-gradient(135deg, #0077b5 0%, #00a0dc 100%)",
+    previewDesc: "My LinkedIn Profile",
   },
   {
     id: 2,
     label: "GitHub",
     icon: <GitHubIcon />,
     href: "https://github.com/MhmdFahreza",
+    previewBg: "linear-gradient(135deg, #24292e 0%, #586069 100%)",
+    previewDesc: "Code Repository",
   },
   {
     id: 3,
     label: "My Portfolio Website",
     icon: <PortfolioIcon />,
     href: "https://muhammadfahreza.vercel.app/",
+    previewBg: "linear-gradient(135deg, #6c63ff 0%, #a78bfa 100%)",
+    previewDesc: "Personal Portfolio",
   },
   {
     id: 4,
     label: "Discord Community",
     icon: <DiscordIcon />,
     href: "https://discord.gg/UncurKFS",
+    previewBg: "linear-gradient(135deg, #5865F2 0%, #7289da 100%)",
+    previewDesc: "Join the Community",
   },
 ];
 
@@ -84,12 +99,16 @@ const MUSIC_LINKS = [
     label: "Spotify",
     icon: <MusicNoteIcon />,
     href: "https://open.spotify.com/user/duezo5jo46nrrfj5qtr89e34u?si=13180a662e6f4a30",
+    previewBg: "linear-gradient(135deg, #1DB954 0%, #1ed760 100%)",
+    previewDesc: "My Spotify Playlist",
   },
   {
     id: 6,
     label: "YouTube Music",
     icon: <MusicNoteIcon />,
     href: "https://music.youtube.com/playlist?list=PL9X21xjKqYoXnoUX4vl0EMhs0iQWEvE1k",
+    previewBg: "linear-gradient(135deg, #FF0000 0%, #ff4444 100%)",
+    previewDesc: "YouTube Music Playlist",
   },
 ];
 
@@ -99,18 +118,24 @@ const DONATION_LINKS = [
     label: "Trakteer",
     icon: <HeartIcon />,
     href: "https://trakteer.id/muhammad_fahreza19",
+    previewBg: "linear-gradient(135deg, #e74c3c 0%, #ff6b6b 100%)",
+    previewDesc: "Support via Trakteer",
   },
   {
     id: 8,
     label: "Saweria",
     icon: <HeartIcon />,
     href: "https://saweria.co/FareekzYT",
+    previewBg: "linear-gradient(135deg, #f39c12 0%, #ffd447 100%)",
+    previewDesc: "Support via Saweria",
   },
   {
     id: 9,
     label: "Tako",
     icon: <HeartIcon />,
     href: "https://tako.id/MuhammadFahreza",
+    previewBg: "linear-gradient(135deg, #00b4d8 0%, #48cae4 100%)",
+    previewDesc: "Support via Tako",
   },
 ];
 
@@ -118,8 +143,10 @@ const SERVICE_LINKS = [
   {
     id: 10,
     label: "Open Jasa Pembuatan Website",
-    icon: <PortfolioIcon />,
+    icon: <WAIcon />,
     href: "https://wa.me/6283847882287?text=Halo%2C%20saya%20ingin%20tanya%20tentang%20jasa%20pembuatan%20website",
+    previewBg: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+    previewDesc: "Chat via WhatsApp",
   },
 ];
 
@@ -162,8 +189,246 @@ const SOCIALS = [
   },
 ];
 
+/* ====================== 1. CUSTOM CURSOR ====================== */
+function CustomCursor() {
+  const dotRef    = useRef(null);
+  const glowRef   = useRef(null);
+  const trailRefs = useRef([]);
+  const TRAIL_N   = 7;
+
+  useEffect(() => {
+    const isTouch = !window.matchMedia("(hover: hover)").matches;
+    if (isTouch) return;
+
+    // Set initial transform origin to top-left so x/y control position
+    gsap.set([dotRef.current, glowRef.current], { xPercent: -50, yPercent: -50 });
+    gsap.set(trailRefs.current, { xPercent: -50, yPercent: -50 });
+
+    const onMove = (e) => {
+      const { clientX: x, clientY: y } = e;
+
+      gsap.to(dotRef.current, { x, y, duration: 0.05, ease: "none" });
+      gsap.to(glowRef.current, { x, y, duration: 0.22, ease: "power3.out" });
+
+      trailRefs.current.forEach((trail, i) => {
+        if (!trail) return;
+        gsap.to(trail, {
+          x, y,
+          duration: 0.12 + i * 0.07,
+          ease: "power2.out",
+          overwrite: "auto",
+        });
+      });
+    };
+
+    const growCursor = () => {
+      gsap.to(dotRef.current,  { scale: 2.8, backgroundColor: "rgba(255,183,197,0.9)", duration: 0.3, ease: "power2.out" });
+      gsap.to(glowRef.current, { scale: 1.6, opacity: 0.7, duration: 0.3 });
+    };
+    const shrinkCursor = () => {
+      gsap.to(dotRef.current,  { scale: 1, backgroundColor: "#e8738a", duration: 0.4, ease: "elastic.out(1, 0.5)" });
+      gsap.to(glowRef.current, { scale: 1, opacity: 0.35, duration: 0.3 });
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.querySelectorAll("a, button, .link-btn-wrap").forEach((el) => {
+      el.addEventListener("mouseenter", growCursor);
+      el.addEventListener("mouseleave", shrinkCursor);
+    });
+
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+    };
+  }, []);
+
+  return (
+    <div className="cursor-root" aria-hidden="true">
+      <div ref={glowRef}  className="cursor-glow" />
+      <div ref={dotRef}   className="cursor-dot"  />
+      {Array.from({ length: TRAIL_N }).map((_, i) => (
+        <div
+          key={i}
+          ref={(el) => { trailRefs.current[i] = el; }}
+          className="cursor-trail"
+          style={{ "--idx": i, "--total": TRAIL_N }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ====================== 2. PAGE TRANSITION OVERLAY ====================== */
+function PageTransition() {
+  const overlayRef = useRef(null);
+  const textRef    = useRef(null);
+
+  useEffect(() => {
+    const tl = gsap.timeline();
+    tl.to(textRef.current, {
+      opacity: 0,
+      y: -20,
+      duration: 0.4,
+      ease: "power2.in",
+      delay: 0.5,
+    }).to(overlayRef.current, {
+      yPercent: -100,
+      duration: 1.0,
+      ease: "expo.inOut",
+    }, "-=0.1");
+  }, []);
+
+  return (
+    <div ref={overlayRef} className="page-transition">
+      <div ref={textRef} className="pt-content">
+        <span className="pt-sakura-icon">🌸</span>
+        <span className="pt-name">Muhammad Fahreza</span>
+      </div>
+    </div>
+  );
+}
+
+/* ====================== 3. SPLIT TEXT REVEAL ====================== */
+function SplitTextReveal({ text, className }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const chars = containerRef.current.querySelectorAll(".char");
+    gsap.fromTo(
+      chars,
+      { opacity: 0, y: 36, rotateX: -70, filter: "blur(6px)" },
+      {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        filter: "blur(0px)",
+        duration: 0.65,
+        stagger: 0.032,
+        ease: "back.out(1.5)",
+        delay: 1.2, // after page transition
+      }
+    );
+  }, []);
+
+  return (
+    <h1 ref={containerRef} className={`${className} name-split`}>
+      {text.split("").map((char, i) => (
+        <span key={i} className="char">
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </h1>
+  );
+}
+
+/* ====================== 4. MAGNETIC BUTTON WRAPPER ====================== */
+function MagneticBtn({ children, strength = 0.38, className = "" }) {
+  const wrapRef  = useRef(null);
+  const innerRef = useRef(null);
+
+  useEffect(() => {
+    const isTouch = !window.matchMedia("(hover: hover)").matches;
+    if (isTouch) return;
+
+    const wrap  = wrapRef.current;
+    const inner = innerRef.current;
+
+    const onMove = (e) => {
+      const rect = wrap.getBoundingClientRect();
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
+      gsap.to(inner, {
+        x: (e.clientX - cx) * strength,
+        y: (e.clientY - cy) * strength,
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    };
+
+    const onLeave = () => {
+      gsap.to(inner, {
+        x: 0, y: 0,
+        duration: 0.8,
+        ease: "elastic.out(1, 0.45)",
+        overwrite: "auto",
+      });
+    };
+
+    wrap.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseleave", onLeave);
+    return () => {
+      wrap.removeEventListener("mousemove", onMove);
+      wrap.removeEventListener("mouseleave", onLeave);
+    };
+  }, [strength]);
+
+  return (
+    <div ref={wrapRef} className={`magnetic-wrap ${className}`}>
+      <div ref={innerRef}>{children}</div>
+    </div>
+  );
+}
+
+/* ====================== 5. HOVER PREVIEW ON LINK BUTTON ====================== */
+function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
+  const previewRef = useRef(null);
+  const hasPreview = !!previewBg;
+
+  const onEnter = () => {
+    if (!hasPreview || !previewRef.current) return;
+    gsap.killTweensOf(previewRef.current);
+    gsap.fromTo(
+      previewRef.current,
+      { opacity: 0, y: 10, scale: 0.94 },
+      { opacity: 1, y: 0,  scale: 1,    duration: 0.28, ease: "power2.out" }
+    );
+  };
+
+  const onLeave = () => {
+    if (!hasPreview || !previewRef.current) return;
+    gsap.killTweensOf(previewRef.current);
+    gsap.to(previewRef.current, {
+      opacity: 0, y: 8, scale: 0.94,
+      duration: 0.2, ease: "power2.in",
+    });
+  };
+
+  return (
+    <div
+      className="link-btn-wrap"
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      <a
+        href={href}
+        className="link-btn"
+        style={{ animationDelay: `${0.3 + index * 0.08}s` }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="link-btn__icon">{icon}</span>
+        <span className="link-btn__label">{label}</span>
+        <span className="link-btn__arrow">→</span>
+      </a>
+
+      {hasPreview && (
+        <div
+          ref={previewRef}
+          className="hover-preview"
+          style={{ background: previewBg }}
+        >
+          <span className="hover-preview__icon">{icon}</span>
+          <div className="hover-preview__info">
+            <strong>{label}</strong>
+            <span>{previewDesc}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ====================== SAKURA SOUND ENGINE (Web Audio API) ====================== */
-/* Generates: gentle breeze + Japanese furin wind chimes + soft ambient pad */
 class SakuraSoundEngine {
   constructor() {
     this.ctx = null;
@@ -174,337 +439,152 @@ class SakuraSoundEngine {
     this._chimeInterval = null;
   }
 
-  /* ── Gentle breeze noise buffer ── */
   _createBreezeBuffer(seconds = 10) {
-    const sr = this.ctx.sampleRate;
+    const sr  = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
-    const d = buf.getChannelData(0);
-    let b0 = 0,
-      b1 = 0,
-      b2 = 0,
-      b3 = 0,
-      b4 = 0,
-      b5 = 0,
-      b6 = 0;
+    const d   = buf.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
     for (let i = 0; i < d.length; i++) {
       const wh = Math.random() * 2 - 1;
-      b0 = 0.99886 * b0 + wh * 0.0555179;
-      b1 = 0.99332 * b1 + wh * 0.0750759;
-      b2 = 0.969 * b2 + wh * 0.153852;
-      b3 = 0.8665 * b3 + wh * 0.3104856;
-      b4 = 0.55 * b4 + wh * 0.5329522;
-      b5 = -0.7616 * b5 - wh * 0.016898;
-      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + wh * 0.5362) * 0.06;
-      b6 = wh * 0.115926;
+      b0 = 0.99886*b0 + wh*0.0555179; b1 = 0.99332*b1 + wh*0.0750759;
+      b2 = 0.969*b2   + wh*0.153852;  b3 = 0.8665*b3  + wh*0.3104856;
+      b4 = 0.55*b4    + wh*0.5329522; b5 = -0.7616*b5 - wh*0.016898;
+      d[i] = (b0+b1+b2+b3+b4+b5+b6+wh*0.5362)*0.06; b6 = wh*0.115926;
     }
     return buf;
   }
 
-  /* ── Soft breeze layer (high-pass filtered, gentle sway) ── */
   _addBreezeLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
     const src = this.ctx.createBufferSource();
-    src.buffer = this._createBreezeBuffer(10);
-    src.loop = true;
-    // High-pass to keep it airy, not rumbly
-    const hpf = this.ctx.createBiquadFilter();
-    hpf.type = "highpass";
-    hpf.frequency.value = 400;
-    hpf.Q.value = 0.5;
-    const bpf = this.ctx.createBiquadFilter();
-    bpf.type = "bandpass";
-    bpf.frequency.value = filterFreq;
-    bpf.Q.value = filterQ;
-    const lpf = this.ctx.createBiquadFilter();
-    lpf.type = "lowpass";
-    lpf.frequency.value = filterFreq * 2.5;
-    // Gentle LFO for swaying wind
-    const lfo = this.ctx.createOscillator();
-    lfo.type = "sine";
-    lfo.frequency.value = lfoFreq;
-    const lfoGainNode = this.ctx.createGain();
-    lfoGainNode.gain.value = lfoDepth;
-    const layerGain = this.ctx.createGain();
-    layerGain.gain.value = gain;
-    src.connect(hpf);
-    hpf.connect(bpf);
-    bpf.connect(lpf);
-    lpf.connect(layerGain);
-    lfo.connect(lfoGainNode);
-    lfoGainNode.connect(layerGain.gain);
-    layerGain.connect(this.masterGain);
-    lfo.start(0);
-    src.start(0, Math.random() * 10);
+    src.buffer = this._createBreezeBuffer(10); src.loop = true;
+    const hpf = this.ctx.createBiquadFilter(); hpf.type="highpass"; hpf.frequency.value=400; hpf.Q.value=0.5;
+    const bpf = this.ctx.createBiquadFilter(); bpf.type="bandpass"; bpf.frequency.value=filterFreq; bpf.Q.value=filterQ;
+    const lpf = this.ctx.createBiquadFilter(); lpf.type="lowpass";  lpf.frequency.value=filterFreq*2.5;
+    const lfo = this.ctx.createOscillator();   lfo.type="sine"; lfo.frequency.value=lfoFreq;
+    const lfoG = this.ctx.createGain(); lfoG.gain.value=lfoDepth;
+    const layG = this.ctx.createGain(); layG.gain.value=gain;
+    src.connect(hpf); hpf.connect(bpf); bpf.connect(lpf); lpf.connect(layG);
+    lfo.connect(lfoG); lfoG.connect(layG.gain); layG.connect(this.masterGain);
+    lfo.start(0); src.start(0, Math.random()*10);
     this.nodes.push({ src, lfo });
   }
 
-  /* ── Ambient pad (soft sustained tones) ── */
   _addAmbientPad() {
-    // Play two detuned sine waves for a warm, dreamy pad
-    const padFreqs = [220, 330]; // A3 & E4 — gentle fifth
-    padFreqs.forEach((freq) => {
-      const osc = this.ctx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.value = freq;
-      // Slight detuning for shimmer
-      osc.detune.value = (Math.random() - 0.5) * 8;
-      const padGain = this.ctx.createGain();
-      padGain.gain.value = 0.025;
-      // Very slow tremolo for life
-      const trem = this.ctx.createOscillator();
-      trem.type = "sine";
-      trem.frequency.value = 0.08 + Math.random() * 0.06;
-      const tremGain = this.ctx.createGain();
-      tremGain.gain.value = 0.012;
-      osc.connect(padGain);
-      trem.connect(tremGain);
-      tremGain.connect(padGain.gain);
-      padGain.connect(this.masterGain);
-      osc.start(0);
-      trem.start(0);
+    [220, 330].forEach((freq) => {
+      const osc  = this.ctx.createOscillator(); osc.type="sine"; osc.frequency.value=freq;
+      osc.detune.value = (Math.random()-0.5)*8;
+      const padG = this.ctx.createGain(); padG.gain.value=0.025;
+      const trem = this.ctx.createOscillator(); trem.type="sine"; trem.frequency.value=0.08+Math.random()*0.06;
+      const tremG = this.ctx.createGain(); tremG.gain.value=0.012;
+      osc.connect(padG); trem.connect(tremG); tremG.connect(padG.gain); padG.connect(this.masterGain);
+      osc.start(0); trem.start(0);
       this.nodes.push({ src: osc, lfo: trem });
     });
   }
 
-  /* ── Japanese furin wind chime (single strike) ── */
   _playChime() {
     if (!this.ctx || !this.playing) return;
-    // Japanese pentatonic scale (In Sen): frequencies in higher octave for bell-like quality
-    const CHIME_NOTES = [
-      523.25, // C5
-      587.33, // D5
-      659.25, // E5
-      783.99, // G5
-      880.0, // A5
-      1046.5, // C6
-      1174.66, // D6
-      1318.51, // E6
-    ];
-    const freq = CHIME_NOTES[Math.floor(Math.random() * CHIME_NOTES.length)];
-    const now = this.ctx.currentTime;
-
-    // Main tone (sine for purity)
-    const osc1 = this.ctx.createOscillator();
-    osc1.type = "sine";
-    osc1.frequency.value = freq;
-
-    // Harmonic overtone (triangle, octave up, softer)
-    const osc2 = this.ctx.createOscillator();
-    osc2.type = "triangle";
-    osc2.frequency.value = freq * 2;
-
-    // Third partial for shimmer
-    const osc3 = this.ctx.createOscillator();
-    osc3.type = "sine";
-    osc3.frequency.value = freq * 3.01;
-
-    const chimeGain = this.ctx.createGain();
-    const attackTime = 0.005;
-    const decayTime = 2.5 + Math.random() * 2.0;
-    const peakVol = 0.06 + Math.random() * 0.04;
-
-    chimeGain.gain.setValueAtTime(0, now);
-    chimeGain.gain.linearRampToValueAtTime(peakVol, now + attackTime);
-    chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + decayTime);
-
-    const overtoneGain = this.ctx.createGain();
-    overtoneGain.gain.value = 0.3;
-
-    const thirdGain = this.ctx.createGain();
-    thirdGain.gain.value = 0.08;
-
-    osc1.connect(chimeGain);
-    osc2.connect(overtoneGain);
-    overtoneGain.connect(chimeGain);
-    osc3.connect(thirdGain);
-    thirdGain.connect(chimeGain);
-    chimeGain.connect(this.masterGain);
-
-    osc1.start(now);
-    osc2.start(now);
-    osc3.start(now);
-    osc1.stop(now + decayTime + 0.1);
-    osc2.stop(now + decayTime + 0.1);
-    osc3.stop(now + decayTime + 0.1);
+    const NOTES = [523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.51];
+    const freq  = NOTES[Math.floor(Math.random()*NOTES.length)];
+    const now   = this.ctx.currentTime;
+    const osc1  = this.ctx.createOscillator(); osc1.type="sine";     osc1.frequency.value=freq;
+    const osc2  = this.ctx.createOscillator(); osc2.type="triangle"; osc2.frequency.value=freq*2;
+    const osc3  = this.ctx.createOscillator(); osc3.type="sine";     osc3.frequency.value=freq*3.01;
+    const cG    = this.ctx.createGain();
+    const decay = 2.5 + Math.random()*2; const peak = 0.06+Math.random()*0.04;
+    cG.gain.setValueAtTime(0,now); cG.gain.linearRampToValueAtTime(peak,now+0.005); cG.gain.exponentialRampToValueAtTime(0.0001,now+decay);
+    const oG = this.ctx.createGain(); oG.gain.value=0.3;
+    const tG = this.ctx.createGain(); tG.gain.value=0.08;
+    osc1.connect(cG); osc2.connect(oG); oG.connect(cG); osc3.connect(tG); tG.connect(cG); cG.connect(this.masterGain);
+    [osc1,osc2,osc3].forEach(o=>{ o.start(now); o.stop(now+decay+0.1); });
   }
 
-  /* ── Start random chime scheduling ── */
   _startChimeLoop() {
-    const scheduleNext = () => {
+    const next = () => {
       if (!this.playing) return;
-      // Random interval: 1.5s to 5s between chimes, sometimes clusters
-      const delay = 1500 + Math.random() * 3500;
-      this._chimeInterval = setTimeout(() => {
+      this._chimeInterval = setTimeout(()=>{
         this._playChime();
-        // Occasionally play a quick second chime for a cluster effect
-        if (Math.random() < 0.3) {
-          setTimeout(() => this._playChime(), 200 + Math.random() * 400);
-        }
-        scheduleNext();
-      }, delay);
+        if (Math.random()<0.3) setTimeout(()=>this._playChime(), 200+Math.random()*400);
+        next();
+      }, 1500+Math.random()*3500);
     };
-    // First chime after a short delay
-    setTimeout(() => {
-      this._playChime();
-      scheduleNext();
-    }, 800);
+    setTimeout(()=>{ this._playChime(); next(); }, 800);
   }
+  _stopChimeLoop() { if (this._chimeInterval) { clearTimeout(this._chimeInterval); this._chimeInterval=null; } }
 
-  _stopChimeLoop() {
-    if (this._chimeInterval) {
-      clearTimeout(this._chimeInterval);
-      this._chimeInterval = null;
-    }
-  }
-
-  /* ── Soft bird-like chirps (occasional) ── */
   _startBirdLoop() {
-    const scheduleBird = () => {
-      if (!this.playing) return;
-      const delay = 4000 + Math.random() * 8000;
-      this._birdTimeout = setTimeout(() => {
-        this._playBirdChirp();
-        scheduleBird();
-      }, delay);
-    };
-    setTimeout(() => scheduleBird(), 3000);
+    const sch = ()=>{ if(!this.playing) return; this._birdTimeout=setTimeout(()=>{ this._playBirdChirp(); sch(); },4000+Math.random()*8000); };
+    setTimeout(()=>sch(), 3000);
   }
-
   _playBirdChirp() {
-    if (!this.ctx || !this.playing) return;
-    const now = this.ctx.currentTime;
-    const baseFreq = 1800 + Math.random() * 1200;
-    const osc = this.ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(baseFreq, now);
-    osc.frequency.linearRampToValueAtTime(baseFreq * 1.3, now + 0.05);
-    osc.frequency.linearRampToValueAtTime(baseFreq * 0.9, now + 0.12);
-    osc.frequency.linearRampToValueAtTime(baseFreq * 1.15, now + 0.18);
-    const birdGain = this.ctx.createGain();
-    birdGain.gain.setValueAtTime(0, now);
-    birdGain.gain.linearRampToValueAtTime(0.02, now + 0.01);
-    birdGain.gain.linearRampToValueAtTime(0.015, now + 0.1);
-    birdGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
-    osc.connect(birdGain);
-    birdGain.connect(this.masterGain);
-    osc.start(now);
-    osc.stop(now + 0.3);
+    if (!this.ctx||!this.playing) return;
+    const now=this.ctx.currentTime; const bf=1800+Math.random()*1200;
+    const osc=this.ctx.createOscillator(); osc.type="sine";
+    osc.frequency.setValueAtTime(bf,now); osc.frequency.linearRampToValueAtTime(bf*1.3,now+0.05);
+    osc.frequency.linearRampToValueAtTime(bf*0.9,now+0.12); osc.frequency.linearRampToValueAtTime(bf*1.15,now+0.18);
+    const bG=this.ctx.createGain();
+    bG.gain.setValueAtTime(0,now); bG.gain.linearRampToValueAtTime(0.02,now+0.01);
+    bG.gain.linearRampToValueAtTime(0.015,now+0.1); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.25);
+    osc.connect(bG); bG.connect(this.masterGain); osc.start(now); osc.stop(now+0.3);
   }
-
-  _stopBirdLoop() {
-    if (this._birdTimeout) {
-      clearTimeout(this._birdTimeout);
-      this._birdTimeout = null;
-    }
-  }
+  _stopBirdLoop() { if (this._birdTimeout) { clearTimeout(this._birdTimeout); this._birdTimeout=null; } }
 
   init() {
     if (this.ctx) return;
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0;
-    this.masterGain.connect(this.ctx.destination);
-    // Light airy breeze layers
-    this._addBreezeLayer({
-      lfoFreq: 0.06,
-      filterFreq: 800,
-      filterQ: 0.4,
-      gain: 0.35,
-      lfoDepth: 0.18,
-    });
-    this._addBreezeLayer({
-      lfoFreq: 0.12,
-      filterFreq: 1800,
-      filterQ: 0.6,
-      gain: 0.2,
-      lfoDepth: 0.12,
-    });
-    this._addBreezeLayer({
-      lfoFreq: 0.03,
-      filterFreq: 3500,
-      filterQ: 0.3,
-      gain: 0.1,
-      lfoDepth: 0.06,
-    });
-    // Warm ambient pad
+    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+    this.masterGain=this.ctx.createGain(); this.masterGain.gain.value=0; this.masterGain.connect(this.ctx.destination);
+    this._addBreezeLayer({lfoFreq:0.06,filterFreq:800, filterQ:0.4,gain:0.35,lfoDepth:0.18});
+    this._addBreezeLayer({lfoFreq:0.12,filterFreq:1800,filterQ:0.6,gain:0.2, lfoDepth:0.12});
+    this._addBreezeLayer({lfoFreq:0.03,filterFreq:3500,filterQ:0.3,gain:0.1, lfoDepth:0.06});
     this._addAmbientPad();
     this.setVolume(this._currentVolume, 0);
   }
-
   play() {
     if (!this.ctx) this.init();
-    if (this.ctx.state === "suspended") this.ctx.resume();
-    const now = this.ctx.currentTime;
-    this.masterGain.gain.cancelScheduledValues(now);
-    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(
-      this._currentVolume,
-      now + 2.5,
-    );
-    this.playing = true;
-    this._startChimeLoop();
-    this._startBirdLoop();
+    if (this.ctx.state==="suspended") this.ctx.resume();
+    const now=this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
+    this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+2.5);
+    this.playing=true; this._startChimeLoop(); this._startBirdLoop();
   }
-
   pause() {
     if (!this.ctx) return;
-    const now = this.ctx.currentTime;
-    this.masterGain.gain.cancelScheduledValues(now);
-    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-    this.masterGain.gain.linearRampToValueAtTime(0, now + 1.0);
-    this.playing = false;
-    this._stopChimeLoop();
-    this._stopBirdLoop();
+    const now=this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
+    this.masterGain.gain.linearRampToValueAtTime(0,now+1.0);
+    this.playing=false; this._stopChimeLoop(); this._stopBirdLoop();
   }
-
-  setVolume(val, ramp = 0.3) {
-    this._currentVolume = Math.min(1, Math.max(0, val));
-    if (this.ctx && this.masterGain) {
-      const now = this.ctx.currentTime;
-      this.masterGain.gain.cancelScheduledValues(now);
-      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-      this.masterGain.gain.linearRampToValueAtTime(
-        this._currentVolume,
-        now + ramp,
-      );
+  setVolume(val,ramp=0.3) {
+    this._currentVolume=Math.min(1,Math.max(0,val));
+    if (this.ctx&&this.masterGain) {
+      const now=this.ctx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(now); this.masterGain.gain.setValueAtTime(this.masterGain.gain.value,now);
+      this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+ramp);
     }
   }
-
-  isPlaying() {
-    return this.playing;
-  }
-
+  isPlaying() { return this.playing; }
   destroy() {
-    this._stopChimeLoop();
-    this._stopBirdLoop();
-    this.nodes.forEach(({ src, lfo }) => {
-      try {
-        src.stop();
-      } catch (_) {}
-      try {
-        lfo.stop();
-      } catch (_) {}
-    });
+    this._stopChimeLoop(); this._stopBirdLoop();
+    this.nodes.forEach(({src,lfo})=>{ try{src.stop()}catch(_){} try{lfo.stop()}catch(_){} });
     if (this.ctx) this.ctx.close();
   }
 }
 
 /* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
-  const [muted, setMuted] = useState(() => {
-    return localStorage.getItem("sakuraMuted") === "true";
-  });
-  const storedVolumeRef = useRef(0.1);
+  const [muted, setMuted] = useState(() => localStorage.getItem("sakuraMuted") === "true");
+  const storedVol = useRef(0.1);
 
   const toggleMute = () => {
-    const engine = engineRef.current;
-    if (!engine) return;
+    const e = engineRef.current;
+    if (!e) return;
     if (muted) {
-      engine.setVolume(storedVolumeRef.current);
+      e.setVolume(storedVol.current);
       setMuted(false);
       localStorage.setItem("sakuraMuted", "false");
     } else {
-      storedVolumeRef.current = engine._currentVolume;
-      engine.setVolume(0);
+      storedVol.current = e._currentVolume;
+      e.setVolume(0);
       setMuted(true);
       localStorage.setItem("sakuraMuted", "true");
     }
@@ -512,33 +592,33 @@ function AudioControl({ engineRef }) {
 
   return (
     <div className="audio-wrap">
-      <button
-        className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`}
-        onClick={toggleMute}
-        aria-label={muted ? "Nyalakan suara sakura" : "Matikan suara sakura"}
-      >
-        {muted ? (
-          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-          </svg>
-        )}
-        {!muted && (
-          <div className="audio-wave">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        )}
-      </button>
+      <MagneticBtn strength={0.25}>
+        <button
+          className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`}
+          onClick={toggleMute}
+          aria-label={muted ? "Nyalakan suara" : "Matikan suara"}
+        >
+          {muted ? (
+            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+            </svg>
+          )}
+          {!muted && (
+            <div className="audio-wave">
+              <span /><span /><span />
+            </div>
+          )}
+        </button>
+      </MagneticBtn>
     </div>
   );
 }
 
-/* ====================== SAKURA SPRING CANVAS BACKGROUND ====================== */
+/* ====================== SAKURA CANVAS BACKGROUND ====================== */
 function SakuraBackground() {
   const canvasRef = useRef(null);
 
@@ -546,245 +626,85 @@ function SakuraBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    let t = 0, animId;
 
-    let W = window.innerWidth;
-    let H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
+    const bgImg = new Image(); bgImg.src = "/sakura-bg.png"; let bgLoaded = false;
+    bgImg.onload = () => { bgLoaded = true; };
 
-    let t = 0;
-    let animId;
+    const PETAL_COLORS = ["rgba(255,183,197,0.85)","rgba(255,200,210,0.80)","rgba(255,160,180,0.75)","rgba(255,220,230,0.70)","rgba(248,140,170,0.80)","rgba(255,175,195,0.90)"];
+    const petals = Array.from({ length: 55 }, () => ({
+      x: Math.random()*W*1.2-W*0.1, y: Math.random()*H*1.2-H*0.3,
+      size: 6+Math.random()*12, rotation: Math.random()*Math.PI*2,
+      rotSpd: (Math.random()-0.5)*0.04, fallSpd: 0.4+Math.random()*1.0,
+      driftSpd: 0.5+Math.random()*1.5, wobbleAmp: 20+Math.random()*40,
+      wobbleSpd: 0.5+Math.random()*1.5, phase: Math.random()*Math.PI*2,
+      color: PETAL_COLORS[Math.floor(Math.random()*PETAL_COLORS.length)],
+      opacity: 0.6+Math.random()*0.4, scaleY: 0.5+Math.random()*0.5,
+    }));
 
-    /* ── Sakura background image ── */
-    const bgImg = new Image();
-    bgImg.src = "/sakura-bg.png";
-    let bgLoaded = false;
-    bgImg.onload = () => {
-      bgLoaded = true;
+    const winds = Array.from({ length: 35 }, () => ({
+      x: Math.random()*W*1.5-W*0.25, y: Math.random()*H,
+      len: 60+Math.random()*160, spd: 2.0+Math.random()*3.5,
+      alpha: 0.04+Math.random()*0.1, w: 0.5+Math.random()*1.0,
+    }));
+
+    const drawPetal = (x,y,size,rot,color,opacity,scaleY) => {
+      ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.scale(1,scaleY); ctx.globalAlpha=opacity;
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(size*0.4,-size*0.6,size,-size*0.4,size*0.5,0);
+      ctx.bezierCurveTo(size,size*0.4,size*0.4,size*0.6,0,0);
+      ctx.fillStyle=color; ctx.shadowBlur=4; ctx.shadowColor="rgba(255,183,197,0.3)"; ctx.fill();
+      ctx.globalAlpha=1; ctx.shadowBlur=0; ctx.restore();
     };
 
-    /* ── SAKURA PETALS ── */
-    const PETAL_COUNT = 55;
-    const petals = [];
-    const PETAL_COLORS = [
-      "rgba(255,183,197,0.85)",
-      "rgba(255,200,210,0.80)",
-      "rgba(255,160,180,0.75)",
-      "rgba(255,220,230,0.70)",
-      "rgba(248,140,170,0.80)",
-      "rgba(255,175,195,0.90)",
-    ];
-
-    for (let i = 0; i < PETAL_COUNT; i++) {
-      petals.push({
-        x: Math.random() * W * 1.2 - W * 0.1,
-        y: Math.random() * H * 1.2 - H * 0.3,
-        size: 6 + Math.random() * 12,
-        rotation: Math.random() * Math.PI * 2,
-        rotSpd: (Math.random() - 0.5) * 0.04,
-        fallSpd: 0.4 + Math.random() * 1.0,
-        driftSpd: 0.5 + Math.random() * 1.5,
-        wobbleAmp: 20 + Math.random() * 40,
-        wobbleSpd: 0.5 + Math.random() * 1.5,
-        phase: Math.random() * Math.PI * 2,
-        color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
-        opacity: 0.6 + Math.random() * 0.4,
-        scaleY: 0.5 + Math.random() * 0.5,
-      });
-    }
-
-    /* ── WIND STREAKS ── */
-    const WIND_COUNT = 35;
-    const winds = [];
-    for (let i = 0; i < WIND_COUNT; i++) {
-      winds.push({
-        x: Math.random() * W * 1.5 - W * 0.25,
-        y: Math.random() * H,
-        len: 60 + Math.random() * 160,
-        spd: 2.0 + Math.random() * 3.5,
-        alpha: 0.04 + Math.random() * 0.1,
-        w: 0.5 + Math.random() * 1.0,
-      });
-    }
-
-    /* ── Draw single petal shape ── */
-    const drawPetal = (x, y, size, rotation, color, opacity, scaleY) => {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rotation);
-      ctx.scale(1, scaleY);
-      ctx.globalAlpha = opacity;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.bezierCurveTo(
-        size * 0.4,
-        -size * 0.6,
-        size,
-        -size * 0.4,
-        size * 0.5,
-        0,
-      );
-      ctx.bezierCurveTo(size, size * 0.4, size * 0.4, size * 0.6, 0, 0);
-      ctx.fillStyle = color;
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = "rgba(255,183,197,0.3)";
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
-      ctx.restore();
-    };
-
-    /* ── MAIN RENDER LOOP ── */
     const draw = () => {
-      t += 0.008;
-      ctx.clearRect(0, 0, W, H);
-
-      /* Sky gradient */
-      const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, "#87CEEB");
-      sky.addColorStop(0.25, "#a8dcf0");
-      sky.addColorStop(0.5, "#c9e8ff");
-      sky.addColorStop(0.75, "#e8d5e0");
-      sky.addColorStop(1.0, "#fce4ec");
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, W, H);
-
-      /* Background image overlay */
+      t += 0.008; ctx.clearRect(0,0,W,H);
+      const sky = ctx.createLinearGradient(0,0,0,H);
+      sky.addColorStop(0,"#87CEEB"); sky.addColorStop(0.25,"#a8dcf0");
+      sky.addColorStop(0.5,"#c9e8ff"); sky.addColorStop(0.75,"#e8d5e0"); sky.addColorStop(1,"#fce4ec");
+      ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
       if (bgLoaded) {
-        ctx.globalAlpha = 0.45;
-        const imgRatio = bgImg.width / bgImg.height;
-        const canvasRatio = W / H;
-        let dw, dh, dx, dy;
-        if (canvasRatio > imgRatio) {
-          dw = W;
-          dh = W / imgRatio;
-          dx = 0;
-          dy = (H - dh) / 2;
-        } else {
-          dh = H;
-          dw = H * imgRatio;
-          dy = 0;
-          dx = (W - dw) / 2;
-        }
-        ctx.drawImage(bgImg, dx, dy, dw, dh);
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha=0.45;
+        const ir=bgImg.width/bgImg.height, cr=W/H;
+        let dw,dh,dx,dy;
+        if (cr>ir) { dw=W;dh=W/ir;dx=0;dy=(H-dh)/2; } else { dh=H;dw=H*ir;dy=0;dx=(W-dw)/2; }
+        ctx.drawImage(bgImg,dx,dy,dw,dh); ctx.globalAlpha=1;
       }
-
-      /* Soft pink/white radial glows */
-      const g1 = ctx.createRadialGradient(
-        W * 0.2,
-        H * 0.15,
-        0,
-        W * 0.2,
-        H * 0.15,
-        W * 0.4,
-      );
-      g1.addColorStop(0, "rgba(255,200,220,0.18)");
-      g1.addColorStop(1, "transparent");
-      ctx.fillStyle = g1;
-      ctx.fillRect(0, 0, W, H);
-
-      const g2 = ctx.createRadialGradient(
-        W * 0.85,
-        H * 0.1,
-        0,
-        W * 0.85,
-        H * 0.1,
-        W * 0.35,
-      );
-      g2.addColorStop(0, "rgba(255,180,200,0.15)");
-      g2.addColorStop(1, "transparent");
-      ctx.fillStyle = g2;
-      ctx.fillRect(0, 0, W, H);
-
-      /* Wind streaks */
-      winds.forEach((l) => {
-        l.x += l.spd;
-        if (l.x > W + l.len) {
-          l.x = -l.len * 1.2;
-          l.y = Math.random() * H;
-        }
-        const dy = l.len * 0.02;
-        const wg = ctx.createLinearGradient(l.x, l.y, l.x + l.len, l.y + dy);
-        wg.addColorStop(0, `rgba(255,255,255,0)`);
-        wg.addColorStop(0.15, `rgba(255,255,255,${l.alpha})`);
-        wg.addColorStop(0.85, `rgba(255,240,245,${l.alpha})`);
-        wg.addColorStop(1, `rgba(255,255,255,0)`);
-        ctx.beginPath();
-        ctx.moveTo(l.x, l.y);
-        ctx.lineTo(l.x + l.len, l.y + dy);
-        ctx.strokeStyle = wg;
-        ctx.lineWidth = l.w;
-        ctx.stroke();
+      [{ cx:W*0.2,cy:H*0.15,r:W*0.4,c:"rgba(255,200,220,0.18)" },{ cx:W*0.85,cy:H*0.1,r:W*0.35,c:"rgba(255,180,200,0.15)" }].forEach(({cx,cy,r,c})=>{
+        const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,c); g.addColorStop(1,"transparent");
+        ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
       });
-
-      /* Sakura petals */
-      const windX = Math.sin(t * 0.5) * 0.8;
-      petals.forEach((p) => {
-        p.x += p.driftSpd + windX;
-        p.y += p.fallSpd;
-        p.x += Math.sin(t * p.wobbleSpd + p.phase) * 0.5;
-        p.rotation += p.rotSpd;
-
-        if (p.y > H + 20) {
-          p.y = -20;
-          p.x = Math.random() * W * 1.2 - W * 0.1;
-        }
-        if (p.x > W + 30) {
-          p.x = -20;
-          p.y = Math.random() * H * 0.5;
-        }
-
-        const wobbleX =
-          Math.sin(t * p.wobbleSpd + p.phase) * p.wobbleAmp * 0.02;
-        drawPetal(
-          p.x + wobbleX,
-          p.y,
-          p.size,
-          p.rotation,
-          p.color,
-          p.opacity,
-          p.scaleY,
-        );
+      winds.forEach(l=>{
+        l.x+=l.spd; if(l.x>W+l.len){l.x=-l.len*1.2;l.y=Math.random()*H;}
+        const dy=l.len*0.02;
+        const wg=ctx.createLinearGradient(l.x,l.y,l.x+l.len,l.y+dy);
+        wg.addColorStop(0,"rgba(255,255,255,0)"); wg.addColorStop(0.15,`rgba(255,255,255,${l.alpha})`);
+        wg.addColorStop(0.85,`rgba(255,240,245,${l.alpha})`); wg.addColorStop(1,"rgba(255,255,255,0)");
+        ctx.beginPath(); ctx.moveTo(l.x,l.y); ctx.lineTo(l.x+l.len,l.y+dy);
+        ctx.strokeStyle=wg; ctx.lineWidth=l.w; ctx.stroke();
       });
-
-      animId = requestAnimationFrame(draw);
+      const windX=Math.sin(t*0.5)*0.8;
+      petals.forEach(p=>{
+        p.x+=p.driftSpd+windX; p.y+=p.fallSpd; p.x+=Math.sin(t*p.wobbleSpd+p.phase)*0.5; p.rotation+=p.rotSpd;
+        if(p.y>H+20){p.y=-20;p.x=Math.random()*W*1.2-W*0.1;}
+        if(p.x>W+30) {p.x=-20;p.y=Math.random()*H*0.5;}
+        drawPetal(p.x+Math.sin(t*p.wobbleSpd+p.phase)*p.wobbleAmp*0.02,p.y,p.size,p.rotation,p.color,p.opacity,p.scaleY);
+      });
+      animId=requestAnimationFrame(draw);
     };
-
     draw();
 
-    const onResize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
+    const onResize = () => { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; };
     window.addEventListener("resize", onResize);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", onResize);
-    };
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", onResize); };
   }, []);
 
   return <canvas ref={canvasRef} className="neon-city-canvas" />;
 }
 
-/* ====================== UI COMPONENTS ====================== */
-function LinkButton({ label, icon, href, index }) {
-  return (
-    <a
-      href={href}
-      className="link-btn"
-      style={{ animationDelay: `${0.3 + index * 0.08}s` }}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <span className="link-btn__icon">{icon}</span>
-      <span className="link-btn__label">{label}</span>
-      <span className="link-btn__arrow">→</span>
-    </a>
-  );
-}
-
+/* ====================== SECTION LABEL ====================== */
 function SectionLabel({ text }) {
   return (
     <div className="section-label">
@@ -797,8 +717,75 @@ function SectionLabel({ text }) {
 
 /* ====================== APP ====================== */
 export default function App() {
-  const engineRef = useRef(null);
+  const engineRef  = useRef(null);
+  const fogRef     = useRef(null);
+  const cardRef    = useRef(null);
 
+  /* ── 4. Lenis Smooth Scroll ── */
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.3,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const tickerFn = (time) => lenis.raf(time * 1000);
+    gsap.ticker.add(tickerFn);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(tickerFn);
+    };
+  }, []);
+
+  /* ── 6. Parallax Depth ── */
+  useEffect(() => {
+    // Card subtle upward float on scroll
+    gsap.to(cardRef.current, {
+      y: -30,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: 1.5,
+      },
+    });
+
+    // Corner glows parallax at different rates
+    gsap.to(".corner-glow--tl", {
+      y: -60, x: -30,
+      ease: "none",
+      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 },
+    });
+    gsap.to(".corner-glow--br", {
+      y: 60, x: 30,
+      ease: "none",
+      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 2 },
+    });
+    gsap.to(".corner-glow--tr", {
+      y: -40,
+      ease: "none",
+      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 },
+    });
+    gsap.to(".corner-glow--bl", {
+      y: 40,
+      ease: "none",
+      scrollTrigger: { trigger: ".page", start: "top top", end: "bottom top", scrub: 1.5 },
+    });
+
+    // Edge fog subtle parallax
+    gsap.to(fogRef.current, {
+      opacity: 0.4,
+      ease: "none",
+      scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true },
+    });
+  }, []);
+
+  /* ── Audio Engine ── */
   useEffect(() => {
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
@@ -806,28 +793,31 @@ export default function App() {
     if (wasMuted) engine.setVolume(0);
     engine.play();
 
-    const resumeOnInteraction = () => {
+    const resume = () => {
       if (engine.ctx && engine.ctx.state === "suspended") engine.play();
-      document.removeEventListener("click", resumeOnInteraction);
-      document.removeEventListener("touchstart", resumeOnInteraction);
+      document.removeEventListener("click", resume);
+      document.removeEventListener("touchstart", resume);
     };
     if (engine.ctx && engine.ctx.state === "suspended") {
-      document.addEventListener("click", resumeOnInteraction);
-      document.addEventListener("touchstart", resumeOnInteraction);
+      document.addEventListener("click", resume);
+      document.addEventListener("touchstart", resume);
     }
-
-    return () => {
-      engine.destroy();
-    };
+    return () => { engine.destroy(); };
   }, []);
 
   let globalIndex = 0;
 
   return (
     <div className="page">
+      {/* 1. Custom Cursor */}
+      <CustomCursor />
+
+      {/* 5. Page Transition */}
+      <PageTransition />
+
       <SakuraBackground />
-      <div className="edge-fog" />
-      {/* Pink glowing orbs at corners */}
+      <div ref={fogRef} className="edge-fog" />
+
       <div className="corner-glows">
         <div className="corner-glow corner-glow--tl" />
         <div className="corner-glow corner-glow--tr" />
@@ -839,18 +829,17 @@ export default function App() {
       <AudioControl engineRef={engineRef} />
 
       <section className="hero">
-        <main className="card">
+        {/* 6. Parallax — card is the slow layer */}
+        <main ref={cardRef} className="card">
           <div className="avatar-wrap">
             <div className="avatar-ring" />
-            <img
-              src={PROFILE.avatar}
-              alt={PROFILE.name}
-              className="avatar-img"
-            />
+            <img src={PROFILE.avatar} alt={PROFILE.name} className="avatar-img" />
             <div className="avatar-badge">🌸</div>
           </div>
+
           <div className="identity">
-            <h1 className="name">{PROFILE.name}</h1>
+            {/* 3. Split Text Reveal */}
+            <SplitTextReveal text={PROFILE.name} className="name" />
             <p className="bio">{PROFILE.bio}</p>
           </div>
 
@@ -878,28 +867,24 @@ export default function App() {
           <SectionLabel text="Services" />
           <div className="links">
             {SERVICE_LINKS.map((link) => (
-              <LinkButton
-                key={link.id}
-                label={link.label}
-                icon={link.icon}
-                href={link.href}
-                index={globalIndex++}
-              />
+              <LinkButton key={link.id} {...link} index={globalIndex++} />
             ))}
           </div>
 
+          {/* 2. Magnetic Buttons — social icons */}
           <div className="socials">
             {SOCIALS.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                className="social-btn"
-                aria-label={s.name}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {s.icon}
-              </a>
+              <MagneticBtn key={s.name} strength={0.45}>
+                <a
+                  href={s.href}
+                  className="social-btn"
+                  aria-label={s.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {s.icon}
+                </a>
+              </MagneticBtn>
             ))}
           </div>
         </main>
