@@ -8,7 +8,6 @@ import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ====================== MOTION CONTEXT ====================== */
 const MotionContext = createContext(true);
 
 const useReducedMotion = () => {
@@ -23,7 +22,6 @@ const useReducedMotion = () => {
   return reducedMotion;
 };
 
-/* ====================== SEO HOOK ====================== */
 const useSEO = ({ title, description, ogImage }) => {
   useEffect(() => {
     document.title = title || "Muhammad Fahreza";
@@ -49,7 +47,6 @@ const useSEO = ({ title, description, ogImage }) => {
   }, [title, description, ogImage]);
 };
 
-/* ====================== ICONS ====================== */
 const LinkedInIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -92,7 +89,6 @@ const WAIcon = () => (
   </svg>
 );
 
-/* ====================== DATA ====================== */
 const PROFILE = {
   name: "Muhammad Fahreza",
   bio: "Web Programmer",
@@ -230,7 +226,6 @@ const SOCIALS = [
   },
 ];
 
-/* ====================== KONAMI CODE HOOK ====================== */
 const KONAMI_SEQUENCE = [
   "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
   "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
@@ -251,7 +246,6 @@ const useKonamiCode = (callback) => {
   }, [callback]);
 };
 
-/* ====================== SAKURA BURST ON AVATAR CLICK ====================== */
 const useSakuraBurst = (avatarRef) => {
   const reducedMotion = useContext(MotionContext);
   const triggerBurst = useCallback(() => {
@@ -282,7 +276,6 @@ const useSakuraBurst = (avatarRef) => {
   return triggerBurst;
 };
 
-/* ====================== PRELOADER (ENHANCED) ====================== */
 function Preloader({ onFinish }) {
   const [progress, setProgress] = useState(0);
   const overlayRef = useRef(null);
@@ -308,7 +301,6 @@ function Preloader({ onFinish }) {
     }
   }, [progress, onFinish]);
 
-  /* Falling petals config */
   const petalData = [
     { left: "188px", top: "28px", anim: "pl-fall-a", dur: "3.2s", delay: "0.0s", size: 10, hue: 197 },
     { left: "212px", top: "18px", anim: "pl-fall-b", dur: "2.9s", delay: "0.6s", size: 8,  hue: 185 },
@@ -323,7 +315,6 @@ function Preloader({ onFinish }) {
 
   return (
     <div ref={overlayRef} className="preloader-overlay">
-      {/* Keyframe animations injected inline */}
       <style>{`
         @keyframes pl-fall-a {
           0%   { transform: translate(0,0)   rotate(0deg)   scale(1);   opacity: 1; }
@@ -373,10 +364,8 @@ function Preloader({ onFinish }) {
 
       <div className="preloader-content" style={{ gap: 0 }}>
 
-        {/* ── ILLUSTRATION SCENE ── */}
         <div style={{ position: "relative", width: 340, height: 220, marginBottom: 6 }}>
 
-          {/* Falling petals (absolutely positioned over SVG) */}
           {petalData.map((p, i) => (
             <div
               key={i}
@@ -417,18 +406,14 @@ function Preloader({ onFinish }) {
               </radialGradient>
             </defs>
 
-            {/* ── Distant mountains ── */}
             <ellipse cx="58"  cy="162" rx="100" ry="62" fill="rgba(210,158,185,0.32)" />
             <ellipse cx="270" cy="168" rx="90"  ry="52" fill="rgba(200,148,175,0.28)" />
             <ellipse cx="158" cy="152" rx="80"  ry="46" fill="rgba(218,168,195,0.22)" />
 
-            {/* ── Moon (top right) ── */}
             <circle cx="298" cy="28" r="22" fill="url(#pl-moon)" />
             <circle cx="298" cy="28" r="22" fill="none" stroke="rgba(255,220,160,0.4)" strokeWidth="3" />
-            {/* Moon glow halo */}
             <circle cx="298" cy="28" r="30" fill="rgba(255,240,200,0.12)" />
 
-            {/* ── Clouds ── */}
             <g style={{ animation: "pl-cloud-drift 6s ease-in-out infinite alternate" }}>
               <ellipse cx="55"  cy="22" rx="28" ry="10" fill="rgba(255,240,248,0.55)" />
               <ellipse cx="70"  cy="16" rx="20" ry="9"  fill="rgba(255,240,248,0.60)" />
@@ -439,11 +424,9 @@ function Preloader({ onFinish }) {
               <ellipse cx="268" cy="26" rx="16" ry="7"  fill="rgba(255,240,248,0.50)" />
             </g>
 
-            {/* ── Ground ── */}
             <rect x="0" y="172" width="340" height="48" fill="url(#pl-gnd)" />
             <rect x="0" y="170" width="340" height="7"  fill="rgba(140,196,90,0.65)" rx="3" />
 
-            {/* ── Grass tufts ── */}
             {[25,62,100,148,265,300,328].map((x, i) => (
               <g key={i}>
                 <line x1={x}   y1="172" x2={x-3} y2="163" stroke="#6aaa38" strokeWidth="1.5" strokeLinecap="round" />
@@ -452,7 +435,6 @@ function Preloader({ onFinish }) {
               </g>
             ))}
 
-            {/* ── Hanging lantern (top left) ── */}
             <g style={{ animation: "pl-lantern-swing 3.5s ease-in-out infinite" }}>
               <line x1="28" y1="0" x2="28" y2="18" stroke="rgba(80,40,20,0.7)" strokeWidth="1.5" />
               <rect x="20" y="18" width="16" height="22" rx="4" fill="#e04010" opacity="0.88" />
@@ -463,91 +445,68 @@ function Preloader({ onFinish }) {
               <ellipse cx="28" cy="51" rx="4" ry="2" fill="rgba(200,80,30,0.5)" />
             </g>
 
-            {/* ── TORII GATE ── */}
             <g opacity="0.90">
-              {/* Left pillar */}
               <rect x="44" y="110" width="9" height="62" rx="3.5" fill="#d85518" />
-              {/* Right pillar */}
               <rect x="82" y="110" width="9" height="62" rx="3.5" fill="#d85518" />
-              {/* Shimagi (top cap bar) */}
               <rect x="30" y="104" width="75" height="6" rx="3" fill="#b83e0c" />
-              {/* Kasagi (main curved crossbeam) */}
               <path d="M28 112 Q67.5 98 107 112" fill="none" stroke="#d85518" strokeWidth="9" strokeLinecap="round" />
               <path d="M28 112 Q67.5 98 107 112" fill="none" stroke="#b83e0c" strokeWidth="9" strokeLinecap="round" opacity="0.4" />
-              {/* Nuki (lower crossbeam) */}
               <rect x="42" y="126" width="51" height="6" rx="3" fill="#b83e0c" />
-              {/* Shimenawa rope hint */}
               <line x1="48" y1="135" x2="87" y2="135" stroke="rgba(240,210,130,0.65)" strokeWidth="1.2" strokeDasharray="3,3" />
-              {/* Komainu base stones */}
               <rect x="40"  y="168" width="14" height="6" rx="3" fill="#c8a888" opacity="0.7" />
               <rect x="81"  y="168" width="14" height="6" rx="3" fill="#c8a888" opacity="0.7" />
             </g>
 
-            {/* ── SAKURA TREE ── */}
             <g style={{ animation: "pl-sway 4.5s ease-in-out infinite", transformOrigin: "228px 172px" }}>
-              {/* Roots hint */}
               <path d="M220 172 Q208 175 200 178" fill="none" stroke="#5a3018" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
               <path d="M220 172 Q232 175 242 178" fill="none" stroke="#5a3018" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
 
-              {/* Main trunk */}
               <path d="M220 172 Q218 148 215 128 Q213 112 210 90" fill="none" stroke="url(#pl-trunk)" strokeWidth="11" strokeLinecap="round" />
-              {/* Trunk highlight */}
               <path d="M220 172 Q219 148 217 128 Q215 112 213 90" fill="none" stroke="rgba(255,200,160,0.25)" strokeWidth="4" strokeLinecap="round" />
 
-              {/* Branches */}
               <path d="M213 105 Q196 83 172 68"  fill="none" stroke="#7a4820" strokeWidth="7" strokeLinecap="round" />
               <path d="M211 98  Q232 74 256 60"   fill="none" stroke="#7a4820" strokeWidth="6" strokeLinecap="round" />
               <path d="M215 122 Q194 110 168 96"  fill="none" stroke="#7a4820" strokeWidth="5.5" strokeLinecap="round" />
               <path d="M217 118 Q242 108 270 94"  fill="none" stroke="#7a4820" strokeWidth="5" strokeLinecap="round" />
-              {/* Sub-branches */}
               <path d="M172 68  Q160 55 152 46"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
               <path d="M256 60  Q266 47 274 40"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
               <path d="M168 96  Q156 86 148 78"   fill="none" stroke="#8a5830" strokeWidth="3"   strokeLinecap="round" />
               <path d="M270 94  Q280 84 288 77"   fill="none" stroke="#8a5830" strokeWidth="3"   strokeLinecap="round" />
               <path d="M210 90  Q205 78 200 68"   fill="none" stroke="#8a5830" strokeWidth="3.5" strokeLinecap="round" />
-              {/* Tiny twigs */}
               <path d="M152 46  Q148 38 144 32"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
               <path d="M274 40  Q280 32 284 25"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
               <path d="M200 68  Q195 60 190 54"   fill="none" stroke="#9a6838" strokeWidth="2"   strokeLinecap="round" />
 
-              {/* ── Blossom clusters ── */}
-              {/* Center-top */}
               <circle cx="210" cy="74"  r="24" fill="rgba(255,168,190,0.82)" />
               <circle cx="196" cy="70"  r="19" fill="rgba(255,183,197,0.86)" />
               <circle cx="226" cy="67"  r="20" fill="rgba(255,155,182,0.80)" />
               <circle cx="209" cy="56"  r="15" fill="rgba(255,195,210,0.78)" />
               <circle cx="220" cy="82"  r="13" fill="rgba(255,175,195,0.75)" />
 
-              {/* Left upper cluster */}
               <circle cx="163" cy="58"  r="20" fill="rgba(255,173,193,0.83)" />
               <circle cx="149" cy="55"  r="15" fill="rgba(255,183,197,0.87)" />
               <circle cx="168" cy="44"  r="14" fill="rgba(255,162,185,0.80)" />
               <circle cx="152" cy="68"  r="12" fill="rgba(255,187,202,0.74)" />
               <circle cx="143" cy="44"  r="11" fill="rgba(255,195,212,0.76)" />
 
-              {/* Right upper cluster */}
               <circle cx="264" cy="55"  r="19" fill="rgba(255,168,190,0.82)" />
               <circle cx="278" cy="50"  r="15" fill="rgba(255,183,197,0.86)" />
               <circle cx="272" cy="67"  r="13" fill="rgba(255,158,183,0.79)" />
               <circle cx="257" cy="42"  r="14" fill="rgba(255,192,208,0.81)" />
               <circle cx="285" cy="65"  r="10" fill="rgba(255,178,198,0.73)" />
 
-              {/* Left mid cluster */}
               <circle cx="158" cy="90"  r="16" fill="rgba(255,175,195,0.80)" />
               <circle cx="145" cy="87"  r="13" fill="rgba(255,183,197,0.84)" />
               <circle cx="163" cy="77"  r="11" fill="rgba(255,162,185,0.77)" />
 
-              {/* Right mid cluster */}
               <circle cx="278" cy="90"  r="15" fill="rgba(255,170,192,0.79)" />
               <circle cx="291" cy="86"  r="12" fill="rgba(255,183,197,0.82)" />
               <circle cx="284" cy="77"  r="11" fill="rgba(255,158,182,0.76)" />
 
-              {/* Top twig blossoms */}
               <circle cx="144" cy="33"  r="11" fill="rgba(255,185,205,0.80)" />
               <circle cx="283" cy="28"  r="11" fill="rgba(255,175,198,0.80)" />
               <circle cx="189" cy="56"  r="12" fill="rgba(255,180,200,0.78)" />
 
-              {/* Blossom highlight dots (five-petal flower centers) */}
               {[
                 [200,68],[214,62],[210,78],[224,72],[165,56],
                 [152,53],[271,53],[257,68],[278,87],[144,86],
@@ -556,101 +515,69 @@ function Preloader({ onFinish }) {
               ))}
             </g>
 
-            {/* ── Petal on ground near tree ── */}
             <ellipse cx="197" cy="174" rx="5"  ry="2.8" fill="rgba(255,183,197,0.68)" transform="rotate(-18,197,174)" />
             <ellipse cx="250" cy="175" rx="4.5" ry="2.5" fill="rgba(255,175,193,0.60)" transform="rotate(12,250,175)" />
             <ellipse cx="175" cy="176" rx="4"   ry="2.2" fill="rgba(255,190,207,0.62)" transform="rotate(-8,175,176)" />
 
-            {/* ── CHIBI CHARACTER (sitting under tree) ── */}
             <g style={{ animation: "pl-breathe 3.2s ease-in-out infinite", transformOrigin: "142px 165px" }}>
-              {/* Ground shadow */}
               <ellipse cx="142" cy="175" rx="22" ry="5.5" fill="rgba(0,0,0,0.14)" />
 
-              {/* ── Legs (sitting/folded) ── */}
               <path d="M134 162 Q125 169 120 174" fill="none" stroke="#f2c2a2" strokeWidth="7" strokeLinecap="round" />
               <path d="M150 162 Q156 169 162 174" fill="none" stroke="#f2c2a2" strokeWidth="7" strokeLinecap="round" />
-              {/* Shoes */}
               <ellipse cx="118" cy="175" rx="7"  ry="4.5" fill="#c84880" />
               <ellipse cx="163" cy="175" rx="7"  ry="4.5" fill="#c84880" />
               <ellipse cx="117" cy="174" rx="5"  ry="2.5" fill="rgba(255,255,255,0.25)" />
               <ellipse cx="162" cy="174" rx="5"  ry="2.5" fill="rgba(255,255,255,0.25)" />
 
-              {/* ── Kimono body ── */}
               <path d="M130 148 Q126 157 122 167 Q131 170 142 170 Q153 170 162 167 Q158 157 154 148 Z" fill="#ffb7c5" />
-              {/* Kimono pattern stripes */}
               <path d="M130 148 Q128 153 127 159 L133 159 Q133 153 132 148 Z" fill="rgba(220,90,130,0.35)" />
               <path d="M152 148 Q154 153 155 159 L149 159 Q149 153 150 148 Z" fill="rgba(220,90,130,0.35)" />
-              {/* Inner collar */}
               <path d="M136 148 Q142 144 148 148" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
-              {/* Obi (sash) */}
               <rect x="126" y="156" width="32" height="8" rx="4" fill="#e0608a" />
               <rect x="126" y="157" width="32" height="3" rx="1.5" fill="rgba(255,255,255,0.20)" />
-              {/* Obi knot (musubi) visible at side */}
               <ellipse cx="163" cy="161" rx="6" ry="5" fill="#e0608a" />
               <ellipse cx="163" cy="160" rx="4" ry="3" fill="rgba(255,140,180,0.5)" />
 
-              {/* ── Arms ── */}
               <path d="M130 152 Q121 157 116 164" fill="none" stroke="#f2c2a2" strokeWidth="6" strokeLinecap="round" />
               <path d="M154 152 Q163 157 168 164" fill="none" stroke="#f2c2a2" strokeWidth="6" strokeLinecap="round" />
-              {/* Hands (holding knees) */}
               <circle cx="114" cy="165" r="5.5" fill="#f2c2a2" />
               <circle cx="169" cy="165" r="5.5" fill="#f2c2a2" />
-              {/* Sleeve cuffs */}
               <ellipse cx="115" cy="162" rx="6" ry="3.5" fill="rgba(255,183,197,0.6)" />
               <ellipse cx="168" cy="162" rx="6" ry="3.5" fill="rgba(255,183,197,0.6)" />
 
-              {/* ── Neck ── */}
               <rect x="135" y="141" width="12" height="10" rx="5" fill="#f2c2a2" />
 
-              {/* ── Head ── */}
               <ellipse cx="142" cy="132" rx="18" ry="17" fill="#f7cab0" />
 
-              {/* ── Hair (back/dark layer) ── */}
               <ellipse cx="142" cy="124" rx="19" ry="15" fill="#2c1808" />
-              {/* Side hair curtains */}
               <path d="M124 127 Q118 138 119 150 Q125 153 128 150 Q124 139 126 127 Z" fill="#2c1808" />
               <path d="M160 127 Q166 138 165 150 Q159 153 156 150 Q160 139 158 127 Z" fill="#2c1808" />
-              {/* Front bangs */}
               <path d="M124 124 Q128 116 142 114 Q156 116 160 124" fill="#2c1808" />
-              {/* Ahoge (cute cowlick) */}
               <path d="M142 114 Q146 105 143 98"  fill="none" stroke="#2c1808" strokeWidth="2.8" strokeLinecap="round" />
               <circle cx="143" cy="97" r="3.2" fill="#2c1808" />
-              {/* Hair highlight */}
               <path d="M130 120 Q136 115 144 116" fill="none" stroke="rgba(120,70,30,0.4)" strokeWidth="2" strokeLinecap="round" />
-              {/* Hair ornament / kanzashi */}
               <circle cx="157" cy="122" r="6"   fill="#ff5599" />
               <circle cx="157" cy="122" r="3.5" fill="#ffb7c5" />
               <circle cx="157" cy="122" r="1.5" fill="#ff3377" />
-              {/* Kanzashi stick */}
               <line x1="157" y1="128" x2="160" y2="136" stroke="#d4488a" strokeWidth="1.5" strokeLinecap="round" />
 
-              {/* ── Face ── */}
-              {/* Eyes */}
               <ellipse cx="134" cy="133" rx="4.5" ry="5" fill="#1c0e04" />
               <ellipse cx="150" cy="133" rx="4.5" ry="5" fill="#1c0e04" />
-              {/* Eye iris color */}
               <ellipse cx="134" cy="133" rx="3.2" ry="3.8" fill="#4a2890" />
               <ellipse cx="150" cy="133" rx="3.2" ry="3.8" fill="#4a2890" />
-              {/* Eye shine */}
               <circle cx="135.5" cy="130.5" r="1.8" fill="white" />
               <circle cx="151.5" cy="130.5" r="1.8" fill="white" />
               <circle cx="134.5" cy="134.5" r="0.9" fill="rgba(255,255,255,0.65)" />
               <circle cx="150.5" cy="134.5" r="0.9" fill="rgba(255,255,255,0.65)" />
-              {/* Eyelashes upper */}
               <path d="M129 129 Q131.5 126 134 129" fill="none" stroke="#1c0e04" strokeWidth="1.2" strokeLinecap="round" />
               <path d="M146 129 Q148.5 126 151 129" fill="none" stroke="#1c0e04" strokeWidth="1.2" strokeLinecap="round" />
-              {/* Blush / rosy cheeks */}
               <ellipse cx="127" cy="139" rx="6" ry="3.5" fill="rgba(255,120,150,0.38)" />
               <ellipse cx="157" cy="139" rx="6" ry="3.5" fill="rgba(255,120,150,0.38)" />
-              {/* Nose */}
               <circle cx="142" cy="139" r="1.3" fill="rgba(190,120,100,0.55)" />
-              {/* Smile */}
               <path d="M136 144 Q142 149 148 144" fill="none" stroke="#c07070" strokeWidth="1.8" strokeLinecap="round" />
-              {/* Cute teeth hint */}
               <rect x="139" y="144" width="6" height="2.5" rx="1" fill="rgba(255,255,255,0.7)" />
             </g>
 
-            {/* ── Firefly sparkles ── */}
             {[[96,140],[182,108],[310,130],[330,60]].map(([cx,cy],i)=>(
               <circle
                 key={i}
@@ -660,7 +587,6 @@ function Preloader({ onFinish }) {
               />
             ))}
 
-            {/* ── Path/stone walkway to torii ── */}
             {[0,1,2,3].map(i=>(
               <ellipse key={i} cx={67.5+i*0} cy={178+i*(-0.5)} rx={10-i} ry={3-i*0.2}
                 fill="rgba(200,180,160,0.5)"
@@ -670,7 +596,6 @@ function Preloader({ onFinish }) {
           </svg>
         </div>
 
-        {/* ── JAPANESE KANJI TITLE ── */}
         <div style={{ textAlign: "center", marginBottom: 22 }}>
           <p
             style={{
@@ -714,7 +639,6 @@ function Preloader({ onFinish }) {
   );
 }
 
-/* ====================== CUSTOM CURSOR ====================== */
 function CustomCursor() {
   const dotRef    = useRef(null);
   const glowRef   = useRef(null);
@@ -769,7 +693,6 @@ function CustomCursor() {
   );
 }
 
-/* ====================== PAGE TRANSITION OVERLAY ====================== */
 function PageTransition() {
   const overlayRef = useRef(null);
   const textRef    = useRef(null);
@@ -792,7 +715,6 @@ function PageTransition() {
   );
 }
 
-/* ====================== SPLIT TEXT REVEAL ====================== */
 function SplitTextReveal({ text, className }) {
   const containerRef = useRef(null);
   const reducedMotion = useContext(MotionContext);
@@ -815,7 +737,6 @@ function SplitTextReveal({ text, className }) {
   );
 }
 
-/* ====================== MAGNETIC BUTTON WRAPPER ====================== */
 function MagneticBtn({ children, strength = 0.38, className = "" }) {
   const wrapRef  = useRef(null);
   const innerRef = useRef(null);
@@ -845,7 +766,6 @@ function MagneticBtn({ children, strength = 0.38, className = "" }) {
   );
 }
 
-/* ====================== HOVER PREVIEW ON LINK BUTTON ====================== */
 function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   const previewRef = useRef(null);
   const hasPreview = !!previewBg;
@@ -881,12 +801,10 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
     </div>
   );
 }
-
-/* ====================== SAKURA SOUND ENGINE (VOLUME TELAH DISESUAIKAN) ====================== */
 class SakuraSoundEngine {
   constructor() {
     this.ctx = null; this.masterGain = null; this.nodes = []; this.playing = false;
-    this._currentVolume = 0.35;   // ✅ Dinaikkan dari 0.12 → 0.35
+    this._currentVolume = 0.35;  
     this._chimeInterval = null;
   }
 
@@ -964,7 +882,6 @@ class SakuraSoundEngine {
     this.ctx=new(window.AudioContext||window.webkitAudioContext)();
     this.masterGain=this.ctx.createGain(); this.masterGain.gain.value=0; this.masterGain.connect(this.ctx.destination);
 
-    // ✅ Gain lapisan angin juga naik
     this._addBreezeLayer({lfoFreq:0.06,filterFreq:800, filterQ:0.4,gain:0.55,lfoDepth:0.22});
     this._addBreezeLayer({lfoFreq:0.12,filterFreq:1800,filterQ:0.6,gain:0.35,lfoDepth:0.16});
     this._addBreezeLayer({lfoFreq:0.03,filterFreq:3500,filterQ:0.3,gain:0.2, lfoDepth:0.08});
@@ -1006,14 +923,13 @@ class SakuraSoundEngine {
   }
 }
 
-/* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
   const [muted, setMuted] = useState(() => localStorage.getItem("sakuraMuted") === "true");
   const storedVol = useRef(0.35);  // ✅ Sesuai default engine
 
   const toggleMute = () => {
     const e = engineRef.current;
-    if (!e) return; // engine belum siap
+    if (!e) return; 
     if (muted) { e.setVolume(storedVol.current); setMuted(false); localStorage.setItem("sakuraMuted","false"); }
     else { storedVol.current=e._currentVolume; e.setVolume(0); setMuted(true); localStorage.setItem("sakuraMuted","true"); }
   };
@@ -1038,7 +954,6 @@ function AudioControl({ engineRef }) {
   );
 }
 
-/* ====================== SAKURA CANVAS BACKGROUND ====================== */
 function SakuraBackground() {
   const canvasRef = useRef(null);
 
@@ -1124,7 +1039,6 @@ function SakuraBackground() {
   return <canvas ref={canvasRef} className="neon-city-canvas" />;
 }
 
-/* ====================== SECTION LABEL ====================== */
 function SectionLabel({ text }) {
   return (
     <div className="section-label">
@@ -1135,7 +1049,6 @@ function SectionLabel({ text }) {
   );
 }
 
-/* ====================== SWIPE DETECTION ====================== */
 function SwipeNotifier() {
   const [message, setMessage] = useState(null);
   const cardRef = useRef(null);
@@ -1165,7 +1078,6 @@ function SwipeNotifier() {
   );
 }
 
-/* ====================== EASTER EGG ====================== */
 function SecretSection({ onClose }) {
   const overlayRef = useRef(null);
   useEffect(() => { if(overlayRef.current) gsap.fromTo(overlayRef.current,{opacity:0},{opacity:1,duration:0.5}); }, []);
@@ -1181,7 +1093,6 @@ function SecretSection({ onClose }) {
   );
 }
 
-/* ====================== APP ====================== */
 export default function App() {
   const engineRef  = useRef(null);
   const fogRef     = useRef(null);
@@ -1200,7 +1111,6 @@ export default function App() {
     ogImage: "/src/assets/fotome.jpg",
   });
 
-  // Lenis smooth scroll (non‑reduced motion only)
   useEffect(() => {
     if (reducedMotion) return;
     const lenis = new Lenis({ duration: 1.3, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
@@ -1211,7 +1121,6 @@ export default function App() {
     return () => { lenis.destroy(); gsap.ticker.remove(tickerFn); };
   }, [reducedMotion]);
 
-  // Scroll‑based parallax & glows
   useEffect(() => {
     if (reducedMotion) return;
     gsap.to(cardRef.current, { y: -30, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1.5 } });
@@ -1222,9 +1131,8 @@ export default function App() {
     gsap.to(fogRef.current, { opacity: 0.4, ease: "none", scrollTrigger: { trigger: ".page", start: "top top", end: "50% top", scrub: true } });
   }, [reducedMotion]);
 
-  // Sound engine HANYA setelah preloader selesai
   useEffect(() => {
-    if (loading) return;                // masih loading → jangan buat engine
+    if (loading) return;                
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
 
