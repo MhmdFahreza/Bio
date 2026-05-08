@@ -544,7 +544,7 @@ body {
 
 .name {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(1.5rem, 5.5vw, 2.1rem);
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
   letter-spacing: clamp(0.02em, 0.06em, 0.08em);
   line-height: 1.1;
   color: var(--text-dark);
@@ -970,13 +970,12 @@ body {
 
 @media (max-width: 380px) {
   .name {
-    font-size: 1.35rem;
+    font-size: 1.7rem; 
     letter-spacing: 0.03em;
   }
-  /* Kurangi padding card agar teks punya lebih banyak ruang */
   .card {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left: 12px; 
+    padding-right: 12px;
   }
 }
 
@@ -985,9 +984,8 @@ body {
     padding: 60px 24px 80px;
   }
   .card {
-    max-width: 420px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .name {
     font-size: 2.25rem;
