@@ -882,12 +882,14 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
   );
 }
 
-/* ====================== SAKURA SOUND ENGINE ====================== */
+/* ====================== SAKURA SOUND ENGINE (VOLUME TELAH DISESUAIKAN) ====================== */
 class SakuraSoundEngine {
   constructor() {
     this.ctx = null; this.masterGain = null; this.nodes = []; this.playing = false;
-    this._currentVolume = 0.12; this._chimeInterval = null;
+    this._currentVolume = 0.35;   // ✅ Dinaikkan dari 0.12 → 0.35
+    this._chimeInterval = null;
   }
+
   _createBreezeBuffer(seconds = 10) {
     const sr = this.ctx.sampleRate;
     const buf = this.ctx.createBuffer(1, sr * seconds, sr);
@@ -902,6 +904,7 @@ class SakuraSoundEngine {
     }
     return buf;
   }
+
   _addBreezeLayer({ lfoFreq, filterFreq, filterQ, gain, lfoDepth }) {
     const src = this.ctx.createBufferSource();
     src.buffer = this._createBreezeBuffer(10); src.loop = true;
@@ -916,17 +919,7 @@ class SakuraSoundEngine {
     lfo.start(0); src.start(0, Math.random()*10);
     this.nodes.push({ src, lfo });
   }
-  _addAmbientPad() {
-    [220,330].forEach((freq) => {
-      const osc = this.ctx.createOscillator(); osc.type="sine"; osc.frequency.value=freq; osc.detune.value=(Math.random()-0.5)*8;
-      const padG = this.ctx.createGain(); padG.gain.value=0.025;
-      const trem = this.ctx.createOscillator(); trem.type="sine"; trem.frequency.value=0.08+Math.random()*0.06;
-      const tremG = this.ctx.createGain(); tremG.gain.value=0.012;
-      osc.connect(padG); trem.connect(tremG); tremG.connect(padG.gain); padG.connect(this.masterGain);
-      osc.start(0); trem.start(0);
-      this.nodes.push({ src: osc, lfo: trem });
-    });
-  }
+
   _playChime() {
     if (!this.ctx||!this.playing) return;
     const NOTES=[523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.51];
@@ -935,19 +928,23 @@ class SakuraSoundEngine {
     const osc2=this.ctx.createOscillator(); osc2.type="triangle"; osc2.frequency.value=freq*2;
     const osc3=this.ctx.createOscillator(); osc3.type="sine"; osc3.frequency.value=freq*3.01;
     const cG=this.ctx.createGain();
-    const decay=2.5+Math.random()*2; const peak=0.06+Math.random()*0.04;
+    const decay=2.5+Math.random()*2; const peak=0.1+Math.random()*0.05; // ✅ Naik dari 0.06+0.04
     cG.gain.setValueAtTime(0,now); cG.gain.linearRampToValueAtTime(peak,now+0.005); cG.gain.exponentialRampToValueAtTime(0.0001,now+decay);
-    const oG=this.ctx.createGain(); oG.gain.value=0.3;
-    const tG=this.ctx.createGain(); tG.gain.value=0.08;
+    const oG=this.ctx.createGain(); oG.gain.value=0.4;   // ✅ Naik dari 0.3
+    const tG=this.ctx.createGain(); tG.gain.value=0.12;  // ✅ Naik dari 0.08
     osc1.connect(cG); osc2.connect(oG); oG.connect(cG); osc3.connect(tG); tG.connect(cG); cG.connect(this.masterGain);
     [osc1,osc2,osc3].forEach(o=>{ o.start(now); o.stop(now+decay+0.1); });
   }
+
   _startChimeLoop() {
     const next=()=>{ if(!this.playing) return; this._chimeInterval=setTimeout(()=>{ this._playChime(); if(Math.random()<0.3) setTimeout(()=>this._playChime(),200+Math.random()*400); next(); },1500+Math.random()*3500); };
     setTimeout(()=>{ this._playChime(); next(); },800);
   }
+
   _stopChimeLoop() { if(this._chimeInterval){clearTimeout(this._chimeInterval);this._chimeInterval=null;} }
+
   _startBirdLoop() { const sch=()=>{ if(!this.playing) return; this._birdTimeout=setTimeout(()=>{ this._playBirdChirp(); sch(); },4000+Math.random()*8000); }; setTimeout(()=>sch(),3000); }
+
   _playBirdChirp() {
     if(!this.ctx||!this.playing) return;
     const now=this.ctx.currentTime; const bf=1800+Math.random()*1200;
@@ -955,21 +952,25 @@ class SakuraSoundEngine {
     osc.frequency.setValueAtTime(bf,now); osc.frequency.linearRampToValueAtTime(bf*1.3,now+0.05);
     osc.frequency.linearRampToValueAtTime(bf*0.9,now+0.12); osc.frequency.linearRampToValueAtTime(bf*1.15,now+0.18);
     const bG=this.ctx.createGain();
-    bG.gain.setValueAtTime(0,now); bG.gain.linearRampToValueAtTime(0.02,now+0.01);
-    bG.gain.linearRampToValueAtTime(0.015,now+0.1); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.25);
+    bG.gain.setValueAtTime(0,now); bG.gain.linearRampToValueAtTime(0.035,now+0.01);  // ✅ Naik dari 0.02
+    bG.gain.linearRampToValueAtTime(0.025,now+0.1); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.25);
     osc.connect(bG); bG.connect(this.masterGain); osc.start(now); osc.stop(now+0.3);
   }
+
   _stopBirdLoop() { if(this._birdTimeout){clearTimeout(this._birdTimeout);this._birdTimeout=null;} }
+
   init() {
     if(this.ctx) return;
     this.ctx=new(window.AudioContext||window.webkitAudioContext)();
     this.masterGain=this.ctx.createGain(); this.masterGain.gain.value=0; this.masterGain.connect(this.ctx.destination);
-    this._addBreezeLayer({lfoFreq:0.06,filterFreq:800, filterQ:0.4,gain:0.35,lfoDepth:0.18});
-    this._addBreezeLayer({lfoFreq:0.12,filterFreq:1800,filterQ:0.6,gain:0.2, lfoDepth:0.12});
-    this._addBreezeLayer({lfoFreq:0.03,filterFreq:3500,filterQ:0.3,gain:0.1, lfoDepth:0.06});
-    this._addAmbientPad();
+
+    // ✅ Gain lapisan angin juga naik
+    this._addBreezeLayer({lfoFreq:0.06,filterFreq:800, filterQ:0.4,gain:0.55,lfoDepth:0.22});
+    this._addBreezeLayer({lfoFreq:0.12,filterFreq:1800,filterQ:0.6,gain:0.35,lfoDepth:0.16});
+    this._addBreezeLayer({lfoFreq:0.03,filterFreq:3500,filterQ:0.3,gain:0.2, lfoDepth:0.08});
     this.setVolume(this._currentVolume,0);
   }
+
   play() {
     if(!this.ctx) this.init();
     if(this.ctx.state==="suspended") this.ctx.resume();
@@ -978,6 +979,7 @@ class SakuraSoundEngine {
     this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+2.5);
     this.playing=true; this._startChimeLoop(); this._startBirdLoop();
   }
+
   pause() {
     if(!this.ctx) return;
     const now=this.ctx.currentTime;
@@ -985,6 +987,7 @@ class SakuraSoundEngine {
     this.masterGain.gain.linearRampToValueAtTime(0,now+1.0);
     this.playing=false; this._stopChimeLoop(); this._stopBirdLoop();
   }
+
   setVolume(val,ramp=0.3) {
     this._currentVolume=Math.min(1,Math.max(0,val));
     if(this.ctx&&this.masterGain){
@@ -993,7 +996,9 @@ class SakuraSoundEngine {
       this.masterGain.gain.linearRampToValueAtTime(this._currentVolume,now+ramp);
     }
   }
+
   isPlaying(){return this.playing;}
+
   destroy(){
     this._stopChimeLoop(); this._stopBirdLoop();
     this.nodes.forEach(({src,lfo})=>{ try{src.stop()}catch(_){} try{lfo.stop()}catch(_){} });
@@ -1004,7 +1009,7 @@ class SakuraSoundEngine {
 /* ====================== AUDIO CONTROL ====================== */
 function AudioControl({ engineRef }) {
   const [muted, setMuted] = useState(() => localStorage.getItem("sakuraMuted") === "true");
-  const storedVol = useRef(0.1);
+  const storedVol = useRef(0.35);  // ✅ Sesuai default engine
 
   const toggleMute = () => {
     const e = engineRef.current;
