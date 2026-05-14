@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 /* eslint-disable no-empty */
 /* eslint-disable no-unused-vars */
 import {
@@ -1540,6 +1541,7 @@ function LinkButton({ label, icon, href, index, previewBg, previewDesc }) {
     </div>
   );
 }
+
 class SakuraSoundEngine {
   constructor() {
     this.ctx = null;
@@ -1804,33 +1806,16 @@ class SakuraSoundEngine {
   }
 }
 
-function AudioControl({ engineRef }) {
-  const [muted, setMuted] = useState(
-    () => localStorage.getItem("sakuraMuted") === "true",
-  );
-  const storedVol = useRef(0.35);
-
-  const toggleMute = () => {
-    const e = engineRef.current;
-    if (!e) return;
-    if (muted) {
-      e.setVolume(storedVol.current);
-      setMuted(false);
-      localStorage.setItem("sakuraMuted", "false");
-    } else {
-      storedVol.current = e._currentVolume;
-      e.setVolume(0);
-      setMuted(true);
-      localStorage.setItem("sakuraMuted", "true");
-    }
-  };
-
+function AudioControl({ muted, onToggle, engineRef }) {
+  // Menampilkan gelombang kecil jika suara tidak dimatikan
+  const isPlaying = engineRef.current?.isPlaying() && !muted;
+  
   return (
     <div className="audio-wrap">
       <MagneticBtn strength={0.25}>
         <button
           className={`audio-btn ${!muted ? "audio-btn--playing" : ""}`}
-          onClick={toggleMute}
+          onClick={onToggle}
           aria-label={muted ? "Nyalakan suara" : "Matikan suara"}
         >
           {muted ? (
@@ -1842,7 +1827,7 @@ function AudioControl({ engineRef }) {
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           )}
-          {!muted && (
+          {isPlaying && (
             <div className="audio-wave">
               <span />
               <span />
@@ -2109,7 +2094,7 @@ function SecretSection({ onClose }) {
 }
 
 // ── Pop‑up untuk mengaktifkan suara ──
-function SoundEnablePrompt({ engineRef, onClose }) {
+function SoundEnablePrompt({ engineRef, onClose, onEnable }) {
   const overlayRef = useRef(null);
   useEffect(() => {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
@@ -2123,7 +2108,9 @@ function SoundEnablePrompt({ engineRef, onClose }) {
     if (engine && !engine.playing) {
       engine.play();
     }
-    onClose();
+    // Pastikan volume tidak nol dan engine berjalan
+    engine.setVolume(0.35, 0.5);
+    onEnable(); // Akan mengubah state muted di App menjadi false dan menutup prompt
   };
 
   return (
@@ -2156,6 +2143,35 @@ export default function App() {
   const [konamiActive, setKonamiActive] = useState(false);
   const [showSoundPrompt, setShowSoundPrompt] = useState(false);
   const reducedMotion = useReducedMotion();
+
+  // State muted dipindahkan ke sini agar satu sumber kebenaran
+  const [muted, setMuted] = useState(() => {
+    try {
+      return localStorage.getItem("sakuraMuted") === "true";
+    } catch (_) {
+      return false;
+    }
+  });
+
+  const toggleMute = useCallback(() => {
+    setMuted((prev) => {
+      const next = !prev;
+      localStorage.setItem("sakuraMuted", String(next));
+      return next;
+    });
+  }, []);
+
+  // Sinkronkan volume engine setiap kali muted berubah
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine || !engine.ctx) return;
+    if (muted) {
+      engine.setVolume(0, 0.2);
+    } else {
+      engine.setVolume(0.35, 0.3);
+      if (!engine.playing) engine.play();
+    }
+  }, [muted]);
 
   useKonamiCode(() => setKonamiActive(true));
   const triggerSakuraBurst = useSakuraBurst(avatarRef);
@@ -2259,16 +2275,20 @@ export default function App() {
     const engine = new SakuraSoundEngine();
     engineRef.current = engine;
 
-    const wasMuted = localStorage.getItem("sakuraMuted") === "true";
-    // coba mainkan mesin
-    engine.play();
+    // Cek status mute dari state (bukan localStorage langsung)
+    if (!muted) {
+      engine.play();
+      engine.setVolume(0.35, 0.5);
+    } else {
+      engine.play(); // tetap init, tapi volume 0
+      engine.setVolume(0, 0);
+    }
 
-    // beri waktu sebentar untuk memeriksa apakah context masih suspended
+    // Periksa apakah AudioContext suspended (kebijakan autoplay browser)
     const checkTimer = setTimeout(() => {
       if (engine.ctx && engine.ctx.state === "suspended") {
         setShowSoundPrompt(true);
-        // jangan mainkan suara sebelum interaksi pengguna
-        engine.pause(); // matikan agar tidak berbunyi tiba‑tiba setelah resume
+        // Jangan paksa play sebelum interaksi; biarkan prompt muncul
       }
     }, 500);
 
@@ -2276,7 +2296,8 @@ export default function App() {
       clearTimeout(checkTimer);
       engine.destroy();
     };
-  }, [loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]); // muted sengaja tidak disertakan agar inisialisasi hanya sekali
 
   let globalIndex = 0;
 
@@ -2298,7 +2319,7 @@ export default function App() {
           <div className="corner-glow corner-glow--br" />
           <div className="corner-glow corner-glow--ct" />
         </div>
-        <AudioControl engineRef={engineRef} />
+        <AudioControl muted={muted} onToggle={toggleMute} engineRef={engineRef} />
         <section className="hero">
           <main ref={cardRef} className="card">
             <div className="avatar-wrap">
@@ -2341,6 +2362,10 @@ export default function App() {
           <SoundEnablePrompt
             engineRef={engineRef}
             onClose={() => setShowSoundPrompt(false)}
+            onEnable={() => {
+              setMuted(false);
+              setShowSoundPrompt(false);
+            }}
           />
         )}
       </div>
