@@ -1,4 +1,4 @@
- import {
+import {
   useEffect,
   useRef,
   useState,
@@ -54,7 +54,7 @@ const useSEO = ({ title, description, ogImage }) => {
   }, [title, description, ogImage]);
 };
 
-// SVG icon components (unchanged)
+// SVG icon components (tetap, tidak diubah)
 const LinkedInIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -481,7 +481,8 @@ function SakuraBackground() {
       "rgba(248,140,170,0.80)",
       "rgba(255,175,195,0.90)",
     ];
-    const petals = Array.from({ length: 55 }, () => ({
+    // ⬇️ dikurangi dari 55 → 25 untuk performa
+    const petals = Array.from({ length: 25 }, () => ({
       x: Math.random() * W * 1.2 - W * 0.1,
       y: Math.random() * H * 1.2 - H * 0.3,
       size: 6 + Math.random() * 12,
@@ -497,7 +498,8 @@ function SakuraBackground() {
       scaleY: 0.5 + Math.random() * 0.5,
     }));
 
-    const winds = Array.from({ length: 35 }, () => ({
+    // ⬇️ dikurangi dari 35 → 15 untuk performa
+    const winds = Array.from({ length: 15 }, () => ({
       x: Math.random() * W * 1.5 - W * 0.25,
       y: Math.random() * H,
       len: 60 + Math.random() * 160,
@@ -695,8 +697,8 @@ export default function App() {
   useEffect(() => {
     if (reducedMotion) return;
     const lenis = new Lenis({
-      duration: 1.3,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.0, // sedikit dikurangi
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -8 * t)), // lebih ringan
       smoothWheel: true,
     });
     lenis.on("scroll", ScrollTrigger.update);
@@ -711,68 +713,18 @@ export default function App() {
 
   useEffect(() => {
     if (reducedMotion) return;
+    // hanya card parallax yang dipertahankan
     gsap.to(cardRef.current, {
-      y: -30,
+      y: -20,
       ease: "none",
       scrollTrigger: {
         trigger: ".hero",
         start: "top top",
         end: "bottom top",
-        scrub: 1.5,
+        scrub: 1.2,
       },
     });
-    gsap.to(".corner-glow--tl", {
-      y: -60,
-      x: -30,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".page",
-        start: "top top",
-        end: "bottom top",
-        scrub: 2,
-      },
-    });
-    gsap.to(".corner-glow--br", {
-      y: 60,
-      x: 30,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".page",
-        start: "top top",
-        end: "bottom top",
-        scrub: 2,
-      },
-    });
-    gsap.to(".corner-glow--tr", {
-      y: -40,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".page",
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5,
-      },
-    });
-    gsap.to(".corner-glow--bl", {
-      y: 40,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".page",
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5,
-      },
-    });
-    gsap.to(fogRef.current, {
-      opacity: 0.4,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".page",
-        start: "top top",
-        end: "50% top",
-        scrub: true,
-      },
-    });
+    // animasi corner glows & fog dihapus agar scroll ringan
 
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
