@@ -14,11 +14,9 @@
   --text-mid: #5a4a5e;
   --text-soft: #9a8a9e;
 
-  /* card background tanpa blur */
   --card-bg: rgba(255, 250, 252, 0.82);
   --card-border: rgba(255, 183, 197, 0.55);
 
-  /* shadow yang lebih ringan */
   --shadow-card: 0 8px 32px rgba(180, 60, 100, 0.12), 0 2px 8px rgba(200, 80, 120, 0.08);
   --shadow-btn: 0 2px 8px rgba(200, 80, 120, 0.1), 0 4px 16px rgba(200, 80, 120, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --shadow-btn-hover: 0 4px 16px rgba(200, 80, 120, 0.2), 0 8px 24px rgba(200, 80, 120, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
@@ -47,6 +45,18 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   cursor: auto;
+}
+
+/* ===== Background Image Statis (sakura-bg.png) ===== */
+.sakura-bg-static {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url("/sakura-bg.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 /* ===== Page Transition ===== */
@@ -132,7 +142,7 @@ body {
   box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.25);
   z-index: 20;
   will-change: opacity, transform;
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .hover-preview::after {
@@ -200,11 +210,11 @@ body {
   }
 }
 
-/* ===== Background Canvas ===== */
+/* ===== Canvas (hanya petal & wind) ===== */
 .neon-city-canvas {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -228,9 +238,8 @@ body {
 .corner-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.75;
-  will-change: transform, opacity;
+  filter: blur(40px);
+  opacity: 0.5;
 }
 
 .corner-glow--tl {
@@ -257,7 +266,7 @@ body {
   top: -30px; left: 50%; transform: translateX(-50%);
   width: 500px; height: 250px;
   background: radial-gradient(ellipse, rgba(255,190,210,0.35) 0%, rgba(255,220,235,0.15) 50%, transparent 70%);
-  filter: blur(100px);
+  filter: blur(40px);
 }
 
 /* ===== Hero & Card ===== */
@@ -280,16 +289,19 @@ body {
   flex-direction: column;
   align-items: center;
 
-  background: var(--card-bg);            /* tanpa backdrop-filter */
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-card);
   padding: 36px 26px 30px;
-  box-shadow: var(--shadow-card);        /* lebih ringan */
-  will-change: transform;
-
-  /* hanya animasi masuk, tanpa float */
+  box-shadow: var(--shadow-card);
+  will-change: transform, opacity;
   animation: card-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
   overflow: visible;
+}
+
+@keyframes card-in {
+  0% { opacity: 0; transform: translateY(50px) scale(0.94); }
+  100% { opacity: 1; transform: translateY(0) scale(1); will-change: auto; }
 }
 
 .card > *:not(.hover-preview) {
@@ -309,7 +321,7 @@ body {
   inset: -5px;
   border-radius: 50%;
   background: conic-gradient(#ffb7c5 0deg, #ffd1dc 90deg, #f8a0b4 180deg, #e8738a 270deg, #ffb7c5 360deg);
-  animation: spin 6s linear infinite;
+  animation: none;
   filter: blur(0.5px);
 }
 .avatar-ring::after {
@@ -318,7 +330,7 @@ body {
   inset: -4px;
   border-radius: 50%;
   background: conic-gradient(rgba(255,183,197,0.4) 0deg, rgba(255,209,220,0.3) 180deg, rgba(255,183,197,0.4) 360deg);
-  animation: spin 10s linear infinite reverse;
+  animation: none;
   filter: blur(3px);
 }
 .avatar-img {
@@ -544,36 +556,6 @@ body {
   border-color: rgba(232,115,138,0.5);
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 6px 20px rgba(200,80,120,0.2), 0 12px 32px rgba(200,80,120,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
-}
-
-/* ===== Edge Fog ===== */
-.edge-fog {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(255,150,185,0.45) 0%, transparent 18%),
-    linear-gradient(to top, rgba(255,130,175,0.2) 0%, transparent 14%),
-    linear-gradient(to right, rgba(255,140,180,0.18) 0%, transparent 12%),
-    linear-gradient(to left, rgba(255,140,180,0.18) 0%, transparent 12%);
-  opacity: 0.6;
-}
-
-/* ===== Animations ===== */
-@keyframes card-in {
-  0% { opacity: 0; transform: translateY(50px) scale(0.94); filter: blur(4px); }
-  60% { filter: blur(0); }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); filter: blur(2px); }
-  to { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes badge-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(232,115,138,0.45), 0 0 0 0 rgba(232,115,138,0.3); }
-  50% { transform: scale(1.08); box-shadow: 0 4px 16px rgba(232,115,138,0.55), 0 0 0 6px rgba(232,115,138,0); }
 }
 
 /* ===== Scrollbar ===== */

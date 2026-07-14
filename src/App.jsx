@@ -210,7 +210,7 @@ const SOCIALS = [
     href: "https://www.youtube.com/@FareekzYT",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-        <path d="M23.5 6.2s-.23-1.64-.95-2.36c-.9-.95-1.92-.96-2.38-1.01C17.1 2.6 12 2.6 12 2.6s-5.1 0-8.17.23c-.46.05-1.47.06-2.38 1.01C.73 4.56.5 6.2.5 6.2S.27 8.1.27 10v1.87c0 1.9.23 3.8.23 3.8s.23 1.64.95 2.36c.91.95 2.1.92 2.63 1.02C5.87 19.27 12 19.27 12 19.27s5.1 0 8.17-.23c.46-.05 1.47-.06 2.38-1.01.72-.72.95-2.36.95-2.36s.23-1.9.23-3.8V10c0-1.9-.23-3.8-.23-3.8zM9.73 14.59V8.66l6.44 2.97-6.44 2.96z" />
+        <path d="M23.5 6.2s-.23-1.64-.95-2.36c-.9-.95-1.92-.96-2.38-1.01C17.1 2.6 12 2.6 12 2.6s-5.1 0-8.17.23c-.46.05-1.47.06-2.38 1.01C.73 4.56.5 6.2.5 6.2s-.23 1.9-.23 3.8v1.87c0 1.9.23 3.8.23 3.8s.23 1.64.95 2.36c.91.95 2.1.92 2.63 1.02C5.87 19.27 12 19.27 12 19.27s5.1 0 8.17-.23c.46-.05 1.47-.06 2.38-1.01.72-.72.95-2.36.95-2.36s.23-1.9.23-3.8V10c0-1.9-.23-3.8-.23-3.8zM9.73 14.59V8.66l6.44 2.97-6.44 2.96z" />
       </svg>
     ),
   },
@@ -330,6 +330,9 @@ function SplitTextReveal({ text, className }) {
         stagger: 0.032,
         ease: "back.out(1.5)",
         delay: 1.2,
+        onComplete: () => {
+          chars.forEach(el => el.style.willChange = 'auto');
+        }
       },
     );
   }, [reducedMotion]);
@@ -337,7 +340,7 @@ function SplitTextReveal({ text, className }) {
   return (
     <h1 ref={containerRef} className={`${className} name-split`}>
       {text.split("").map((char, i) => (
-        <span key={i} className="char">
+        <span key={i} className="char" style={{ willChange: 'transform, opacity, filter' }}>
           {char === " " ? "\u00A0" : char}
         </span>
       ))}
@@ -466,13 +469,6 @@ function SakuraBackground() {
     let t = 0,
       animId;
 
-    const bgImg = new Image();
-    bgImg.src = "/sakura-bg.png";
-    let bgLoaded = false;
-    bgImg.onload = () => {
-      bgLoaded = true;
-    };
-
     const PETAL_COLORS = [
       "rgba(255,183,197,0.85)",
       "rgba(255,200,210,0.80)",
@@ -481,8 +477,7 @@ function SakuraBackground() {
       "rgba(248,140,170,0.80)",
       "rgba(255,175,195,0.90)",
     ];
-    // ⬇️ dikurangi dari 55 → 25 untuk performa
-    const petals = Array.from({ length: 25 }, () => ({
+    const petals = Array.from({ length: 12 }, () => ({
       x: Math.random() * W * 1.2 - W * 0.1,
       y: Math.random() * H * 1.2 - H * 0.3,
       size: 6 + Math.random() * 12,
@@ -498,8 +493,7 @@ function SakuraBackground() {
       scaleY: 0.5 + Math.random() * 0.5,
     }));
 
-    // ⬇️ dikurangi dari 35 → 15 untuk performa
-    const winds = Array.from({ length: 15 }, () => ({
+    const winds = Array.from({ length: 6 }, () => ({
       x: Math.random() * W * 1.5 - W * 0.25,
       y: Math.random() * H,
       len: 60 + Math.random() * 160,
@@ -537,43 +531,8 @@ function SakuraBackground() {
     const draw = () => {
       t += 0.008;
       ctx.clearRect(0, 0, W, H);
-      const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, "#87CEEB");
-      sky.addColorStop(0.25, "#a8dcf0");
-      sky.addColorStop(0.5, "#c9e8ff");
-      sky.addColorStop(0.75, "#e8d5e0");
-      sky.addColorStop(1, "#fce4ec");
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, W, H);
-      if (bgLoaded) {
-        ctx.globalAlpha = 0.45;
-        const ir = bgImg.width / bgImg.height,
-          cr = W / H;
-        let dw, dh, dx, dy;
-        if (cr > ir) {
-          dw = W;
-          dh = W / ir;
-          dx = 0;
-          dy = (H - dh) / 2;
-        } else {
-          dh = H;
-          dw = H * ir;
-          dy = 0;
-          dx = (W - dw) / 2;
-        }
-        ctx.drawImage(bgImg, dx, dy, dw, dh);
-        ctx.globalAlpha = 1;
-      }
-      [
-        { cx: W * 0.2, cy: H * 0.15, r: W * 0.4, c: "rgba(255,200,220,0.18)" },
-        { cx: W * 0.85, cy: H * 0.1, r: W * 0.35, c: "rgba(255,180,200,0.15)" },
-      ].forEach(({ cx, cy, r, c }) => {
-        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        g.addColorStop(0, c);
-        g.addColorStop(1, "transparent");
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
-      });
+      // Background transparan, gambar sakura-bg.png sudah di layer bawah
+
       winds.forEach((l) => {
         l.x += l.spd;
         if (l.x > W + l.len) {
@@ -593,6 +552,7 @@ function SakuraBackground() {
         ctx.lineWidth = l.w;
         ctx.stroke();
       });
+
       const windX = Math.sin(t * 0.5) * 0.8;
       petals.forEach((p) => {
         p.x += p.driftSpd + windX;
@@ -680,7 +640,6 @@ function SwipeNotifier() {
 }
 
 export default function App() {
-  const fogRef = useRef(null);
   const cardRef = useRef(null);
   const avatarRef = useRef(null);
   const reducedMotion = useReducedMotion();
@@ -697,14 +656,14 @@ export default function App() {
   useEffect(() => {
     if (reducedMotion) return;
     const lenis = new Lenis({
-      duration: 1.0, // sedikit dikurangi
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -8 * t)), // lebih ringan
+      duration: 1.2,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
+      smoothTouch: true,
     });
     lenis.on("scroll", ScrollTrigger.update);
     const tickerFn = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tickerFn);
-    gsap.ticker.lagSmoothing(0);
     return () => {
       lenis.destroy();
       gsap.ticker.remove(tickerFn);
@@ -713,7 +672,6 @@ export default function App() {
 
   useEffect(() => {
     if (reducedMotion) return;
-    // hanya card parallax yang dipertahankan
     gsap.to(cardRef.current, {
       y: -20,
       ease: "none",
@@ -724,7 +682,6 @@ export default function App() {
         scrub: 1.2,
       },
     });
-    // animasi corner glows & fog dihapus agar scroll ringan
 
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -737,8 +694,9 @@ export default function App() {
     <MotionContext.Provider value={reducedMotion}>
       <div className="page">
         <PageTransition />
+        {/* Gambar background statis sebagai pengganti canvas bgImg */}
+        <div className="sakura-bg-static" />
         <SakuraBackground />
-        <div ref={fogRef} className="edge-fog" />
         <div className="corner-glows">
           <div className="corner-glow corner-glow--tl" />
           <div className="corner-glow corner-glow--tr" />
